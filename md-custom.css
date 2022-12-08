@@ -1,0 +1,18 @@
+.invisible {
+    display: none;;
+}
+
+.bg-red {
+    background-color: red;
+}
+.search-wrapper {
+    position: fixed;
+    top: 0px;    
+    width: 100%;
+    background: black;
+    padding: 5px;
+}
+
+.search-wrapper input {
+    padding: 0.25rem 0.5rem;
+}
