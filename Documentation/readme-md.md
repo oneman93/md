@@ -1,8 +1,12 @@
 
 
-# md.htm.md
+# How to github
 
-# Code comments
+Open C:/Works/md folder in vs code
+git push
+
+
+# Table of *.md file not rendering within md.htm
 
 * 2022-12-06
 * Not sure why markdown table is not rendering in this `md.htm`.
@@ -11,6 +15,11 @@
 * `Expand` button is best-effort approach. When clicked, there could be all elements visible already. In other words, when all elements are showing, you still see `Expand` button.
 * The other way, showing `Expand` button when any hidden `li` exists, was hard, because `li`'s parent `h1/h2` may not be visible, and showing `Expand` button there is not a good solution either.
     
+# This project started from:
+- https://github.com/zhlicen/md.htm
+- https://github.com/zerodevx/zero-md
+- https://github.com/markedjs/marked
+
 
 # Backgournd
 
