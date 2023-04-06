@@ -76,8 +76,8 @@
                     // mangle: false
                 })
 
-                // Debug to see original DOM tags right after zero-md.
-                // return;
+                // Uncomment below to see original DOM tags right after zero-md.
+                //return;
 
                 //-----------------------------
                 // Clone starts from here
@@ -87,9 +87,7 @@
                 var mdBody = app.shadowRoot.childNodes[1];
                 console.log('mdBody:', mdBody);
 
-                //-----------------------------
                 // Add keyup etc event listener
-                //-----------------------------
                 const inputSearch = document.getElementById("inputSearch");
                 const btnReset = document.getElementById("btnReset");
                 inputSearch.addEventListener("keyup", searchText);
@@ -98,19 +96,61 @@
                 //-----------------------------
                 // Move html elements to clone node because you cannot play shadow doms with jQuery
                 //-----------------------------
-                // $(app).hide();   // didn't work, don't know why.
                 $(app).addClass('invisible');
                 mdClone = document.createElement("zero-md-clone");
-                mdClone.append(mdBody);
-                document.getElementById("mdcontainer").append(mdClone)
+
+                //mdClone.append(mdBody);
+
+                var div = changeBody();
+                mdClone.append(div);
+
+                document.getElementById("mdcontainer").append(mdClone);
+
 
                 inputSearch.focus();
+
                 // Retrieve search text on page load
                 inputSearch.value = localStorage.getItem("search-text");
                 searchText();
 
-                // On keyup, search html
+                //-----------------------
+                // FUNCTIONS
+                //-----------------------
+
+                // Change mdBody structure nested from plain
+                // Before: <h1/> <ul/> <h2/> <h1/>
+                // After: <h1><ul<h2></h1> <h1></h1>
+                function changeBody() {
+                    // To help search result better, add some css class for h1, h2
+                    console.log('length', $(mdBody).find('h1').length);
+
+                    var divAll = document.createElement("div");
+                    divAll.className = 'all';
+
+                    $(mdBody).find('h1').each(function () {
+                        var h1Wrapper = document.createElement("div");
+                        h1Wrapper.className = 'h1-wrapper';
+
+                        var clone = this.cloneNode(true);       //without clone, append was making messy
+                        h1Wrapper.append(clone);
+
+                        $(this).nextUntil('h1').each(function () {
+                            clone = this.cloneNode(true);
+                            h1Wrapper.append(clone);
+                        });
+                        divAll.append(h1Wrapper);
+                    });
+
+                    console.log('all', divAll);
+                    return divAll;
+                }
+
+                //---------------------
+                // On keyup, search    
+                //---------------------             
                 function searchText() {
+                    $('.btn-sm').remove();  //remove all previously created buttons.
+
                     var input, filter, ul, tags, a, i, txtValue, elem;
                     filter = inputSearch.value.toUpperCase();
 
@@ -118,6 +158,7 @@
                     localStorage.setItem("search-text", filter);
 
                     if (filter == "") {
+                        // Reset button
                         $('[style*="display: none"]').slideDown();
                         $('.btn-sm').not('#btnReset').remove();
                         return;
@@ -137,76 +178,68 @@
                         elem = tags[i];
                         var elemTagName = elem.tagName;
                         txtValue = elem.textContent || elem.innerText;
+                        var searchMatching = txtValue.toUpperCase().indexOf(filter) >= 0;
 
-                        if (txtValue.toUpperCase().indexOf(filter) >= 0) {
-                            // filtered by search
+                        if (searchMatching) {
+                            //$(elem).addClass('highlight');
+                            console.log('txtValue', txtValue);
+
+                            // elem is matching with search criteria
                             $(elem).slideDown();
-                            if (elemTagName == "H1" || elemTagName == "H2") {
+                            if (elemTagName == "H1") {
+                                var div = $(elem).closest('.h1-wrapper');
+
                                 // Create `Expand` button dynamically
-                                var btnExpand = $(elem).next('.btn-sm');
+                                var btnExpand = div.find('.btn-sm');
                                 if (btnExpand.length <= 0) {
                                     let btn = document.createElement('button');
                                     btn.innerHTML = "Expand";
-                                    btn.classList.add("btn", "btn-sm");
-                                    if (elemTagName == "H1") {
-                                        btn.classList.add("btn-success");  // green expand button
-                                    } else {
-                                        btn.classList.add("btn-info");  // light blue
-                                    }
-
+                                    btn.classList.add("btn", "btn-sm", "btn-success");  // green expand button
                                     btn.addEventListener("click", function () {
-                                        var prev = $(this).prev();
-                                        if ($(prev).prop('tagName') == 'H1') {
-                                            //h1
-                                            $(this).prev('h1').nextUntil('h1').each(function (index) {
-                                                $(this).slideDown();
-                                                if ($(this).prop('tagName') == 'UL') {
-                                                    $(this).find('li').slideDown();
-                                                }
-                                            });
-                                        }
-                                        else {
-                                            //h2
-                                            $(this).prev('h2').nextUntil(':header').each(function (index) {
-                                                $(this).slideDown();
-                                                if ($(this).prop('tagName') == 'UL') {
-                                                    $(this).find('li').slideDown();
-                                                }
-                                            });
+                                        console.log('yo, h1');
 
-                                        }
+                                        var children = div.find('*');
+                                        console.log('children', children.length);
+                                        children.slideDown();
+
                                         $(this).remove();
                                     });
-                                    insertAfter(elem, btn);
-                                }
-                            } else if (elemTagName == "LI") {
-                                // LI
-                                var h1 = $(elem).closest('ul').prev('h1');
-                                if (h1.length > 0 && !h1.is(':visible')) {
-                                    var btnExpand = h1.next('.btn-sm');
-                                    if (btnExpand.length <= 0) {
-                                        let btn = document.createElement('button');
-                                        btn.innerHTML = "Expand";
-                                        btn.classList.add("btn", "btn-sm", "btn-info");     // light-blue expand button
-                                        btn.addEventListener("click", function () {
-                                            // alert("Button is clicked");
-                                            $(this).prev('h1').slideDown();
-                                            $(this).prev('h1').nextUntil('h1').each(function (index) {
-                                                $(this).slideDown();
-                                                if ($(this).prop('tagName') == 'UL') {
-                                                    $(this).find('li').slideDown();
-                                                }
-                                            });
-                                            $(this).remove();
-                                        });
-                                        insertAfter(h1.get(0), btn);
-                                    }
+                                    div.prepend(btn);
                                 }
                             }
+                            else {
+                                // h2, li matching
+                                var div = $(elem).closest('.h1-wrapper');
+                                var h1 = div.find('h1');
+                                if (!h1.is(':visible')) {
+                                    h1.show();
+                                }
+
+                                if (div.find('.btn-sm').length <= 0) {
+                                    var btnExpand = div.find('.btn-sm');
+                                    if (btnExpand.length <= 0) {
+                                        // if button does not exist, create one.
+                                        let btn = document.createElement('button');
+                                        btn.innerHTML = "Expand";
+                                        btn.classList.add("btn", "btn-sm", "btn-success");  // green expand button
+                                        btn.addEventListener("click", function () {
+                                            console.log('yo, li');
+                                            var div = $(this).closest('.h1-wrapper');
+                                            // find more than one level
+                                            // https://stackoverflow.com/questions/7648761/how-to-select-all-children-in-any-level-from-a-parent-in-jquery
+                                            var children = div.find('*');
+                                            console.log('children', children.length);
+                                            children.slideDown();
+                                        });
+                                        div.prepend(btn);
+                                    }
+                                }
+
+                            }
+
                         } else {
                             // elem doesn't contain search string
                             $(elem).hide();
-                            $(elem).next('.btn-sm').remove();
                         }
                     }
                 }

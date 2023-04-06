@@ -2,6 +2,7 @@
 * `md` is markdown file extension.
 * `md.htm` is a github project that embeds markdown file inside html.
 * We can use `md.htm` to use javascript on top of `.md` file
+* See also [implement-detail.md](./implement-detail.md)
 
 # key places
 item|desc
@@ -22,8 +23,11 @@ md-custom.js | * Not used<br>* Intended to use for keyup event in search.<br>* K
 # How to github
 
 Open C:/Works/md folder in vs code
+```
+git add .
+git commit -m 'test'
 git push
-
+```
 
 # Table of *.md file not rendering within md.htm
 
