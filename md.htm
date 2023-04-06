@@ -129,7 +129,7 @@
                     tags = mdClone.querySelectorAll("h1,h2,li");
 
                     // All other tags will be hidden unless filter is reset to "".
-                    var otherTags = mdClone.querySelectorAll("table,pre,p");
+                    var otherTags = mdClone.querySelectorAll("table,pre");
                     $(otherTags).hide();
 
                     console.log('tags length: ', tags.length);
@@ -142,7 +142,7 @@
                             // filtered by search
                             $(elem).slideDown();
                             if (elemTagName == "H1" || elemTagName == "H2") {
-
+                                // Create `Expand` button dynamically
                                 var btnExpand = $(elem).next('.btn-sm');
                                 if (btnExpand.length <= 0) {
                                     let btn = document.createElement('button');

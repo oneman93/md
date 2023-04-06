@@ -1,4 +1,23 @@
 
+* `md` is markdown file extension.
+* `md.htm` is a github project that embeds markdown file inside html.
+* We can use `md.htm` to use javascript on top of `.md` file
+
+# key places
+item|desc
+--|--
+This project started from|https://github.com/zhlicen/md.htm
+How to use without param |http://127.0.0.1:5500/md/md.htm 
+How to use with `src` param| http://127.0.0.1:5500/md/md.htm?src=../_LoadingDocuments/aws-personal.md
+Code | C:\Works\md
+github | https://github.com/oneman93/md
+
+# file structure
+item|desc
+--|--
+md.htm | main file with all `js` implementation
+md-custom.css | * CSS for button etc <br>* Called from md.htm
+md-custom.js | * Not used<br>* Intended to use for keyup event in search.<br>* Key up implemented in `md.htm` itself
 
 # How to github
 
@@ -31,20 +50,18 @@ git push
 - [ref2] https://zerodevx.github.io/zero-md/attributes-and-helpers/
 
 
-# Implementation md.htm
+# Implementation of md.htm
 - c:\works\md.htm
 - Other files:
 - Folder `c:\works\md` has css file.
 - md.htm has cdn url `zero-md` library parsing md file into html.
 - I added bootstrap etc to make style
-- Everything should be inside `window.load` because md file should be loaded into html first to play with jQuery.
-- As showdow root doms could not be accessed by jQuery, I do clone the dom elements of shadow root and put it into `<zero-md-clone>`
+- Everything should be inside `window.load` because `md` file should be loaded into `html` first so that we can play with `jQuery`.
+- As showdow-root-doms could not be accessed by jQuery, I do clone the dom elements of shadow-root and put it into `<zero-md-clone>`
 - Every elements inside `<zero-md-clone>` can now be played with jQuery.
 
 # How to run
 - Open `md.htm` in `vs`
-- Go live
-- ![](./imgs/md-htm/golive.png "go live")
+- Click `Go live`
 - http://127.0.0.1:5500/md.htm
-- ![](./imgs/md-htm/md1.png)
-- ![](./imgs/md-htm/md2.png)
+- ![](./imgs/0001.png)
