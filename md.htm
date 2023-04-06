@@ -149,7 +149,7 @@
                 // On keyup, search    
                 //---------------------             
                 function searchText() {
-                    $('.btn-sm').remove();  //remove all previously created buttons.
+                    $('.btn-sm').not('#btnReset').remove();
 
                     var input, filter, ul, tags, a, i, txtValue, elem;
                     filter = inputSearch.value.toUpperCase();
@@ -183,58 +183,51 @@
                         if (searchMatching) {
                             //$(elem).addClass('highlight');
                             console.log('txtValue', txtValue);
+                            var div = $(elem).closest('.h1-wrapper');
 
                             // elem is matching with search criteria
                             $(elem).slideDown();
-                            if (elemTagName == "H1") {
-                                var div = $(elem).closest('.h1-wrapper');
-
-                                // Create `Expand` button dynamically
-                                var btnExpand = div.find('.btn-sm');
-                                if (btnExpand.length <= 0) {
-                                    let btn = document.createElement('button');
-                                    btn.innerHTML = "Expand";
-                                    btn.classList.add("btn", "btn-sm", "btn-success");  // green expand button
-                                    btn.addEventListener("click", function () {
-                                        console.log('yo, h1');
-
-                                        var children = div.find('*');
-                                        console.log('children', children.length);
-                                        children.slideDown();
-
-                                        $(this).remove();
-                                    });
-                                    div.prepend(btn);
-                                }
-                            }
-                            else {
+                            if (elemTagName != "H1") {
                                 // h2, li matching
-                                var div = $(elem).closest('.h1-wrapper');
                                 var h1 = div.find('h1');
                                 if (!h1.is(':visible')) {
                                     h1.show();
                                 }
+                            }
 
-                                if (div.find('.btn-sm').length <= 0) {
-                                    var btnExpand = div.find('.btn-sm');
-                                    if (btnExpand.length <= 0) {
-                                        // if button does not exist, create one.
-                                        let btn = document.createElement('button');
-                                        btn.innerHTML = "Expand";
-                                        btn.classList.add("btn", "btn-sm", "btn-success");  // green expand button
-                                        btn.addEventListener("click", function () {
-                                            console.log('yo, li');
-                                            var div = $(this).closest('.h1-wrapper');
-                                            // find more than one level
-                                            // https://stackoverflow.com/questions/7648761/how-to-select-all-children-in-any-level-from-a-parent-in-jquery
-                                            var children = div.find('*');
-                                            console.log('children', children.length);
-                                            children.slideDown();
-                                        });
-                                        div.prepend(btn);
+                            // Show button
+                            var btnExpand = div.find('.btn-sm');
+
+                            if (btnExpand.length <= 0) {
+                                // if button does not exist, create one.
+                                let btn = document.createElement('button');
+                                btn.innerHTML = "Expand";
+                                btn.classList.add("btn", "btn-sm", "btn-expand", "btn-success");  // green expand button
+                                btn.addEventListener("click", function () {
+
+                                    var isExpand = this.innerHTML == 'Expand';
+                                    console.log('isExpand', isExpand);
+                                    console.log('yo, li');
+                                    // find more than one level
+                                    // https://stackoverflow.com/questions/7648761/how-to-select-all-children-in-any-level-from-a-parent-in-jquery
+
+                                    // Have to define again here.
+                                    var div = $(this).closest('.h1-wrapper');
+                                    var children = div.find('*');
+                                    console.log('children', children.length);
+                                    if (isExpand) {
+                                        children.slideDown();
+                                        btn.innerHTML = 'Collapse';
+                                        btn.classList.remove('btn-success');
+                                        btn.classList.add('btn-danger');
+                                    } else {
+                                        searchText();
+                                        btn.innerHTML = 'Expand';
+                                        btn.classList.add('btn-success');
+                                        btn.classList.remove('btn-danger');
                                     }
-                                }
-
+                                });
+                                div.prepend(btn);
                             }
 
                         } else {
