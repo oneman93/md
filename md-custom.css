@@ -28,3 +28,19 @@ h2 {
 .btn-expand {
     margin-top: 1em;
 }
+
+/* customization */
+p {
+    margin-bottom: 0rem;
+}
+h1 {
+    font-size: 2rem;
+}
+h2 {
+    font-size: 1.5rem;
+}
+
+.h1-wrapper button {
+    margin-left: 30px;
+    margin-top: -5px;
+}

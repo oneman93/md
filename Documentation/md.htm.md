@@ -69,3 +69,17 @@ git push
 - Click `Go live`
 - http://127.0.0.1:5500/md.htm
 - ![](./imgs/0001.png)
+
+
+# How to use md.htm in another machine, eg, mac
+
+1. Copy md folder to mac. (only 2mb)
+2. Open md/md.htm and edit
+```
+if (app.src == '') {
+    app.src = '../_work_index.md';
+}
+```
+3. Run vs code, go live
+4. http://127.0.0.1:5500/md.htm
+
