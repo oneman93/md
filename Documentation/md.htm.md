@@ -22,8 +22,9 @@ md-custom.js | * Not used<br>* Intended to use for keyup event in search.<br>* K
 
 # How to github
 
-Open C:/Works/md folder in vs code
 ```
+// Open C:/Works/md folder in vs code or
+// cd /c/Works/md
 git add .
 git commit -m 'test'
 git push

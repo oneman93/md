@@ -108,12 +108,34 @@
 
                 document.getElementById("mdcontainer").append(mdClone);
 
+                //---------------
+                // Page Load
+                //----------------
 
                 inputSearch.focus();
 
                 // Retrieve search text on page load
                 inputSearch.value = localStorage.getItem("search-text");
                 searchText();
+
+                var strNth = localStorage.getItem("expanded-nth");
+                console.log('strNth:', strNth);
+
+                if (strNth != null) {
+                    var nthArray = strNth.split(',');
+                    nthArray.forEach(expandFunction)
+
+                    function expandFunction(item) {
+                        var selector = '.h1-wrapper:nth-child(#n)'.replace('#n', parseInt(item));
+                        console.log('selector:', selector);
+
+                        var btn = $(selector).find('.btn-sm');
+                        if (btn.length) {
+                            btn.click();
+                        }
+                    }
+
+                }
 
                 //-----------------------
                 // FUNCTIONS
@@ -200,6 +222,10 @@
                             // Show button
                             var btnExpand = div.find('.btn-sm');
 
+
+                            //------------------
+                            // btnExpand
+                            //------------------
                             if (btnExpand.length <= 0) {
                                 // if button does not exist, create one.
                                 let btn = document.createElement('button');
@@ -217,16 +243,42 @@
                                     var div = $(this).closest('.h1-wrapper');
                                     var children = div.find('*');
                                     console.log('children', children.length);
+
+                                    //https://stackoverflow.com/questions/13550079/how-to-find-nth-element-when-a-click-is-activated
+                                    var divs = $('.h1-wrapper');
+                                    var divIndex = divs.index(div);
+
                                     if (isExpand) {
+                                        // Expand button clicked
                                         children.slideDown();
                                         btn.innerHTML = 'Collapse';
                                         btn.classList.remove('btn-success');
                                         btn.classList.add('btn-danger');
+
+                                        var strArray = localStorage.getItem("expanded-nth");
+                                        var array = [];
+                                        if (strArray != null) {
+                                            array = strArray.split(',').map(function (item) {
+                                                return parseInt(item, 10);
+                                            });
+                                        }
+                                        console.log('array:', array);
+                                        console.log('divIndex:', divIndex);
+
+                                        var nth = divIndex + 1;
+                                        if (!array.includes(nth)) {
+                                            array.push(nth);
+                                            localStorage.setItem("expanded-nth", array.toString());
+                                        }
+
                                     } else {
+                                        // Collapse button clicked
                                         searchText();
                                         btn.innerHTML = 'Expand';
                                         btn.classList.add('btn-success');
                                         btn.classList.remove('btn-danger');
+
+                                        localStorage.removeItem("expanded-nth");
                                     }
                                 });
                                 div.find('h1').append(btn);
