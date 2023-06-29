@@ -35,9 +35,17 @@
     </head>
 
     <body>
-        <div class="search-wrapper mb-5">
-            <input id="inputSearch" type="text" placeholder="type to search..." />
-            <button id="btnReset" type="button" class="btn btn-primary btn-sm">Reset</button>
+        <div class="search-wrapper d-flex justify-content-between">
+            <DIV>
+                <input id="inputSearch" type="text" placeholder="type to search..." />
+                <button id="btnReset" type="button" class="btn btn-primary btn-sm">Reset</button>
+
+            </DIV>
+            <DIV>
+                <!-- <button id="btnCopy" type="button" class="btn btn-primary btn-sm">Copy</button> -->
+                <!-- <button id="btnOpenMD" type="button" class="btn btn-primary btn-sm">Open with md.htm</button> -->
+            </DIV>
+
         </div>
         <div style="width:70%; margin:0 auto; margin-top: 50px;" id="mdcontainer">
         </div>
@@ -98,8 +106,12 @@
                 // Add keyup etc event listener
                 const inputSearch = document.getElementById("inputSearch");
                 const btnReset = document.getElementById("btnReset");
+                //const btnCopy = document.getElementById("btnCopy");
+                const btnOpenMD = document.getElementById("btnOpenMD");
+
                 inputSearch.addEventListener("keyup", searchText);
                 btnReset.addEventListener("click", resetText);
+                //btnCopy.addEventListener("click", copyToClipboard);
 
                 //-----------------------------
                 // ChangeBody: move html elements to clone node because you cannot play shadow doms with jQuery
@@ -111,6 +123,12 @@
                 var div = changeBody();
                 mdClone.append(div);
                 document.getElementById("mdcontainer").append(mdClone);
+
+                // $('a').each(function () {
+                //     var oldUrl = $(this).attr("href");
+                //     var newUrl = oldUrl.replace("127.0.0.1:5500/./", "127.0.0.1:5500/md/md.htm?src=../");
+                //     $(this).attr("href", newUrl);
+                // });
 
                 //---------------
                 // Page Load
@@ -179,7 +197,6 @@
                 // On keyup, search    
                 //---------------------             
                 function searchText() {
-                    $('.btn-sm').not('#btnReset').remove();
 
                     var input, filter, ul, tags, a, i, txtValue, elem;
                     filter = inputSearch.value.toUpperCase();
@@ -190,7 +207,7 @@
                     if (filter == "") {
                         // Reset button
                         $('[style*="display: none"]').slideDown();
-                        $('.btn-sm').not('#btnReset').remove();
+                        $('.btn-expand').remove();
                         return;
                     }
 
@@ -300,6 +317,14 @@
                 function resetText() {
                     inputSearch.value = "";
                     searchText();
+                }
+
+                function copyToClipboard() {
+                    //https://webdeveloper.com/community/60349-is-there-a-way-to-simulate-ctrl-a-ctrl-c-in-javascript/
+                    document.execCommand("SelectAll", true);
+                    document.execCommand("Copy", true);
+                    // document.execCommand("UnSelect", true);
+                    alert('Copied');
                 }
 
                 function insertAfter(referenceNode, newNode) {
