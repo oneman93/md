@@ -84,3 +84,10 @@ if (app.src == '') {
 3. Run vs code, go live
 4. http://127.0.0.1:5500/md.htm
 
+# ChangeBody
+
+## Known bugs
+
+* If `md` page does not have `<h1>` (a line starting with `#` symbol) tag first, it does not now on load.
+
+

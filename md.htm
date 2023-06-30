@@ -20,6 +20,7 @@
 
 
         <link rel="stylesheet" href="md-custom.css" />
+        <link rel="stylesheet" href="github.css" />
 
         <!-- These two stylesheets were created by zero-md dynamically under shadow root: #shadow-root
         I copied here manually to use with <zero-md-clone></zero-md-clone> -->
@@ -42,8 +43,9 @@
 
             </DIV>
             <DIV>
-                <!-- <button id="btnCopy" type="button" class="btn btn-primary btn-sm">Copy</button> -->
-                <!-- <button id="btnOpenMD" type="button" class="btn btn-primary btn-sm">Open with md.htm</button> -->
+                <button id="btnHome" type="button" class="btn btn-primary btn-sm"
+                    onclick="location.href='http://127.0.0.1:5500/md/md.htm'">Home</button>
+                <button id="btnWrapIt" type="button" class="btn btn-primary btn-sm">Wrap with md.htm</button>
             </DIV>
 
         </div>
@@ -77,6 +79,7 @@
             // my code trial begins ----
             const app = document.querySelector('zero-md')
             const run = async () => {
+
                 console.log('app.src: ', app.src);
 
                 if (app.src == '') {
@@ -106,16 +109,17 @@
                 // Add keyup etc event listener
                 const inputSearch = document.getElementById("inputSearch");
                 const btnReset = document.getElementById("btnReset");
-                //const btnCopy = document.getElementById("btnCopy");
-                const btnOpenMD = document.getElementById("btnOpenMD");
+                const btnWrapIt = document.getElementById("btnWrapIt");
 
                 inputSearch.addEventListener("keyup", searchText);
                 btnReset.addEventListener("click", resetText);
-                //btnCopy.addEventListener("click", copyToClipboard);
+                btnWrapIt.addEventListener("click", toggleWrap);
 
                 //-----------------------------
                 // ChangeBody: move html elements to clone node because you cannot play shadow doms with jQuery
                 //-----------------------------
+                // debugger;
+                // Hide zero-md
                 $(app).addClass('invisible');
                 mdClone = document.createElement("zero-md-clone");
 
@@ -123,24 +127,26 @@
                 var div = changeBody();
                 mdClone.append(div);
                 document.getElementById("mdcontainer").append(mdClone);
-
-                // $('a').each(function () {
-                //     var oldUrl = $(this).attr("href");
-                //     var newUrl = oldUrl.replace("127.0.0.1:5500/./", "127.0.0.1:5500/md/md.htm?src=../");
-                //     $(this).attr("href", newUrl);
-                // });
+                // Now it shows zero-md-clone
 
                 //---------------
                 // Page Load
                 //----------------
-                // To use bootstrap nice table css
+                // To use bootstrap/github css
                 $('table').addClass('table');
+                $('div.all').addClass('markdown-body');
 
                 inputSearch.focus();
 
                 // Retrieve search text on page load
                 inputSearch.value = localStorage.getItem("search-text");
                 searchText();
+
+                // Button `Wrap with md.htm` clicked already?
+                var isWrapped = localStorage.getItem("is-wrapped");
+                if (isWrapped == "1") {
+                    wrapWithMdHtml();
+                }
 
                 var strNth = localStorage.getItem("expanded-nth");
                 console.log('strNth:', strNth);
@@ -329,6 +335,53 @@
 
                 function insertAfter(referenceNode, newNode) {
                     referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+                }
+
+                function toggleWrap() {
+                    var isWrapped = localStorage.getItem('is-wrapped');
+                    if (isWrapped != '1') {
+                        wrapWithMdHtml();
+                        localStorage.setItem('is-wrapped', '1');
+                    } else {
+                        unWrapWithMdHtml();
+                        localStorage.setItem('is-wrapped', '0');
+                    }
+                }
+
+                function wrapWithMdHtml() {
+                    $('a').each(function () {
+                        var oldUrl = $(this).attr("href");
+                        if (oldUrl.endsWith(".md")) {
+                            var newUrl = oldUrl.replace("127.0.0.1:5500/./", "127.0.0.1:5500/md/md.htm?src=../");
+                            var newUrl = newUrl.replace("127.0.0.1:5500/_LoadingDocuments/", "127.0.0.1:5500/md/md.htm?src=../_LoadingDocuments/");
+                            $(this).attr("href", newUrl);
+                        }
+                    });
+
+                    $('img').addClass('sm');
+                    $(document).on('click', 'img.sm', function () {
+                        //alert('Click on Image id: ' + $(this).attr('id'));
+                        window.open(this.src, '_blank');
+                    });
+
+
+                    btnWrapIt.textContent = "Unwrap links"
+                    btnWrapIt.classList.add('btn-warning');
+                    btnWrapIt.classList.remove('btn-primary');
+                }
+
+                function unWrapWithMdHtml() {
+                    $('a').each(function () {
+                        var oldUrl = $(this).attr("href");
+                        var newUrl = oldUrl.replace("/md/md.htm?src=..", "");
+                        $(this).attr("href", newUrl);
+                    });
+
+                    $('img').removeClass('sm');
+
+                    btnWrapIt.textContent = "Wrap with md.html"
+                    btnWrapIt.classList.remove('btn-warning');
+                    btnWrapIt.classList.add('btn-primary');
                 }
             }
 
