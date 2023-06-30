@@ -40,11 +40,11 @@
             <DIV>
                 <input id="inputSearch" type="text" placeholder="type to search..." />
                 <button id="btnReset" type="button" class="btn btn-primary btn-sm">Reset</button>
+                <button id="btnHome" type="button" class="btn btn-primary btn-sm"
+                    onclick="location.href='http://127.0.0.1:5500/md/md.htm'">Home</button>
 
             </DIV>
             <DIV>
-                <button id="btnHome" type="button" class="btn btn-primary btn-sm"
-                    onclick="location.href='http://127.0.0.1:5500/md/md.htm'">Home</button>
                 <button id="btnWrapIt" type="button" class="btn btn-primary btn-sm">Wrap with md.htm</button>
             </DIV>
 
@@ -84,6 +84,8 @@
 
                 if (app.src == '') {
                     app.src = '../_work_index.md';
+                    const btnHome = document.getElementById("btnHome");
+                    $(btnHome).addClass('invisible');
                 }
 
                 // Without this line, clone was not working.
@@ -130,7 +132,7 @@
                 // Now it shows zero-md-clone
 
                 //---------------
-                // Page Load
+                // PageLoad
                 //----------------
                 // To use bootstrap/github css
                 $('table').addClass('table');
