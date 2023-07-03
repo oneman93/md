@@ -29,10 +29,50 @@
             href="https://cdn.jsdelivr.net/gh/sindresorhus/github-markdown-css@4/github-markdown.min.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/PrismJS/prism@1/themes/prism.min.css">
 
+
         <meta charset="utf-8">
         <title>md.htm</title>
         <link rel="icon" type="image/x-icon" href="/md/images/favicon.png">
 
+        <!-- photo swipe -->
+        <script type="module">
+            import PhotoSwipeLightbox from './dist/photoswipe-lightbox.esm.js';
+            const options = {
+                gallery: '#mdcontainer',
+                children: 'a.photoswipe',
+                pswpModule: () => import('./dist/photoswipe.esm.js')
+            };
+            const lightbox = new PhotoSwipeLightbox(options);
+            lightbox.on('uiRegister', function () {
+                lightbox.pswp.ui.registerElement({
+                    name: 'custom-caption',
+                    order: 9,
+                    isButton: false,
+                    appendTo: 'root',
+                    html: 'Caption text',
+                    onInit: (el, pswp) => {
+                        lightbox.pswp.on('change', () => {
+                            const currSlideElement = lightbox.pswp.currSlide.data.element;
+                            let captionHTML = '';
+                            if (currSlideElement) {
+                                const hiddenCaption = currSlideElement.querySelector('.hidden-caption-content');
+                                if (hiddenCaption) {
+                                    // get caption from element with class hidden-caption-content
+                                    captionHTML = hiddenCaption.innerHTML;
+                                } else {
+                                    // get caption from alt attribute
+                                    captionHTML = currSlideElement.querySelector('img').getAttribute('title');
+                                }
+                            }
+                            el.innerHTML = captionHTML || '';
+                        });
+                    }
+                });
+            });
+            lightbox.init();
+        </script>
+
+        <link rel="stylesheet" href="./dist/photoswipe.css">
     </head>
 
     <body>
@@ -49,7 +89,9 @@
             </DIV>
 
         </div>
+
         <div style="width:70%; margin:0 auto; margin-top: 50px;" id="mdcontainer">
+            <!-- shadow dom will be cloned here -->
         </div>
     </body>
 
@@ -132,7 +174,7 @@
                 // Now it shows zero-md-clone
 
                 //---------------
-                // PageLoad
+                // Page Load
                 //----------------
                 // To use bootstrap/github css
                 $('table').addClass('table');
@@ -181,7 +223,7 @@
                     console.log('length', $(mdBody).find('h1').length);
 
                     var divAll = document.createElement("div");
-                    divAll.className = 'all';
+                    divAll.classList.add('all');
 
                     $(mdBody).find('h1').each(function () {
                         var h1Wrapper = document.createElement("div");
@@ -351,6 +393,7 @@
                 }
 
                 function wrapWithMdHtml() {
+                    // wrap xxx.md file line
                     $('a').each(function () {
                         var oldUrl = $(this).attr("href");
                         if (oldUrl.endsWith(".md")) {
@@ -360,17 +403,50 @@
                         }
                     });
 
+                    // get image width and height from source
+                    const getMeta = (url, cb) => {
+                        const img = new Image();
+                        img.onload = () => cb(null, img);
+                        img.onerror = (err) => cb(err);
+                        img.src = url;
+                    };
+
+                    // wrap each img tag with hyperlink
                     $('img').addClass('sm');
-                    $(document).on('click', 'img.sm', function () {
-                        //alert('Click on Image id: ' + $(this).attr('id'));
-                        window.open(this.src, '_blank');
+
+                    var Photos = "";
+                    $('img.sm').each(function () {
+                        getMeta(this.src, (err, img) => {
+                            console.log(img.naturalWidth, img.naturalHeight);
+
+                            var newLink = $("<a />", {
+                                href: this.src
+                            });
+                            newLink.attr('data-pswp-width', img.naturalWidth);
+                            newLink.attr('data-pswp-height', img.naturalHeight);
+                            newLink.addClass('photoswipe');
+                            newLink.append($(this).clone());
+                            $(this).replaceWith(newLink);
+                        });
+
+                        // This saved my life!
+                        // https://stackoverflow.com/questions/14946200/use-photoswipe-on-dynamically-created-ul
+                        // Photos += '<li><a href="' + this.src + '" data-pswp-width=1920 data-pswp-height=1080><img src="' + this.src + '" alt="' + this.title + '" width="80" /></a></li>';
+                        // You need a physical tag exsiting already. In this case #mdcontainer
+
                     });
 
+
+                    // img click event > replaced by photoswipe
+                    // $(document).on('click', 'img.sm', function () {
+                    //     window.open(this.src, '_blank');
+                    // });
 
                     btnWrapIt.textContent = "Unwrap links"
                     btnWrapIt.classList.add('btn-warning');
                     btnWrapIt.classList.remove('btn-primary');
                 }
+
 
                 function unWrapWithMdHtml() {
                     $('a').each(function () {
@@ -391,5 +467,7 @@
 
         } //window.load
     </script>
+
+
 
 </html>

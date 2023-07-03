@@ -4,6 +4,13 @@
 * We can use `md.htm` to use javascript on top of `.md` file
 * See also [implement-detail.md](./implement-detail.md)
 
+# Photoswipe
+
+https://photoswipe.com/
+Source code: C:\Works\Photoswipe
+Test html file: [index.htm](../../PhotoSwipe-master/index.htm)
+
+
 # key places
 item|desc
 --|--
