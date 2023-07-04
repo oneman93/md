@@ -6,10 +6,16 @@
 
 # Photoswipe
 
-https://photoswipe.com/
-Source code: C:\Works\Photoswipe
-Test html file: [index.htm](../../PhotoSwipe-master/index.htm)
+* https://photoswipe.com/
+* Source code: C:\Works\Photoswipe
+* Test html file: [index.htm](../../PhotoSwipe-master/index.htm)
 
+```
+// This saved my life!
+// https://stackoverflow.com/questions/14946200/use-photoswipe-on-dynamically-created-ul
+// Photos += '<li><a href="' + this.src + '" data-pswp-width=1920 data-pswp-height=1080><img src="' + this.src + '" alt="' + this.title + '" width="80" /></a></li>';
+// You need a physical tag exsiting already. In this case #mdcontainer
+```
 
 # key places
 item|desc

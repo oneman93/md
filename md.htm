@@ -257,6 +257,8 @@
                 //---------------------             
                 function searchText() {
 
+                    if (!fnIsRootPage()) return;
+
                     var input, filter, ul, tags, a, i, txtValue, elem;
                     filter = inputSearch.value.toUpperCase();
 
@@ -401,14 +403,19 @@
                     }
                 }
 
+                // When button `Wrap with md.htm` is clicked, you do some css changes+DOM changes
                 function wrapWithMdHtml() {
                     // wrap xxx.md file line
                     $('a').each(function () {
                         var oldUrl = $(this).attr("href");
                         if (oldUrl.endsWith(".md")) {
+                            // href to md files
                             var newUrl = oldUrl.replace("127.0.0.1:5500/./", "127.0.0.1:5500/md/md.htm?src=../");
                             var newUrl = newUrl.replace("127.0.0.1:5500/_LoadingDocuments/", "127.0.0.1:5500/md/md.htm?src=../_LoadingDocuments/");
                             $(this).attr("href", newUrl);
+                        } else {
+                            // all other general href
+                            $(this).attr('target', '_blank');
                         }
                     });
 
@@ -434,15 +441,10 @@
                             newLink.attr('data-pswp-width', img.naturalWidth);
                             newLink.attr('data-pswp-height', img.naturalHeight);
                             newLink.addClass('photoswipe');
+
                             newLink.append($(this).clone());
                             $(this).replaceWith(newLink);
                         });
-
-                        // This saved my life!
-                        // https://stackoverflow.com/questions/14946200/use-photoswipe-on-dynamically-created-ul
-                        // Photos += '<li><a href="' + this.src + '" data-pswp-width=1920 data-pswp-height=1080><img src="' + this.src + '" alt="' + this.title + '" width="80" /></a></li>';
-                        // You need a physical tag exsiting already. In this case #mdcontainer
-
                     });
 
 
@@ -469,6 +471,14 @@
                     btnWrapIt.textContent = "Wrap with md.html"
                     btnWrapIt.classList.remove('btn-warning');
                     btnWrapIt.classList.add('btn-primary');
+                }
+
+                function fnIsRootPage() {
+                    var isRootPage = false;
+                    if (app.src.toLowerCase() == '../_work_index.md') {
+                        isRootPage = true;
+                    }
+                    return isRootPage;
                 }
             }
 
