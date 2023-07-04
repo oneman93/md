@@ -125,9 +125,15 @@
                 console.log('app.src: ', app.src);
 
                 if (app.src == '') {
+                    // Is root page
                     app.src = '../_work_index.md';
                     const btnHome = document.getElementById("btnHome");
                     $(btnHome).addClass('invisible');
+                }
+
+                var isRootPage = false;
+                if (app.src.toLowerCase() == '../_work_index.md') {
+                    isRootPage = true;
                 }
 
                 // Without this line, clone was not working.
@@ -184,7 +190,10 @@
 
                 // Retrieve search text on page load
                 inputSearch.value = localStorage.getItem("search-text");
-                searchText();
+                if (isRootPage) {
+                    // Apply filter only in root page.
+                    searchText();
+                }
 
                 // Button `Wrap with md.htm` clicked already?
                 var isWrapped = localStorage.getItem("is-wrapped");
