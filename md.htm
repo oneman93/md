@@ -29,6 +29,8 @@
             href="https://cdn.jsdelivr.net/gh/sindresorhus/github-markdown-css@4/github-markdown.min.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/PrismJS/prism@1/themes/prism.min.css">
 
+        <!-- fontawsome -->
+        <script src="https://kit.fontawesome.com/33b67b9684.js" crossorigin="anonymous"></script>
 
         <meta charset="utf-8">
         <title>md.htm</title>
@@ -77,14 +79,14 @@
 
     <body>
         <div class="search-wrapper d-flex justify-content-between">
-            <DIV>
+            <DIV id="divLeft">
                 <input id="inputSearch" type="text" placeholder="type to search..." />
                 <button id="btnReset" type="button" class="btn btn-primary btn-sm">Reset</button>
                 <button id="btnHome" type="button" class="btn btn-primary btn-sm"
-                    onclick="location.href='http://127.0.0.1:5500/md/md.htm'">Home</button>
+                    onclick="location.href='http://127.0.0.1:5500/md/md.htm'">Go Home</button>
 
             </DIV>
-            <DIV>
+            <DIV id="divRight">
                 <button id="btnWrapIt" type="button" class="btn btn-primary btn-sm">Wrap with md.htm</button>
             </DIV>
 
@@ -125,16 +127,19 @@
                 console.log('app.src: ', app.src);
 
                 if (app.src == '') {
-                    // Is root page
                     app.src = '../_work_index.md';
-                    const btnHome = document.getElementById("btnHome");
-                    $(btnHome).addClass('invisible');
                 }
 
                 var isRootPage = false;
                 if (app.src.toLowerCase() == '../_work_index.md') {
                     isRootPage = true;
+
+                    $('#btnHome').addClass('invisible');
+                    const icon = '<span style="font-size: 1em;color:Dodgerblue;"><i class="fa-solid fa-house"></i></span>';
+                    $('#divLeft').append(icon);
                 }
+
+                console.log('isRootPage:', isRootPage, ',app.src:', app.src);
 
                 // Without this line, clone was not working.
                 await app.render({
