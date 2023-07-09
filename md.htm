@@ -82,8 +82,8 @@
             <DIV id="divLeft">
                 <input id="inputSearch" type="text" placeholder="type to search..." />
                 <button id="btnReset" type="button" class="btn btn-primary btn-sm">Reset</button>
-                <button id="btnHome" type="button" class="btn btn-primary btn-sm"
-                    onclick="location.href='http://127.0.0.1:5500/md/md.htm'">Go Home</button>
+                <button id="btnHome" type="button" class="btn btn-primary btn-sm">Go Home</button>
+
 
             </DIV>
             <DIV id="divRight">
@@ -135,7 +135,7 @@
                     isRootPage = true;
 
                     $('#btnHome').addClass('invisible');
-                    const icon = '<span style="font-size: 1em;color:Dodgerblue;"><i class="fa-solid fa-house"></i></span>';
+                    const icon = '<span style="font-size: 1em;color:Tomato;"><i class="fa-solid fa-house"></i></span>';
                     $('#divLeft').append(icon);
                 }
 
@@ -163,10 +163,13 @@
 
                 // Add keyup etc event listener
                 const inputSearch = document.getElementById("inputSearch");
+                const btnHome = document.getElementById("btnHome");
                 const btnReset = document.getElementById("btnReset");
                 const btnWrapIt = document.getElementById("btnWrapIt");
 
                 inputSearch.addEventListener("keyup", searchText);
+
+                btnHome.addEventListener("click", goHome);
                 btnReset.addEventListener("click", resetText);
                 btnWrapIt.addEventListener("click", toggleWrap);
 
@@ -383,6 +386,12 @@
                 function resetText() {
                     inputSearch.value = "";
                     searchText();
+                }
+
+                function goHome() {
+                    localStorage.removeItem('search-text');
+                    inputSearch.value = localStorage.getItem("search-text");
+                    location.href = 'http://127.0.0.1:5500/md/md.htm';
                 }
 
                 function copyToClipboard() {
