@@ -4,6 +4,7 @@
 * We can use `md.htm` to use javascript on top of `.md` file
 * See also [implement-detail.md](./implement-detail.md)
 
+
 # Photoswipe
 
 * https://photoswipe.com/
@@ -97,10 +98,24 @@ if (app.src == '') {
 3. Run vs code, go live
 4. http://127.0.0.1:5500/md.htm
 
-# ChangeBody
+# ChangeBody()
 
 ## Known bugs
 
 * If `md` page does not have `<h1>` (a line starting with `#` symbol) tag first, it does not now on load.
 
+## Why not showing?
+```
+function changeBody() {
+...
+// Line 249
+// h1 only will be returned.
+// `Document start ~ first h1` will not be shown in <zero-md-clone>
+```
+## zero-md vs zero-md-clone
 
+![](../../_LoadingDocuments/Markdown/imgs/0003.png)
+
+# Other Screenshots
+![](../../_LoadingDocuments/Markdown/imgs/0001.png)
+![](../../_LoadingDocuments/Markdown/imgs/0002.png)

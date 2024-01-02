@@ -83,7 +83,7 @@
                 <input id="inputSearch" type="text" placeholder="type to search..." />
                 <button id="btnReset" type="button" class="btn btn-primary btn-sm">Reset</button>
                 <button id="btnHome" type="button" class="btn btn-primary btn-sm">
-                    <span style="font-size: 1em;color:darkblue;"><i class="fa-solid fa-house"></i></span>
+                    <span style="font-size: 1em;color:tomato;"><i class="fa-solid fa-house"></i></span>
                     Go Home</button>
 
 
@@ -114,7 +114,16 @@
             return "";
         }
 
+        // Prevent chrome auto page refresh
+        // https://stackoverflow.com/questions/58118286/how-to-prevent-page-refresh-or-default-prompt-box-in-chrome
+        // 2/11/23, Disabled to remove Leave Site? popup.
+        // https://superuser.com/questions/705307/how-can-i-disable-are-you-sure-you-want-to-leave-this-page-popups-in-chrome
 
+        // window.addEventListener("beforeunload", function (e) {
+        //     // Do something
+        //     console.log('chrome auto refresh blocked.');
+        //     e.preventDefault();
+        // }, false);
 
         window.onload = function () {
             md = document.createElement("zero-md")
@@ -137,9 +146,12 @@
                     isRootPage = true;
 
                     $('#btnHome').addClass('invisible');
-                    const icon = '<span style="font-size: 1em;color:Tomato;"><i class="fa-solid fa-house"></i></span>';
+                    const icon = '<span style="font-size: 1em;color:blue;"><i class="fa-solid fa-house"></i></span>';
                     $('#divLeft').append(icon);
                 }
+
+                document.title = app.src.toLowerCase().replace('../', '').replace('./', '').replace('_loadingdocuments/', '');
+
 
                 console.log('isRootPage:', isRootPage, ',app.src:', app.src);
 
@@ -244,6 +256,8 @@
                     var divAll = document.createElement("div");
                     divAll.classList.add('all');
 
+                    // <h1> only will be returned.
+                    // `Document start ~ first h1` will not be shown in <zero-md-clone>
                     $(mdBody).find('h1').each(function () {
                         var h1Wrapper = document.createElement("div");
                         h1Wrapper.className = 'h1-wrapper';
@@ -429,6 +443,7 @@
                             var newUrl = oldUrl.replace("127.0.0.1:5500/./", "127.0.0.1:5500/md/md.htm?src=../");
                             var newUrl = newUrl.replace("127.0.0.1:5500/_LoadingDocuments/", "127.0.0.1:5500/md/md.htm?src=../_LoadingDocuments/");
                             $(this).attr("href", newUrl);
+                            $(this).attr('target', '_blank');
                         } else {
                             // all other general href
                             $(this).attr('target', '_blank');
@@ -449,17 +464,24 @@
                     var Photos = "";
                     $('img.sm').each(function () {
                         getMeta(this.src, (err, img) => {
-                            console.log(img.naturalWidth, img.naturalHeight);
+                            if (img != undefined) {
+                                console.log('img width/height:', img.naturalWidth, img.naturalHeight);
 
-                            var newLink = $("<a />", {
-                                href: this.src
-                            });
-                            newLink.attr('data-pswp-width', img.naturalWidth);
-                            newLink.attr('data-pswp-height', img.naturalHeight);
-                            newLink.addClass('photoswipe');
+                                if (img.naturalWidth < 200) {
+                                    // really small img >> keep original width
+                                    $(this).removeClass('sm');
+                                }
 
-                            newLink.append($(this).clone());
-                            $(this).replaceWith(newLink);
+                                var newLink = $("<a />", {
+                                    href: this.src
+                                });
+                                newLink.attr('data-pswp-width', img.naturalWidth);
+                                newLink.attr('data-pswp-height', img.naturalHeight);
+                                newLink.addClass('photoswipe');
+
+                                newLink.append($(this).clone());
+                                $(this).replaceWith(newLink);
+                            }
                         });
                     });
 
@@ -480,6 +502,7 @@
                         var oldUrl = $(this).attr("href");
                         var newUrl = oldUrl.replace("/md/md.htm?src=..", "");
                         $(this).attr("href", newUrl);
+                        $(this).attr("target", "_blank");   //open in new tab, 2/11/23
                     });
 
                     $('img').removeClass('sm');

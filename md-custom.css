@@ -29,9 +29,10 @@ h2 {
     margin-top: 1em;
 }
 
-/* customization */
+/* customization - override github.css */
 p {
-    margin-bottom: 0rem;
+    margin-bottom: .5rem !important;
+    margin-top: 0 !important;
 }
 h1 {
     font-size: 2rem;
@@ -50,7 +51,7 @@ h2 {
 } */
 
 img.sm {
-    width: 20%;
+    width: 200px;
     border: 1px solid #ccc !important;
     border-radius: 5px;
     cursor: pointer;
