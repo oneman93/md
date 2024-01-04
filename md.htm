@@ -90,16 +90,32 @@
             </DIV>
             <DIV id="divRight">
                 <button id="btnWrapIt" type="button" class="btn btn-primary btn-sm">Wrap with md.htm</button>
+                <button id="btnCopy" type="button" class="btn btn-primary btn-sm"
+                    onclick="CopyHTMLToClipboard()">Copy</button>
             </DIV>
 
         </div>
 
-        <div style="width:70%; margin:0 auto; margin-top: 50px;" id="mdcontainer">
+        <div id="mdcontainer" style="width:70%; margin:0 auto; margin-top: 50px;">
             <!-- shadow dom will be cloned here -->
         </div>
     </body>
 
     <script>
+
+        //https://stackoverflow.com/questions/12982156/select-copy-text-using-javascript-or-jquery
+        function CopyHTMLToClipboard() {
+            //Before we copy, we are going to select the text.
+            var text = document.getElementById('mdcontainer');
+            var selection = window.getSelection();
+            var range = document.createRange();
+            range.selectNodeContents(text);
+            selection.removeAllRanges();
+            selection.addRange(range);
+            //add to clipboard.
+            document.execCommand('copy');
+        }
+
         function getQuery(key) {
             var query = window.location.search.substring(1);
             var key_values = query.split("&");
