@@ -92,6 +92,8 @@
                 <button id="btnWrapIt" type="button" class="btn btn-primary btn-sm">Wrap with md.htm</button>
                 <button id="btnCopy" type="button" class="btn btn-primary btn-sm"
                     onclick="CopyHTMLToClipboard()">Copy</button>
+                <button id="btnCopied" type="button" class="btn btn-outline-success btn-sm"
+                    style="display: none;">Copied!</button>
             </DIV>
 
         </div>
@@ -114,6 +116,8 @@
             selection.addRange(range);
             //add to clipboard.
             document.execCommand('copy');
+            document.execCommand("UnSelect", true);
+            $('#btnCopied').show().fadeOut('slow');
         }
 
         function getQuery(key) {
