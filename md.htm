@@ -276,15 +276,26 @@
                     var divAll = document.createElement("div");
                     divAll.classList.add('all');
 
-                    // <h1> only will be returned.
-                    // `Document start ~ first h1` will not be shown in <zero-md-clone>
+                    // `Document start ~ first h1` was not be shown in <zero-md-clone>
+                    var noTagElems = $(mdBody).html().split('<h1')[0];
+                    if (noTagElems.length > 0 && !noTagElems.startsWith('<h1')) {
+                        //console.log('noTagElems:', noTagElems);
+
+                        var h1Wrapper = document.createElement("div");
+                        h1Wrapper.className = 'h1-wrapper';
+                        h1Wrapper.innerHTML = '<h1>Summary</h1>' + noTagElems;
+                        divAll.append(h1Wrapper);
+                    }
+
+                    // The entire document will be restructured by <h1> tag.
                     $(mdBody).find('h1').each(function () {
                         var h1Wrapper = document.createElement("div");
                         h1Wrapper.className = 'h1-wrapper';
 
-                        var clone = this.cloneNode(true);       //without clone, append was making messy
+                        var clone = this.cloneNode(true);       //add current h1 into div.h1-wrapper
                         h1Wrapper.append(clone);
 
+                        // add all the following elems until next h1 into div.h1-wrapper
                         $(this).nextUntil('h1').each(function () {
                             clone = this.cloneNode(true);
                             h1Wrapper.append(clone);
