@@ -4,6 +4,31 @@
 * We can use `md.htm` to use javascript on top of `.md` file
 * See also [implement-detail.md](./implement-detail.md)
 
+# jsPDF
+
+* I wanted convert current page into pdf.
+* jsPDF had node.js version.
+    * https://github.com/parallax/jsPDF?tab=readme-ov-file
+
+* jsPDF jquery version youtube (with cdn link only):
+    * https://www.youtube.com/watch?v=KeoSctcJsHg
+* To convert it jQuery (node.js and md.htm didn't work well together), I had to locally import below 2 cdn:
+    * https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js
+    * https://html2canvas.hertzen.com/dist/html2canvas.js
+
+## error - jspdf is not defined
+* https://stackoverflow.com/questions/43333286/uncaught-referenceerror-jspdf-is-not-defined
+
+## error - jspdf.html() is not a defined function
+
+* Very good example:
+* https://phppot.com/javascript/html-to-pdf-in-javascript-using-jspdf/
+
+## Screenshots
+
+![](./img-jspdf/0001.png)
+![](./img-jspdf/0002.png)
+![](./img-jspdf/0003.png)
 
 # Photoswipe
 
