@@ -39,6 +39,7 @@
         <!-- photo swipe -->
         <script type="module">
             import PhotoSwipeLightbox from './dist/photoswipe-lightbox.esm.js';
+
             const options = {
                 gallery: '#mdcontainer',
                 children: 'a.photoswipe',
@@ -75,6 +76,11 @@
         </script>
 
         <link rel="stylesheet" href="./dist/photoswipe.css">
+
+        <!-- jspdf -->
+        <script src="./dist/jspdf/jspdf-251.js"></script>
+        <script src="./dist/jspdf/html2canvas.js"></script>
+
     </head>
 
     <body>
@@ -94,6 +100,7 @@
                     onclick="CopyHTMLToClipboard()">Copy</button>
                 <button id="btnCopied" type="button" class="btn btn-outline-success btn-sm"
                     style="display: none;">Copied!</button>
+                <button id="btnPDF" type="button" class="btn btn-dark btn-sm">PDF</button>
             </DIV>
 
         </div>
@@ -101,9 +108,18 @@
         <div id="mdcontainer" style="width:70%; margin:0 auto; margin-top: 50px;">
             <!-- shadow dom will be cloned here -->
         </div>
+
+
+
     </body>
 
     <script>
+        var specialElementHandlers = {
+            '#editor': function (element, renderer) {
+                return true;
+            }
+        };
+
 
         //https://stackoverflow.com/questions/12982156/select-copy-text-using-javascript-or-jquery
         function CopyHTMLToClipboard() {
@@ -155,6 +171,7 @@
             const app = document.querySelector('zero-md')
             const run = async () => {
 
+                const _url = window.location.href;
                 console.log('app.src: ', app.src);
 
                 if (app.src == '') {
@@ -200,12 +217,14 @@
                 const btnHome = document.getElementById("btnHome");
                 const btnReset = document.getElementById("btnReset");
                 const btnWrapIt = document.getElementById("btnWrapIt");
+                const btnPDF = document.getElementById("btnPDF");
 
                 inputSearch.addEventListener("keyup", searchText);
 
                 btnHome.addEventListener("click", goHome);
                 btnReset.addEventListener("click", resetText);
                 btnWrapIt.addEventListener("click", toggleWrap);
+                btnPDF.addEventListener("click", convert2PDF);
 
                 //-----------------------------
                 // ChangeBody: move html elements to clone node because you cannot play shadow doms with jQuery
@@ -321,8 +340,8 @@
                     localStorage.setItem("search-text", filter);
 
                     if (filter == "") {
-                        // Reset button
-                        $('[style*="display: none"]').slideDown();
+                        // Reset button clicked >> show all content
+                        $('#mdcontainer').find('[style*="display: none"]').slideDown();
                         $('.btn-expand').remove();
                         return;
                     }
@@ -464,6 +483,47 @@
                     }
                 }
 
+                //https://stackoverflow.com/questions/43333286/uncaught-referenceerror-jspdf-is-not-defined
+                //https://github.com/parallax/jsPDF?tab=readme-ov-file
+                //https://phppot.com/javascript/html-to-pdf-in-javascript-using-jspdf/
+                function convert2PDF() {
+                    $('#btnPDF').html('...');
+                    doc_PlainFormat();
+
+                    const { jsPDF } = window.jspdf;
+                    var doc = new jsPDF('l', 'mm', [1200, 1210]);
+                    var pdfjs = document.querySelector('.markdown-body');
+                    var filename = _url.split('/').pop().toLowerCase().replace('.md', '.pdf');
+
+                    // Convert HTML to PDF in JavaScript
+                    doc.html(pdfjs, {
+                        callback: function (doc) {
+                            doc.save(filename);
+                            doc_StyleFormat();
+                            $('#btnPDF').html('PDF');
+                        },
+                        x: 10,
+                        y: 10
+                    });
+                }
+
+                function doc_PlainFormat() {
+                    var isWrapped = localStorage.getItem('is-wrapped');
+                    if (isWrapped == '1') {
+                        unWrapWithMdHtml();
+                        localStorage.setItem('is-wrapped', '0');
+                    }
+                }
+
+                function doc_StyleFormat() {
+                    var isWrapped = localStorage.getItem('is-wrapped');
+                    if (isWrapped != '1') {
+                        wrapWithMdHtml();
+                        localStorage.setItem('is-wrapped', '1');
+                    }
+                }
+
+
                 // When button `Wrap with md.htm` is clicked, you do some css changes+DOM changes
                 function wrapWithMdHtml() {
                     // wrap xxx.md file line
@@ -556,6 +616,7 @@
 
         } //window.load
     </script>
+
 
 
 
