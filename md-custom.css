@@ -56,3 +56,8 @@ img.sm {
     border-radius: 5px;
     cursor: pointer;
 }
+
+/* jspdf was making pdf with background, black (#1b1f230d) */
+code {
+    background-color: white !important;
+}

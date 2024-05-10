@@ -30,6 +30,19 @@
 ![](./img-jspdf/0002.png)
 ![](./img-jspdf/0003.png)
 
+## CSS style
+
+* ![](./img-jspdf/0004.png)
+* https://www.youtube.com/watch?v=cfNGQCsSC3I
+
+```
+//md-custom.css
+code {
+    background-color: white !important;
+}
+```
+
+
 # Photoswipe
 
 * https://photoswipe.com/
