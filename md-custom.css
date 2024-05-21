@@ -59,5 +59,9 @@ img.sm {
 
 /* jspdf was making pdf with background, black (#1b1f230d) */
 code {
-    background-color: white !important;
+    background-color: transparent !important;
+}
+
+.green {
+    background: yellow;
 }

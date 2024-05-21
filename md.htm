@@ -89,12 +89,18 @@
                 <input id="inputSearch" type="text" placeholder="type to search..." />
                 <button id="btnReset" type="button" class="btn btn-primary btn-sm">Reset</button>
                 <button id="btnHome" type="button" class="btn btn-primary btn-sm">
-                    <span style="font-size: 1em;color:tomato;"><i class="fa-solid fa-house"></i></span>
+                    <span style="font-size: 1em;color:red;"><i class="fa-solid fa-house"></i></span>
                     Go Home</button>
 
 
             </DIV>
             <DIV id="divRight">
+
+
+                <a id="btnLocalVideos" type="button" class="btn btn-info btn-sm"
+                    href="https://laureateaus-my.sharepoint.com/personal/matthew_oh_torrens_edu_au/_layouts/15/onedrive.aspx?id=%2Fpersonal%2Fmatthew%5Foh%5Ftorrens%5Fedu%5Fau%2FDocuments%2FLocalVideos&view=0">
+                    Local Videos</a>
+
                 <button id="btnWrapIt" type="button" class="btn btn-primary btn-sm">Wrap with md.htm</button>
                 <button id="btnCopy" type="button" class="btn btn-primary btn-sm"
                     onclick="CopyHTMLToClipboard()">Copy</button>
@@ -243,9 +249,10 @@
                 //---------------
                 // Page Load
                 //----------------
-                // To use bootstrap/github css
+                // To use bootstrap/github css + apply custom css
                 $('table').addClass('table');
                 $('div.all').addClass('markdown-body');
+                applyCustomCss();
 
                 inputSearch.focus();
 
@@ -303,6 +310,9 @@
                         var h1Wrapper = document.createElement("div");
                         h1Wrapper.className = 'h1-wrapper';
                         h1Wrapper.innerHTML = '<h1>Summary</h1>' + noTagElems;
+                        if (fnIsRootPage()) {
+                            h1Wrapper.innerHTML = '<h1>Recently worked on ...</h1>' + noTagElems;
+                        }
                         divAll.append(h1Wrapper);
                     }
 
@@ -324,6 +334,18 @@
 
                     console.log('all', divAll);
                     return divAll;
+                }
+
+                function applyCustomCss() {
+                    $('a').each(function () {
+                        var txtOrg = $(this).text();
+                        if (txtOrg.toLowerCase().indexOf("loading") >= 0) {
+                            // add green css
+                            var txtReplaced = txtOrg.toLowerCase().replace('loading', '<span class="green">loading</span>');
+                            $(this).html(txtReplaced);
+                        }
+                    });
+
                 }
 
                 //---------------------
@@ -534,7 +556,7 @@
                             var newUrl = oldUrl.replace("127.0.0.1:5500/./", "127.0.0.1:5500/md/md.htm?src=../");
                             var newUrl = newUrl.replace("127.0.0.1:5500/_LoadingDocuments/", "127.0.0.1:5500/md/md.htm?src=../_LoadingDocuments/");
                             $(this).attr("href", newUrl);
-                            $(this).attr('target', '_blank');
+                            //$(this).attr('target', '_blank'); // open in current page
                         } else {
                             // all other general href
                             $(this).attr('target', '_blank');
