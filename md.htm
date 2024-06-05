@@ -226,6 +226,7 @@
                 const btnWrapIt = document.getElementById("btnWrapIt");
                 const btnPDF = document.getElementById("btnPDF");
 
+                // On keyup, search!
                 inputSearch.addEventListener("keyup", searchText);
 
                 btnHome.addEventListener("click", goHome);
@@ -310,9 +311,9 @@
 
                         var h1Wrapper = document.createElement("div");
                         h1Wrapper.className = 'h1-wrapper';
-                        h1Wrapper.innerHTML = '<h1>Summary</h1>' + noTagElems;
+                        h1Wrapper.innerHTML = '<h1>Outline</h1>' + noTagElems;
                         if (fnIsRootPage()) {
-                            h1Wrapper.innerHTML = '<h1>Recently worked on ...</h1>' + noTagElems;
+                            h1Wrapper.innerHTML = '<h1>Recently viewed ...</h1>' + noTagElems;
                         }
                         divAll.append(h1Wrapper);
                     }
@@ -354,13 +355,14 @@
                 //---------------------             
                 function searchText() {
 
-                    if (!fnIsRootPage()) return;
-
                     var input, filter, ul, tags, a, i, txtValue, elem;
                     filter = inputSearch.value.toUpperCase();
 
-                    // Set Item (otherwise, chrome refreshes it.)
+                    // Save search text (otherwise, chrome refreshes it.)
                     localStorage.setItem("search-text", filter);
+
+                    // But search is available only in home page
+                    if (!fnIsRootPage()) return;
 
                     if (filter == "") {
                         // Reset button clicked >> show all content
@@ -478,9 +480,10 @@
                 }
 
                 function goHome() {
-                    // moh, 21/5/24, not understand the purpose of below two lines. I want to keep filtering when going home. commented.
+                    // Reset search box when you move from subpage to homepage
                     // localStorage.removeItem('search-text');
                     // inputSearch.value = localStorage.getItem("search-text");
+
                     location.href = 'http://127.0.0.1:5500/md/md.htm';
                 }
 

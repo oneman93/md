@@ -75,7 +75,7 @@ code {
         display: flex;
         flex-direction: row;
         justify-content: flex-start;
-        gap: 40px;
+        gap: 0 40px;
         white-space: nowrap;
         max-width: 1200px;
         flex-wrap: wrap;
