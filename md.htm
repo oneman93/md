@@ -120,6 +120,12 @@
     </body>
 
     <script>
+        // Local storage variables
+        var lsClickHistory = "ls-click-history";
+        var lsExpandedNth = "ls-expanded-nth";
+        var lsSearchText = "ls-search-text";
+        var lsWrapped = "ls-is-wrapper";
+
         var specialElementHandlers = {
             '#editor': function (element, renderer) {
                 return true;
@@ -226,9 +232,11 @@
                 const btnWrapIt = document.getElementById("btnWrapIt");
                 const btnPDF = document.getElementById("btnPDF");
 
+                //-----------------------------
+                // Event Handler
+                //-----------------------------  
                 // On keyup, search!
                 inputSearch.addEventListener("keyup", searchText);
-
                 btnHome.addEventListener("click", goHome);
                 btnReset.addEventListener("click", resetText);
                 btnWrapIt.addEventListener("click", toggleWrap);
@@ -259,19 +267,19 @@
                 inputSearch.focus();
 
                 // Retrieve search text on page load
-                inputSearch.value = localStorage.getItem("search-text");
+                inputSearch.value = localStorage.getItem(lsSearchText);
                 if (isRootPage) {
                     // Apply filter only in root page.
                     searchText();
                 }
 
                 // Button `Wrap with md.htm` clicked already?
-                var isWrapped = localStorage.getItem("is-wrapped");
+                var isWrapped = localStorage.getItem(lsWrapped);
                 if (isWrapped == "1") {
                     wrapWithMdHtml();
                 }
 
-                var strNth = localStorage.getItem("expanded-nth");
+                var strNth = localStorage.getItem(lsExpandedNth);
                 console.log('strNth:', strNth);
 
                 if (strNth != null) {
@@ -359,7 +367,7 @@
                     filter = inputSearch.value.toUpperCase();
 
                     // Save search text (otherwise, chrome refreshes it.)
-                    localStorage.setItem("search-text", filter);
+                    localStorage.setItem(lsSearchText, filter);
 
                     // But search is available only in home page
                     if (!fnIsRootPage()) return;
@@ -389,7 +397,7 @@
 
                         if (searchMatching) {
                             //$(elem).addClass('highlight');
-                            console.log('txtValue', txtValue);
+                            //console.log('txtValue', txtValue);
                             var div = $(elem).closest('.h1-wrapper');
 
                             // elem is matching with search criteria
@@ -438,7 +446,7 @@
                                         btn.classList.remove('btn-success');
                                         btn.classList.add('btn-danger');
 
-                                        var strArray = localStorage.getItem("expanded-nth");
+                                        var strArray = localStorage.getItem(lsExpandedNth);
                                         var array = [];
                                         if (strArray != null) {
                                             array = strArray.split(',').map(function (item) {
@@ -451,7 +459,7 @@
                                         var nth = divIndex + 1;
                                         if (!array.includes(nth)) {
                                             array.push(nth);
-                                            localStorage.setItem("expanded-nth", array.toString());
+                                            localStorage.setItem(lsExpandedNth, array.toString());
                                         }
 
                                     } else {
@@ -461,7 +469,7 @@
                                         btn.classList.add('btn-success');
                                         btn.classList.remove('btn-danger');
 
-                                        localStorage.removeItem("expanded-nth");
+                                        localStorage.removeItem(lsExpandedNth);
                                     }
                                 });
                                 div.find('h1').append(btn);
@@ -481,8 +489,8 @@
 
                 function goHome() {
                     // Reset search box when you move from subpage to homepage
-                    // localStorage.removeItem('search-text');
-                    // inputSearch.value = localStorage.getItem("search-text");
+                    // localStorage.removeItem(lsSearchText);
+                    // inputSearch.value = localStorage.getItem(lsSearchText);
 
                     location.href = 'http://127.0.0.1:5500/md/md.htm';
                 }
@@ -500,13 +508,13 @@
                 }
 
                 function toggleWrap() {
-                    var isWrapped = localStorage.getItem('is-wrapped');
+                    var isWrapped = localStorage.getItem(lsWrapped);
                     if (isWrapped != '1') {
                         wrapWithMdHtml();
-                        localStorage.setItem('is-wrapped', '1');
+                        localStorage.setItem(lsWrapped, '1');
                     } else {
                         unWrapWithMdHtml();
-                        localStorage.setItem('is-wrapped', '0');
+                        localStorage.setItem(lsWrapped, '0');
                     }
                 }
 
@@ -535,18 +543,18 @@
                 }
 
                 function doc_PlainFormat() {
-                    var isWrapped = localStorage.getItem('is-wrapped');
+                    var isWrapped = localStorage.getItem(lsWrapped);
                     if (isWrapped == '1') {
                         unWrapWithMdHtml();
-                        localStorage.setItem('is-wrapped', '0');
+                        localStorage.setItem(lsWrapped, '0');
                     }
                 }
 
                 function doc_StyleFormat() {
-                    var isWrapped = localStorage.getItem('is-wrapped');
+                    var isWrapped = localStorage.getItem(lsWrapped);
                     if (isWrapped != '1') {
                         wrapWithMdHtml();
-                        localStorage.setItem('is-wrapped', '1');
+                        localStorage.setItem(lsWrapped, '1');
                     }
                 }
 
@@ -644,7 +652,46 @@
         } //window.load
     </script>
 
+    <script>
+        $(document).ready(function () {
+            var all = allStorage();
+            console.log('allStorage:', all);
+        });
 
+        $(document).on('click', 'a', function () {
+            var href = $(this).prop('href');
+            add2History(href);
+        });
+
+        // Show all local storage
+        // https://stackoverflow.com/questions/17745292/how-to-retrieve-all-localstorage-items-without-knowing-the-keys-in-advance
+
+        function allStorage() {
+            var archive = [],
+                keys = Object.keys(localStorage),
+                i = 0, key;
+            for (; key = keys[i]; i++) {
+                archive.push(key + '=' + localStorage.getItem(key));
+            }
+            return archive;
+        }
+
+        function add2History(href) {
+            var strArray = localStorage.getItem(lsClickHistory);
+            var array = [];
+            if (strArray != null) {
+                array = strArray.split(',').map(function (item) {
+                    return item;
+                });
+            }
+            console.log('array:', array);
+
+            if (!array.includes(href)) {
+                array.push(href);
+                localStorage.setItem(lsClickHistory, array.toString());
+            }
+        }
+    </script>
 
 
 </html>
