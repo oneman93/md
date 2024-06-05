@@ -63,5 +63,21 @@ code {
 }
 
 .green {
-    background: yellow;
+    /* background: #28a745;
+    color: white; */
+    font-weight: bold;
+}
+
+/* shows items in a row. Too many items now.
+15/5/24
+*/
+.work-index .markdown-body ul {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        gap: 40px;
+        white-space: nowrap;
+        max-width: 1200px;
+        flex-wrap: wrap;
+        margin-bottom: 0px !important; /*override github css*/
 }

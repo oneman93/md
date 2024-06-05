@@ -88,8 +88,8 @@
             <DIV id="divLeft">
                 <input id="inputSearch" type="text" placeholder="type to search..." />
                 <button id="btnReset" type="button" class="btn btn-primary btn-sm">Reset</button>
-                <button id="btnHome" type="button" class="btn btn-primary btn-sm">
-                    <span style="font-size: 1em;color:red;"><i class="fa-solid fa-house"></i></span>
+                <button id="btnHome" type="button" class="btn btn-danger btn-sm">
+                    <span style="font-size: 1em;color:white;"><i class="fa-solid fa-house"></i></span>
                     Go Home</button>
 
 
@@ -189,8 +189,9 @@
                     isRootPage = true;
 
                     $('#btnHome').addClass('invisible');
-                    const icon = '<span style="font-size: 1em;color:blue;"><i class="fa-solid fa-house"></i></span>';
-                    $('#divLeft').append(icon);
+                    const homeIcon = '<span style="font-size: 1em;color:blue;"><i class="fa-solid fa-house"></i></span>';
+                    $('#divLeft').append(homeIcon);
+                    $('#mdcontainer').addClass('work-index');
                 }
 
                 document.title = app.src.toLowerCase().replace('../', '').replace('./', '').replace('_loadingdocuments/', '');
@@ -477,8 +478,9 @@
                 }
 
                 function goHome() {
-                    localStorage.removeItem('search-text');
-                    inputSearch.value = localStorage.getItem("search-text");
+                    // moh, 21/5/24, not understand the purpose of below two lines. I want to keep filtering when going home. commented.
+                    // localStorage.removeItem('search-text');
+                    // inputSearch.value = localStorage.getItem("search-text");
                     location.href = 'http://127.0.0.1:5500/md/md.htm';
                 }
 
