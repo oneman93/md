@@ -321,7 +321,7 @@
                         h1Wrapper.className = 'h1-wrapper';
                         h1Wrapper.innerHTML = '<h1>Outline</h1>' + noTagElems;
                         if (fnIsRootPage()) {
-                            h1Wrapper.innerHTML = '<h1>Recently viewed ...</h1>' + noTagElems;
+                            h1Wrapper.innerHTML = '<h1>Recently viewed ...</h1>' + getHistoryArrayHtml();
                         }
                         divAll.append(h1Wrapper);
                     }
@@ -654,13 +654,16 @@
 
     <script>
         $(document).ready(function () {
-            var all = allStorage();
-            console.log('allStorage:', all);
+
+            // console.log('allStorage:', allStorage());
+            console.log('history:', getHistoryArray());
         });
 
         $(document).on('click', 'a', function () {
             var href = $(this).prop('href');
-            add2History(href);
+            if (href.includes('.md')) {
+                addHistory(href);
+            }
         });
 
         // Show all local storage
@@ -676,7 +679,33 @@
             return archive;
         }
 
-        function add2History(href) {
+        function addHistory(tmpHref) {
+            var array = getHistoryArray();
+            removeItemAll(array, tmpHref);
+
+            console.log('array2:', array);
+
+            // add to end
+            array.push(tmpHref);
+
+            //Task last 5 items only
+            var newArray = array.slice(-5);
+            localStorage.setItem(lsClickHistory, newArray.toString());
+        }
+
+        function removeItemAll(arr, value) {
+            var i = 0;
+            while (i < arr.length) {
+                if (arr[i] === value) {
+                    arr.splice(i, 1);
+                } else {
+                    ++i;
+                }
+            }
+            return arr;
+        }
+
+        function getHistoryArray() {
             var strArray = localStorage.getItem(lsClickHistory);
             var array = [];
             if (strArray != null) {
@@ -684,13 +713,24 @@
                     return item;
                 });
             }
-            console.log('array:', array);
-
-            if (!array.includes(href)) {
-                array.push(href);
-                localStorage.setItem(lsClickHistory, array.toString());
-            }
+            return array;
         }
+
+        function getHistoryArrayHtml() {
+            var div = '<div>';
+            var array = getHistoryArray();
+            //for (var i = array.length - 1; i >= 0; i--) {
+            for (var i = 0; i <= array.length - 1; i++) {
+                var url = array[i];
+                var filename = url.split('/').pop();
+
+                div = div + `<li><a href="${url}">${filename}</li>`;
+            }
+            div = div + '</div>';
+            return div;
+        }
+
+
     </script>
 
 
