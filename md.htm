@@ -121,10 +121,10 @@
 
     <script>
         // Local storage variables
-        var lsClickHistory = "ls-click-history";
-        var lsExpandedNth = "ls-expanded-nth";
-        var lsSearchText = "ls-search-text";
-        var lsWrapped = "ls-is-wrapper";
+        var _clickHistory = "ls-click-history";
+        var _expandedNth = "ls-expanded-nth";
+        var _searchText = "ls-search-text";
+        var _isWrapped = "ls-is-wrapper";
 
         var specialElementHandlers = {
             '#editor': function (element, renderer) {
@@ -267,19 +267,19 @@
                 inputSearch.focus();
 
                 // Retrieve search text on page load
-                inputSearch.value = localStorage.getItem(lsSearchText);
+                inputSearch.value = localStorage.getItem(_searchText);
                 if (isRootPage) {
                     // Apply filter only in root page.
                     searchText();
                 }
 
                 // Button `Wrap with md.htm` clicked already?
-                var isWrapped = localStorage.getItem(lsWrapped);
+                var isWrapped = localStorage.getItem(_isWrapped);
                 if (isWrapped == "1") {
                     wrapWithMdHtml();
                 }
 
-                var strNth = localStorage.getItem(lsExpandedNth);
+                var strNth = localStorage.getItem(_expandedNth);
                 console.log('strNth:', strNth);
 
                 if (strNth != null) {
@@ -288,9 +288,9 @@
 
                     function expandFunction(item) {
                         var selector = '.h1-wrapper:nth-child(#n)'.replace('#n', parseInt(item));
-                        console.log('selector:', selector);
+                        // console.log('selector:', selector);
 
-                        var btn = $(selector).find('.btn-sm');
+                        var btn = $(selector).find('.btn-sm').not('.btn-danger');
                         if (btn.length) {
                             btn.click();
                         }
@@ -321,9 +321,13 @@
                         h1Wrapper.className = 'h1-wrapper';
                         h1Wrapper.innerHTML = '<h1>Outline</h1>' + noTagElems;
                         if (fnIsRootPage()) {
-                            h1Wrapper.innerHTML = '<h1>Recently viewed ...</h1>' + getHistoryArrayHtml();
+                            h1Wrapper.innerHTML = '<h1 id="h1Recent">Recently viewed ...'
+                                + '<button class="btn btn-sm btn-danger" onclick="RemoveButtonClicked()">Remove</button>'
+                                + '</h1>'
+                                + getHistoryArrayHtml();
                         }
                         divAll.append(h1Wrapper);
+                        // addRemoveButton();
                     }
 
                     // The entire document will be restructured by <h1> tag.
@@ -367,7 +371,7 @@
                     filter = inputSearch.value.toUpperCase();
 
                     // Save search text (otherwise, chrome refreshes it.)
-                    localStorage.setItem(lsSearchText, filter);
+                    localStorage.setItem(_searchText, filter);
 
                     // But search is available only in home page
                     if (!fnIsRootPage()) return;
@@ -446,7 +450,7 @@
                                         btn.classList.remove('btn-success');
                                         btn.classList.add('btn-danger');
 
-                                        var strArray = localStorage.getItem(lsExpandedNth);
+                                        var strArray = localStorage.getItem(_expandedNth);
                                         var array = [];
                                         if (strArray != null) {
                                             array = strArray.split(',').map(function (item) {
@@ -459,7 +463,7 @@
                                         var nth = divIndex + 1;
                                         if (!array.includes(nth)) {
                                             array.push(nth);
-                                            localStorage.setItem(lsExpandedNth, array.toString());
+                                            localStorage.setItem(_expandedNth, array.toString());
                                         }
 
                                     } else {
@@ -469,7 +473,7 @@
                                         btn.classList.add('btn-success');
                                         btn.classList.remove('btn-danger');
 
-                                        localStorage.removeItem(lsExpandedNth);
+                                        localStorage.removeItem(_expandedNth);
                                     }
                                 });
                                 div.find('h1').append(btn);
@@ -489,8 +493,8 @@
 
                 function goHome() {
                     // Reset search box when you move from subpage to homepage
-                    // localStorage.removeItem(lsSearchText);
-                    // inputSearch.value = localStorage.getItem(lsSearchText);
+                    // localStorage.removeItem(_searchText);
+                    // inputSearch.value = localStorage.getItem(_searchText);
 
                     location.href = 'http://127.0.0.1:5500/md/md.htm';
                 }
@@ -508,13 +512,13 @@
                 }
 
                 function toggleWrap() {
-                    var isWrapped = localStorage.getItem(lsWrapped);
+                    var isWrapped = localStorage.getItem(_isWrapped);
                     if (isWrapped != '1') {
                         wrapWithMdHtml();
-                        localStorage.setItem(lsWrapped, '1');
+                        localStorage.setItem(_isWrapped, '1');
                     } else {
                         unWrapWithMdHtml();
-                        localStorage.setItem(lsWrapped, '0');
+                        localStorage.setItem(_isWrapped, '0');
                     }
                 }
 
@@ -543,18 +547,18 @@
                 }
 
                 function doc_PlainFormat() {
-                    var isWrapped = localStorage.getItem(lsWrapped);
+                    var isWrapped = localStorage.getItem(_isWrapped);
                     if (isWrapped == '1') {
                         unWrapWithMdHtml();
-                        localStorage.setItem(lsWrapped, '0');
+                        localStorage.setItem(_isWrapped, '0');
                     }
                 }
 
                 function doc_StyleFormat() {
-                    var isWrapped = localStorage.getItem(lsWrapped);
+                    var isWrapped = localStorage.getItem(_isWrapped);
                     if (isWrapped != '1') {
                         wrapWithMdHtml();
-                        localStorage.setItem(lsWrapped, '1');
+                        localStorage.setItem(_isWrapped, '1');
                     }
                 }
 
@@ -591,7 +595,7 @@
                     $('img.sm').each(function () {
                         getMeta(this.src, (err, img) => {
                             if (img != undefined) {
-                                console.log('img width/height:', img.naturalWidth, img.naturalHeight);
+                                // console.log('img width/height:', img.naturalWidth, img.naturalHeight);
 
                                 if (img.naturalWidth < 200) {
                                     // really small img >> keep original width
@@ -652,11 +656,14 @@
         } //window.load
     </script>
 
+    <!-- moh, 24/6/24. Scripts that can be handled by pure jQuery, and not needed to be inside window.load -->
     <script>
         $(document).ready(function () {
-
-            // console.log('allStorage:', allStorage());
             console.log('history:', getHistoryArray());
+        });
+
+        $(window).on('load', function () {
+            //dom not only ready, but everything is loaded
         });
 
         $(document).on('click', 'a', function () {
@@ -665,6 +672,12 @@
                 addHistory(href);
             }
         });
+
+        // delete local storage
+        function RemoveButtonClicked() {
+            localStorage.setItem(_clickHistory, '');
+            location.reload();
+        }
 
         // Show all local storage
         // https://stackoverflow.com/questions/17745292/how-to-retrieve-all-localstorage-items-without-knowing-the-keys-in-advance
@@ -690,7 +703,7 @@
 
             //Task last 5 items only
             var newArray = array.slice(-5);
-            localStorage.setItem(lsClickHistory, newArray.toString());
+            localStorage.setItem(_clickHistory, newArray.toString());
         }
 
         function removeItemAll(arr, value) {
@@ -706,7 +719,7 @@
         }
 
         function getHistoryArray() {
-            var strArray = localStorage.getItem(lsClickHistory);
+            var strArray = localStorage.getItem(_clickHistory);
             var array = [];
             if (strArray != null) {
                 array = strArray.split(',').map(function (item) {
