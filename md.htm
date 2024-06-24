@@ -290,9 +290,9 @@
                         var selector = '.h1-wrapper:nth-child(#n)'.replace('#n', parseInt(item));
                         // console.log('selector:', selector);
 
-                        var btn = $(selector).find('.btn-sm').not('.btn-danger');
+                        var btn = $(selector).find('.btn-sm');
                         if (btn.length) {
-                            btn.click();
+                            btn.click();    // dangerous, but it seems I did this for initial expanding.
                         }
                     }
 
@@ -321,13 +321,15 @@
                         h1Wrapper.className = 'h1-wrapper';
                         h1Wrapper.innerHTML = '<h1>Outline</h1>' + noTagElems;
                         if (fnIsRootPage()) {
+                            // + '<button class="btn btn-sm btn-danger" onclick="RemoveButtonClicked()">Remove</button>'
+                            var btnx = '<button class="close" aria-label="Close" onclick="RemoveHistoryItem()"><span aria-hidden="true">&times;</span></button>';
+
                             h1Wrapper.innerHTML = '<h1 id="h1Recent">Recently viewed ...'
-                                + '<button class="btn btn-sm btn-danger" onclick="RemoveButtonClicked()">Remove</button>'
+                                + btnx
                                 + '</h1>'
                                 + getHistoryArrayHtml();
                         }
                         divAll.append(h1Wrapper);
-                        // addRemoveButton();
                     }
 
                     // The entire document will be restructured by <h1> tag.
@@ -669,13 +671,13 @@
         $(document).on('click', 'a', function () {
             var href = $(this).prop('href');
             if (href.includes('.md')) {
-                addHistory(href);
+                addHistoryItem(href);
             }
         });
 
         // delete local storage
-        function RemoveButtonClicked() {
-            localStorage.setItem(_clickHistory, '');
+        function RemoveHistoryItem() {
+            localStorage.removeItem(_clickHistory);
             location.reload();
         }
 
@@ -692,7 +694,7 @@
             return archive;
         }
 
-        function addHistory(tmpHref) {
+        function addHistoryItem(tmpHref) {
             var array = getHistoryArray();
             removeItemAll(array, tmpHref);
 
@@ -732,11 +734,10 @@
         function getHistoryArrayHtml() {
             var div = '<div>';
             var array = getHistoryArray();
-            //for (var i = array.length - 1; i >= 0; i--) {
-            for (var i = 0; i <= array.length - 1; i++) {
+
+            for (var i = 0; i < array.length; i++) {
                 var url = array[i];
                 var filename = url.split('/').pop();
-
                 div = div + `<li><a href="${url}">${filename}</li>`;
             }
             div = div + '</div>';
