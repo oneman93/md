@@ -286,13 +286,14 @@
                     var nthArray = strNth.split(',');
                     nthArray.forEach(expandFunction)
 
+                    // Remember expanded button status in local storage. Keep it expanded when the page is refreshed.
                     function expandFunction(item) {
                         var selector = '.h1-wrapper:nth-child(#n)'.replace('#n', parseInt(item));
                         // console.log('selector:', selector);
 
-                        var btn = $(selector).find('.btn-sm');
-                        if (btn.length) {
-                            btn.click();    // dangerous, but it seems I did this for initial expanding.
+                        var btnExpand = $(selector).find('.btn-ex-collapse');
+                        if (btnExpand.length) {
+                            btnExpand.click();    // dangerous, but it seems I did this for initial expanding.
                         }
                     }
 
@@ -417,7 +418,7 @@
                             }
 
                             // Show button
-                            var btnExpand = div.find('.btn-sm');
+                            var btnExpand = div.find('.btn-ex-collapse');
 
 
                             //------------------
@@ -427,7 +428,7 @@
                                 // if button does not exist, create one.
                                 let btn = document.createElement('button');
                                 btn.innerHTML = "Expand";
-                                btn.classList.add("btn", "btn-sm", "btn-expand", "btn-success");  // green expand button
+                                btn.classList.add("btn", "btn-sm", "btn-expand", "btn-success", "btn-ex-collapse");  // green expand button
                                 btn.addEventListener("click", function () {
 
                                     var isExpand = this.innerHTML == 'Expand';
