@@ -102,11 +102,15 @@
                     Local Videos</a>
 
                 <button id="btnWrapIt" type="button" class="btn btn-primary btn-sm">Wrap with md.htm</button>
+
                 <button id="btnCopy" type="button" class="btn btn-primary btn-sm"
                     onclick="CopyHTMLToClipboard()">Copy</button>
                 <button id="btnCopied" type="button" class="btn btn-outline-success btn-sm"
                     style="display: none;">Copied!</button>
                 <button id="btnPDF" type="button" class="btn btn-dark btn-sm">PDF</button>
+
+                <button id="btnH1Only" type="button" class="btn btn-primary btn-sm">Show H1 Only</button>
+
             </DIV>
 
         </div>
@@ -231,6 +235,7 @@
                 const btnReset = document.getElementById("btnReset");
                 const btnWrapIt = document.getElementById("btnWrapIt");
                 const btnPDF = document.getElementById("btnPDF");
+                const btnH1Only = document.getElementById("btnH1Only");
 
                 //-----------------------------
                 // Event Handler
@@ -241,6 +246,7 @@
                 btnReset.addEventListener("click", resetText);
                 btnWrapIt.addEventListener("click", toggleWrap);
                 btnPDF.addEventListener("click", convert2PDF);
+                btnH1Only.addEventListener("click", toggleH1Only);
 
                 //-----------------------------
                 // ChangeBody: move html elements to clone node because you cannot play shadow doms with jQuery
@@ -266,12 +272,7 @@
 
                 inputSearch.focus();
 
-                // Retrieve search text on page load
-                inputSearch.value = localStorage.getItem(_searchText);
-                if (isRootPage) {
-                    // Apply filter only in root page.
-                    searchText();
-                }
+
 
                 // Button `Wrap with md.htm` clicked already?
                 var isWrapped = localStorage.getItem(_isWrapped);
@@ -297,6 +298,14 @@
                         }
                     }
 
+                }
+
+                // Retrieve search text on page load
+                // This part should be positioned here at the last. Otherwise, folding/unfolding will show override search result.
+                inputSearch.value = localStorage.getItem(_searchText);
+                if (isRootPage) {
+                    // Apply filter only in root page.
+                    searchText();
                 }
 
                 //-----------------------
@@ -489,13 +498,92 @@
                     }
                 }
 
+                // Copied from searchText()
+                function showH1Only() {
+
+                    var input, filter, ul, tags, a, i, txtValue, elem;
+                    tags = mdClone.querySelectorAll("h1");
+
+                    // All other tags will be hidden unless filter is reset to "".
+                    var otherTags = mdClone.querySelectorAll("table,pre,h2,li");
+                    $(otherTags).hide();
+
+                    console.log('tags length: ', tags.length);
+                    for (i = 0; i < tags.length; i++) {
+                        elem = tags[i];
+                        var elemTagName = elem.tagName;
+                        txtValue = elem.textContent || elem.innerText;
+
+                        var div = $(elem).closest('.h1-wrapper');
+
+                        // elem is matching with search criteria
+                        $(elem).slideDown();
+                        if (elemTagName != "H1") {
+                            // h2, li matching
+                            var h1 = div.find('h1');
+                            if (!h1.is(':visible')) {
+                                h1.show();
+                            }
+                        }
+
+                        // Show button
+                        var btnExpand = div.find('.btn-ex-collapse');
+
+                        //------------------
+                        // btnExpand
+                        //------------------
+                        if (btnExpand.length <= 0) {
+                            // if button does not exist, create one.
+                            let btn = document.createElement('button');
+                            btn.innerHTML = "Expand";
+                            btn.classList.add("btn", "btn-sm", "btn-expand", "btn-success", "btn-ex-collapse");  // green expand button
+                            btn.addEventListener("click", function () {
+
+                                var isExpand = this.innerHTML == 'Expand';
+                                console.log('isExpand', isExpand);
+                                console.log('yo, li');
+                                // find more than one level
+                                // https://stackoverflow.com/questions/7648761/how-to-select-all-children-in-any-level-from-a-parent-in-jquery
+
+                                // Have to define again here.
+                                var div = $(this).closest('.h1-wrapper');
+                                var children = div.find('*');
+                                console.log('children', children.length);
+
+                                //https://stackoverflow.com/questions/13550079/how-to-find-nth-element-when-a-click-is-activated
+                                var divs = $('.h1-wrapper');
+                                var divIndex = divs.index(div);
+
+                                if (isExpand) {
+                                    // Expand button clicked
+                                    children.slideDown();
+                                    btn.innerHTML = 'Collapse';
+                                    btn.classList.remove('btn-success');
+                                    btn.classList.add('btn-danger');
+
+                                } else {
+                                    // Collapse button clicked
+                                    searchText();
+                                    btn.innerHTML = 'Expand';
+                                    btn.classList.add('btn-success');
+                                    btn.classList.remove('btn-danger');
+                                }
+                            });
+                            div.find('h1').append(btn);
+                        }
+
+
+                    }
+                }
+
+
                 function resetText() {
                     inputSearch.value = "";
                     searchText();
                 }
 
                 function goHome() {
-                    // Reset search box when you move from subpage to homepage
+                    // Reset search box when you come back from subpage to homepage
                     // localStorage.removeItem(_searchText);
                     // inputSearch.value = localStorage.getItem(_searchText);
 
@@ -522,6 +610,16 @@
                     } else {
                         unWrapWithMdHtml();
                         localStorage.setItem(_isWrapped, '0');
+                    }
+                }
+
+                function toggleH1Only() {
+                    if (btnH1Only.getHTML() == "Show H1 Only") {
+                        btnH1Only.innerHTML = 'Show ALL';
+                        $('h1').addClass('font-size-normal');
+                        showH1Only();
+                    } else {
+                        location.reload();
                     }
                 }
 

@@ -34,9 +34,14 @@ p {
     margin-bottom: .5rem !important;
     margin-top: 0 !important;
 }
+
 h1 {
     font-size: 2rem;
 }
+h1.font-size-normal {
+    font-size: 1rem !important;
+}
+
 h2 {
     font-size: 1.5rem;
 }
@@ -81,3 +86,4 @@ code {
         flex-wrap: wrap;
         margin-bottom: 0px !important; /*override github css*/
 }
+
