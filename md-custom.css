@@ -73,6 +73,11 @@ code {
     font-weight: bold;
 }
 
+.orange {
+    /* background: #28a745;*/
+    color: orangered;
+}
+
 /* shows items in a row. Too many items now.
 15/5/24
 */

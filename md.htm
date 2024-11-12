@@ -365,11 +365,24 @@
                 function applyCustomCss() {
                     $('a').each(function () {
                         var txtOrg = $(this).text();
-                        if (txtOrg.toLowerCase().indexOf("loading") >= 0) {
-                            // add green css
-                            var txtReplaced = txtOrg.toLowerCase().replace('loading', '<span class="green">loading</span>');
-                            $(this).html(txtReplaced);
-                        }
+                        var boldWords = ["loading", "summary"];
+                        var orangeWords = ["bau"];
+
+                        boldWords.forEach((elem) => {
+                            if (txtOrg.toLowerCase().indexOf(elem) >= 0) {
+                                // add green css
+                                var txtReplaced = txtOrg.toLowerCase().replace(elem, `<span class="green">${elem}</span>`);
+                                $(this).html(txtReplaced);
+                            }
+                        });
+
+                        orangeWords.forEach((elem) => {
+                            if (txtOrg.toLowerCase().indexOf(elem) >= 0) {
+                                // add green css
+                                var txtReplaced = txtOrg.toLowerCase().replace(elem, `<span class="orange">${elem}</span>`);
+                                $(this).html(txtReplaced);
+                            }
+                        });
                     });
 
                 }
@@ -504,8 +517,8 @@
                     var input, filter, ul, tags, a, i, txtValue, elem;
                     tags = mdClone.querySelectorAll("h1");
 
-                    // All other tags will be hidden unless filter is reset to "".
-                    var otherTags = mdClone.querySelectorAll("table,pre,h2,li");
+                    // All other tags will be hidden unless filter is reset to "". 24/10/24, img added.
+                    var otherTags = mdClone.querySelectorAll("table,pre,h2,li,img");
                     $(otherTags).hide();
 
                     console.log('tags length: ', tags.length);
