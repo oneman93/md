@@ -191,11 +191,11 @@
                 console.log('app.src: ', app.src);
 
                 if (app.src == '') {
-                    app.src = '../_work_index.md';
+                    app.src = '../_work-index.md';
                 }
 
                 var isRootPage = false;
-                if (app.src.toLowerCase() == '../_work_index.md') {
+                if (app.src.toLowerCase() == '../_work-index.md') {
                     isRootPage = true;
 
                     $('#btnHome').addClass('invisible');
@@ -758,7 +758,7 @@
 
                 function fnIsRootPage() {
                     var isRootPage = false;
-                    if (app.src.toLowerCase() == '../_work_index.md') {
+                    if (app.src.toLowerCase() == '../_work-index.md') {
                         isRootPage = true;
                     }
                     return isRootPage;
