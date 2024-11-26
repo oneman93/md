@@ -520,28 +520,37 @@
                 function applyHighlightCss() {
                     $('a').each(function () {
                         var txtOrg = $(this).text().toLowerCase();
+                        var ctrl = $(this);
 
-                        var searchWord = $('#inputSearch').val();   //was empty. didn't work
-                        //var searchWord = localStorage.getItem(_searchText).toLowerCase();
-                        // console.log('searchWord:', searchWord);
+                        // var searchWord = $('#inputSearch').val().toLowerCase();   //was empty. didn't work
+                        var searchWord = localStorage.getItem(_searchText).toLowerCase();
+                        console.log('searchWord:', searchWord);
 
                         if (searchWord == "") {
-                            // console.log('html1:', $(this).html());
+                            console.log('html1:', ctrl.html());
                             // remove span
-                            if ($(this).html().indexOf('<span class="highlight">') > 0) {
-                                var rawText = $(this).text();
-                                $(this).html(rawText);
-                                // console.log('html2:', $(this).html());
+                            if (ctrl.find('.highlight').length > 0) {
+                                removeHighlightCss(ctrl);
                             }
                         }
                         else {
                             if (txtOrg.indexOf(searchWord) >= 0) {
                                 // console.log('txtOrg:', txtOrg);
                                 var txtReplaced = txtOrg.replace(searchWord, `<span class="highlight">${searchWord}</span>`);
-                                $(this).html(txtReplaced);
+                                ctrl.html(txtReplaced);
+                            } else {
+                                removeHighlightCss(ctrl);
                             }
                         }
                     });
+                }
+
+                function removeHighlightCss(ctrl) {
+                    // var txtReplaced = ctrl.html().replace(`<span class="highlight">${searchWord}</span>`, searchWord);
+                    // above didn't work with fast typing search.
+
+                    var spanRawText = ctrl.find('.highlight').text();
+                    ctrl.find('.highlight').replaceWith(spanRawText);
                 }
 
                 // Copied from searchText()
