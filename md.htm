@@ -364,28 +364,33 @@
 
                 function applyCustomCss() {
                     $('a').each(function () {
-                        var txtOrg = $(this).text();
+                        var txtOrg = $(this).text().toLowerCase();
                         var boldWords = ["loading", "summary", "itwiki", "release"];
                         var orangeWords = ["bau"];
 
+                        // console.log('searchWord:', searchWord);
+                        // console.log('txtOrg:', txtOrg);
+
+                        // Note that below style will be overwritten by the last if.
                         boldWords.forEach((elem) => {
-                            if (txtOrg.toLowerCase().indexOf(elem) >= 0) {
+                            if (txtOrg.indexOf(elem) >= 0) {
                                 // add green css
-                                var txtReplaced = txtOrg.toLowerCase().replace(elem, `<span class="green">${elem}</span>`);
+                                var txtReplaced = txtOrg.replace(elem, `<span class="green">${elem}</span>`);
                                 $(this).html(txtReplaced);
                             }
                         });
 
                         orangeWords.forEach((elem) => {
-                            if (txtOrg.toLowerCase().indexOf(elem) >= 0) {
+                            if (txtOrg.indexOf(elem) >= 0) {
                                 // add green css
-                                var txtReplaced = txtOrg.toLowerCase().replace(elem, `<span class="orange">${elem}</span>`);
+                                var txtReplaced = txtOrg.replace(elem, `<span class="orange">${elem}</span>`);
                                 $(this).html(txtReplaced);
                             }
                         });
                     });
 
                 }
+
 
                 //---------------------
                 // On keyup, search    
@@ -397,6 +402,7 @@
 
                     // Save search text (otherwise, chrome refreshes it.)
                     localStorage.setItem(_searchText, filter);
+                    applyHighlightCss();
 
                     // But search is available only in home page
                     if (!fnIsRootPage()) return;
@@ -509,6 +515,33 @@
                             $(elem).hide();
                         }
                     }
+                }
+
+                function applyHighlightCss() {
+                    $('a').each(function () {
+                        var txtOrg = $(this).text().toLowerCase();
+
+                        var searchWord = $('#inputSearch').val();   //was empty. didn't work
+                        //var searchWord = localStorage.getItem(_searchText).toLowerCase();
+                        // console.log('searchWord:', searchWord);
+
+                        if (searchWord == "") {
+                            // console.log('html1:', $(this).html());
+                            // remove span
+                            if ($(this).html().indexOf('<span class="highlight">') > 0) {
+                                var rawText = $(this).text();
+                                $(this).html(rawText);
+                                // console.log('html2:', $(this).html());
+                            }
+                        }
+                        else {
+                            if (txtOrg.indexOf(searchWord) >= 0) {
+                                // console.log('txtOrg:', txtOrg);
+                                var txtReplaced = txtOrg.replace(searchWord, `<span class="highlight">${searchWord}</span>`);
+                                $(this).html(txtReplaced);
+                            }
+                        }
+                    });
                 }
 
                 // Copied from searchText()
