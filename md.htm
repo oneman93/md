@@ -518,22 +518,26 @@
                 }
 
                 function applyHighlightCss() {
-                    $('a').each(function () {
-                        var txtOrg = $(this).text().toLowerCase();
-                        var ctrl = $(this);
+                    // var searchWord = $('#inputSearch').val().toLowerCase();   //was empty. didn't work
+                    var searchWord = localStorage.getItem(_searchText).toLowerCase();
+                    console.log('searchWord:', searchWord);
 
-                        // var searchWord = $('#inputSearch').val().toLowerCase();   //was empty. didn't work
-                        var searchWord = localStorage.getItem(_searchText).toLowerCase();
-                        console.log('searchWord:', searchWord);
-
-                        if (searchWord == "") {
+                    if (searchWord == "") {
+                        $('a').each(function () {
+                            var ctrl = $(this);
                             console.log('html1:', ctrl.html());
                             // remove span
                             if (ctrl.find('.highlight').length > 0) {
                                 removeHighlightCss(ctrl);
                             }
-                        }
-                        else {
+                        });
+                        applyCustomCss();
+                    }
+                    else {
+                        $('a').each(function () {
+                            var txtOrg = $(this).text().toLowerCase();
+                            var ctrl = $(this);
+
                             if (txtOrg.indexOf(searchWord) >= 0) {
                                 // console.log('txtOrg:', txtOrg);
                                 var txtReplaced = txtOrg.replace(searchWord, `<span class="highlight">${searchWord}</span>`);
@@ -541,8 +545,9 @@
                             } else {
                                 removeHighlightCss(ctrl);
                             }
-                        }
-                    });
+
+                        });
+                    }
                 }
 
                 function removeHighlightCss(ctrl) {
