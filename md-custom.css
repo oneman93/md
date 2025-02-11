@@ -92,3 +92,8 @@ code {
         margin-bottom: 0px !important; /*override github css*/
 }
 
+/* photoswipe fix 11/2/25 */
+
+.pswp--touch .pswp__button--arrow {
+    visibility: visible !important;
+}

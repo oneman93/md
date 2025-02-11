@@ -218,6 +218,9 @@
                     // mangle: false
                 })
 
+                // Check file exists
+                UrlExists(app.src);
+
                 // Uncomment below to see original DOM tags right after zero-md.
                 //return;
 
@@ -835,6 +838,25 @@
                 addHistoryItem(href);
             }
         });
+
+        // Convert top to below to trigger 404 error
+        // urlMdHtm:    http://127.0.0.1:5500/md/md.htm?src=../_LoadingDocuments/./aws-file-upload-jubo.md
+        // urlOrg:      http://127.0.0.1:5500/_LoadingDocuments/./aws-file-upload-jubo.md
+
+        function UrlExists(filePath) {
+            var urlMdHtm = window.location.href;
+            var urlOrg = urlMdHtm.split('/')[0] + filePath;
+
+            var http = new XMLHttpRequest();
+            http.open('HEAD', urlOrg, false);   //`urlMdHtm` will not raise error because md.htm is valid url.
+            http.send();
+            if (http.status != 404) {
+                //  do something
+            }
+            else {
+                alert('file not found');
+            }
+        }
 
         // delete local storage
         function RemoveHistoryItem() {
