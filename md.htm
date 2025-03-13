@@ -101,12 +101,20 @@
                     href="https://laureateaus-my.sharepoint.com/personal/matthew_oh_torrens_edu_au/_layouts/15/onedrive.aspx?id=%2Fpersonal%2Fmatthew%5Foh%5Ftorrens%5Fedu%5Fau%2FDocuments%2FLocalVideos&view=0">
                     Local Videos</a>
 
+
+
                 <button id="btnWrapIt" type="button" class="btn btn-primary btn-sm">Wrap with md.htm</button>
 
-                <button id="btnCopy" type="button" class="btn btn-primary btn-sm"
-                    onclick="CopyHTMLToClipboard()">Copy</button>
+                <button id="btnCopy" type="button" class="btn btn-primary btn-sm" onclick="CopyHTMLToClipboard()">
+                    <span style="font-size: 1em;color:white;"><i class="fa-solid fa-file"></i></span>
+                    Copy</button>
                 <button id="btnCopied" type="button" class="btn btn-outline-success btn-sm"
                     style="display: none;">Copied!</button>
+
+                <button id="btnImageFolder" type="button" class="btn btn-primary btn-sm">
+                    <span style="font-size: 1em;color:white;"><i class="fa-solid fa-folder-open"></i></span>
+                    Copy</button>
+
                 <button id="btnPDF" type="button" class="btn btn-dark btn-sm">PDF</button>
 
                 <button id="btnH1Only" type="button" class="btn btn-primary btn-sm">Show H1 Only</button>
@@ -250,6 +258,14 @@
                 btnWrapIt.addEventListener("click", toggleWrap);
                 btnPDF.addEventListener("click", convert2PDF);
                 btnH1Only.addEventListener("click", toggleH1Only);
+                btnImageFolder.addEventListener("click", function () {
+                    // window.open("file:///" + "c:/works/");
+                    // showOpenFilePicker("documents").then((fileHandle) => {
+                    //     console.log(fileHandle);
+                    // });
+                    copyImageFolderToClipboard();
+                    $('#btnCopied').show().fadeOut('slow');
+                });
 
                 //-----------------------------
                 // ChangeBody: move html elements to clone node because you cannot play shadow doms with jQuery
@@ -655,12 +671,24 @@
                     location.href = 'http://127.0.0.1:5500/md/md.htm';
                 }
 
+                //moh, 13/3/25, no one seems to call this.
+                //https://webdeveloper.com/community/60349-is-there-a-way-to-simulate-ctrl-a-ctrl-c-in-javascript/
                 function copyToClipboard() {
-                    //https://webdeveloper.com/community/60349-is-there-a-way-to-simulate-ctrl-a-ctrl-c-in-javascript/
                     document.execCommand("SelectAll", true);
                     document.execCommand("Copy", true);
-                    // document.execCommand("UnSelect", true);
                     alert('Copied');
+                }
+
+                function copyImageFolderToClipboard() {
+                    var folder = 'c:/works/';
+                    var imgPath = $('img').first().attr('src').replace('http://', '').replace('https://', '');
+                    var words = imgPath.split('/');
+                    words.shift();
+                    words.pop();
+
+                    var resFolderPath = folder + words.toString().replaceAll(',', '/').replaceAll('./', '');
+                    console.log('resFolderPath', resFolderPath);
+                    navigator.clipboard.writeText(resFolderPath);
                 }
 
                 function insertAfter(referenceNode, newNode) {
