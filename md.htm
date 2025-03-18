@@ -106,13 +106,12 @@
                 <button id="btnWrapIt" type="button" class="btn btn-primary btn-sm">Wrap with md.htm</button>
 
                 <button id="btnCopy" type="button" class="btn btn-primary btn-sm" onclick="CopyHTMLToClipboard()">
-                    <span style="font-size: 1em;color:white;"><i class="fa-solid fa-file"></i></span>
                     Copy</button>
                 <button id="btnCopied" type="button" class="btn btn-outline-success btn-sm"
                     style="display: none;">Copied!</button>
 
-                <button id="btnImageFolder" type="button" class="btn btn-primary btn-sm">
-                    <span style="font-size: 1em;color:white;"><i class="fa-solid fa-folder-open"></i></span>
+                <button id="btnImageFolder" type="button" class="btn btn-primary btn-sm invisible">
+                    <span style=" font-size: 1em;color:white;"><i class="fa-solid fa-folder-open"></i></span>
                     Copy</button>
 
                 <button id="btnPDF" type="button" class="btn btn-dark btn-sm">PDF</button>
@@ -259,16 +258,12 @@
                 btnPDF.addEventListener("click", convert2PDF);
                 btnH1Only.addEventListener("click", toggleH1Only);
                 btnImageFolder.addEventListener("click", function () {
-                    // window.open("file:///" + "c:/works/");
-                    // showOpenFilePicker("documents").then((fileHandle) => {
-                    //     console.log(fileHandle);
-                    // });
                     copyImageFolderToClipboard();
                     $('#btnCopied').show().fadeOut('slow');
                 });
 
                 //-----------------------------
-                // ChangeBody: move html elements to clone node because you cannot play shadow doms with jQuery
+                // ChangeBody start: move html elements to clone node because you cannot play shadow doms with jQuery
                 //-----------------------------
                 // debugger;
                 // Hide zero-md
@@ -289,9 +284,12 @@
                 $('div.all').addClass('markdown-body');
                 applyCustomCss();
 
+                addImageFolderButton();
                 inputSearch.focus();
 
-
+                //-----------------------------
+                // ChangeBody done.
+                //-----------------------------
 
                 // Button `Wrap with md.htm` clicked already?
                 var isWrapped = localStorage.getItem(_isWrapped);
@@ -330,6 +328,29 @@
                 //-----------------------
                 // FUNCTIONS
                 //-----------------------
+
+                function addImageFolderButton() {
+                    // 1. clone copy button
+                    // 2. append it beside image
+                    const btnClone = $('#btnImageFolder').clone();
+
+                    btnClone.removeAttr('id');
+                    btnClone.addClass('btn-image-folder');
+                    btnClone.removeClass('btn-primary invisible').addClass('btn-secondary');
+                    btnClone.html(btnClone.html().replace('Copy', ''));
+                    // no text just image button
+
+                    document.addEventListener("click", function (e) {
+                        const target = e.target.closest(".btn-image-folder"); // Or any other selector.
+                        if (target) {
+                            // Do something with `target`.
+                            copyImageFolderToClipboard(target);
+                            $('#btnCopied').show().fadeOut('slow');
+                        }
+                    });
+
+                    $('p').find('img:last').after(btnClone);
+                }
 
                 // Change mdBody structure nested from plain
                 // Before: <h1/> <ul/> <h2/> <h1/>
@@ -679,14 +700,15 @@
                     alert('Copied');
                 }
 
-                function copyImageFolderToClipboard() {
-                    var folder = 'c:/works/';
-                    var imgPath = $('img').first().attr('src').replace('http://', '').replace('https://', '');
+                function copyImageFolderToClipboard(btnClicked) {
+                    var folder = 'C:\\Works\\';
+                    var imgLast = $(btnClicked).closest('p').find('img:last');
+                    var imgPath = imgLast.attr('src').replace('http://', '').replace('https://', '');
                     var words = imgPath.split('/');
                     words.shift();
                     words.pop();
 
-                    var resFolderPath = folder + words.toString().replaceAll(',', '/').replaceAll('./', '');
+                    var resFolderPath = folder + words.toString().replaceAll(',', '\\').replaceAll('.\\', '');
                     console.log('resFolderPath', resFolderPath);
                     navigator.clipboard.writeText(resFolderPath);
                 }

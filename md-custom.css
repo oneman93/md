@@ -97,3 +97,7 @@ code {
 .pswp--touch .pswp__button--arrow {
     visibility: visible !important;
 }
+
+.invisible {
+    display: none;
+}
