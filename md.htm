@@ -708,7 +708,7 @@
                     words.shift();
                     words.pop();
 
-                    var resFolderPath = folder + words.toString().replaceAll(',', '\\').replaceAll('.\\', '');
+                    var resFolderPath = folder + words.toString().replaceAll(',', '\\').replaceAll('.\\', '').replaceAll('%20', ' ');
                     console.log('resFolderPath', resFolderPath);
                     navigator.clipboard.writeText(resFolderPath);
                 }
