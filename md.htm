@@ -111,7 +111,7 @@
                     style="display: none;">Copied!</button>
 
                 <button id="btnImageFolder" type="button" class="btn btn-primary btn-sm invisible">
-                    <span style=" font-size: 1em;color:white;"><i class="fa-solid fa-folder-open"></i></span>
+                    <span style=" font-size: 1em;color:white;"><i class="fa-solid fa-folder"></i></span>
                     Copy</button>
 
                 <button id="btnPDF" type="button" class="btn btn-dark btn-sm">PDF</button>
@@ -257,10 +257,8 @@
                 btnWrapIt.addEventListener("click", toggleWrap);
                 btnPDF.addEventListener("click", convert2PDF);
                 btnH1Only.addEventListener("click", toggleH1Only);
-                btnImageFolder.addEventListener("click", function () {
-                    copyImageFolderToClipboard();
-                    $('#btnCopied').show().fadeOut('slow');
-                });
+
+
 
                 //-----------------------------
                 // ChangeBody start: move html elements to clone node because you cannot play shadow doms with jQuery
@@ -344,8 +342,11 @@
                         const target = e.target.closest(".btn-image-folder"); // Or any other selector.
                         if (target) {
                             // Do something with `target`.
-                            copyImageFolderToClipboard(target);
-                            $('#btnCopied').show().fadeOut('slow');
+                            copyImageFolderPathToClipboard(target);
+                            $(target).after('<span class="copied"> Copied</span>');
+                            setTimeout(function () {
+                                $('.copied').remove();
+                            }, 1000);
                         }
                     });
 
@@ -700,7 +701,7 @@
                     alert('Copied');
                 }
 
-                function copyImageFolderToClipboard(btnClicked) {
+                function copyImageFolderPathToClipboard(btnClicked) {
                     var folder = 'C:\\Works\\';
                     var imgLast = $(btnClicked).closest('p').find('img:last');
                     var imgPath = imgLast.attr('src').replace('http://', '').replace('https://', '');
