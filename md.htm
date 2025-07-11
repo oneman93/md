@@ -211,6 +211,7 @@
                     $('#mdcontainer').addClass('work-index');
                 }
 
+                // Set document title - will be updated later if outline content exists
                 document.title = app.src.toLowerCase().replace('../', '').replace('./', '').replace('_loadingdocuments/', '');
 
 
@@ -368,9 +369,33 @@
                     if (noTagElems.length > 0 && !noTagElems.startsWith('<h1')) {
                         //console.log('noTagElems:', noTagElems);
 
+                        // Extract first line to create a title h1
+                        var tempDiv = document.createElement('div');
+                        tempDiv.innerHTML = noTagElems;
+                        var firstLine = tempDiv.textContent.trim().split('\n')[0];
+
                         var h1Wrapper = document.createElement("div");
                         h1Wrapper.className = 'h1-wrapper';
-                        h1Wrapper.innerHTML = '<h1>Outline</h1>' + noTagElems;
+
+                        if (firstLine && firstLine.length > 0) {
+                            // Create title h1 from first line and remove it from the content
+                            var remainingContent = noTagElems.replace(firstLine, '').trim();
+                            // Remove empty <li> elements
+                            if (remainingContent) {
+                                var tempContentDiv = document.createElement('div');
+                                tempContentDiv.innerHTML = remainingContent;
+                                var lis = tempContentDiv.querySelectorAll('li');
+                                lis.forEach(function (li) {
+                                    if (!li.textContent.trim()) {
+                                        li.remove();
+                                    }
+                                });
+                                remainingContent = tempContentDiv.innerHTML;
+                            }
+                            h1Wrapper.innerHTML = '<h1>' + firstLine + '</h1>' + (remainingContent ? remainingContent : '');
+                        } else {
+                            h1Wrapper.innerHTML = '<h1>Outline</h1>' + noTagElems;
+                        }
                         if (fnIsRootPage()) {
                             // + '<button class="btn btn-sm btn-danger" onclick="RemoveButtonClicked()">Remove</button>'
                             var btnx = '<button class="close" aria-label="Close" onclick="RemoveHistoryItem()"><span aria-hidden="true">&times;</span></button>';
