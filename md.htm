@@ -915,6 +915,14 @@
             }
         });
 
+        // MOH, 15/7/25, hotkey for image folder. No error, but not working.
+        $(document).on('click', '.btn-image-folder', function () {
+            console.log('btn-image-folder clicked');
+            // Simulate Ctrl+Caps key combination
+            simulateCtrlCaps();
+        });
+
+
         // Convert top to below to trigger 404 error
         // urlMdHtm:    http://127.0.0.1:5500/md/md.htm?src=../_LoadingDocuments/./aws-file-upload-jubo.md
         // urlOrg:      http://127.0.0.1:5500/_LoadingDocuments/./aws-file-upload-jubo.md
@@ -1003,8 +1011,40 @@
             return div;
         }
 
+        /* hotkeys: Ctrl+CapsLock */
 
+        function simulateCtrlCaps() {
+            // Create and dispatch the keydown event
+            const keydownEvent = new KeyboardEvent('keydown', {
+                key: 'CapsLock',
+                code: 'CapsLock',
+                ctrlKey: true,
+                bubbles: true,
+                cancelable: true
+            });
+
+            // Create and dispatch the keyup event
+            const keyupEvent = new KeyboardEvent('keyup', {
+                key: 'CapsLock',
+                code: 'CapsLock',
+                ctrlKey: true,
+                bubbles: true,
+                cancelable: true
+            });
+
+            // Dispatch events
+            document.dispatchEvent(keydownEvent);
+            document.dispatchEvent(keyupEvent);
+
+        }
+
+        // Listen for the simulated event
+        document.addEventListener('keydown', function (e) {
+            if (e.ctrlKey && e.key === 'CapsLock') {
+                console.log('Ctrl+Caps detected!');
+                // Your custom logic here
+            }
+        });
     </script>
-
 
 </html>
