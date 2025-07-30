@@ -137,6 +137,9 @@
         var _searchText = "ls-search-text";
         var _isWrapped = "ls-is-wrapper";
 
+        // File paths
+        var indexMdFile = '../_work-index.md';
+
         var specialElementHandlers = {
             '#editor': function (element, renderer) {
                 return true;
@@ -198,11 +201,11 @@
                 console.log('app.src: ', app.src);
 
                 if (app.src == '') {
-                    app.src = '../_work-index.md';
+                    app.src = indexMdFile;
                 }
 
                 var isRootPage = false;
-                if (app.src.toLowerCase() == '../_work-index.md') {
+                if (app.src.toLowerCase() == indexMdFile) {
                     isRootPage = true;
 
                     $('#btnHome').addClass('invisible');
@@ -715,7 +718,7 @@
                     // localStorage.removeItem(_searchText);
                     // inputSearch.value = localStorage.getItem(_searchText);
 
-                    location.href = 'http://127.0.0.1:5500/md/md.htm';
+                    location.href = 'http://127.0.0.1:' + window.location.port + '/md/md.htm';
                 }
 
                 //moh, 13/3/25, no one seems to call this.
@@ -812,8 +815,8 @@
                         var oldUrl = $(this).attr("href");
                         if (oldUrl.endsWith(".md")) {
                             // href to md files
-                            var newUrl = oldUrl.replace("127.0.0.1:5500/./", "127.0.0.1:5500/md/md.htm?src=../");
-                            var newUrl = newUrl.replace("127.0.0.1:5500/_LoadingDocuments/", "127.0.0.1:5500/md/md.htm?src=../_LoadingDocuments/");
+                            var newUrl = oldUrl.replace("127.0.0.1:" + window.location.port + "/./", "127.0.0.1:" + window.location.port + "/md/md.htm?src=../");
+                            var newUrl = newUrl.replace("127.0.0.1:" + window.location.port + "/_LoadingDocuments/", "127.0.0.1:" + window.location.port + "/md/md.htm?src=../_LoadingDocuments/");
                             $(this).attr("href", newUrl);
                             //$(this).attr('target', '_blank'); // open in current page
                         } else {
@@ -886,7 +889,7 @@
 
                 function fnIsRootPage() {
                     var isRootPage = false;
-                    if (app.src.toLowerCase() == '../_work-index.md') {
+                    if (app.src.toLowerCase() == indexMdFile) {
                         isRootPage = true;
                     }
                     return isRootPage;
@@ -924,21 +927,33 @@
 
 
         // Convert top to below to trigger 404 error
+        // filePath:    ../_LoadingDocuments/./aws-file-upload-jubo.md
         // urlMdHtm:    http://127.0.0.1:5500/md/md.htm?src=../_LoadingDocuments/./aws-file-upload-jubo.md
-        // urlOrg:      http://127.0.0.1:5500/_LoadingDocuments/./aws-file-upload-jubo.md
+        // urlOrg:      http://127.0.0.1:5500/../_LoadingDocuments/./aws-file-upload-jubo.md
 
         function UrlExists(filePath) {
-            var urlMdHtm = window.location.href;
-            var urlOrg = urlMdHtm.split('/')[0] + filePath;
+            console.log('filePath:', filePath);
 
+            var urlMdHtm = window.location.href;
+            // Fix: Construct proper URL with hostname and port
+            var baseUrl = window.location.protocol + '//' + window.location.host;
+            var urlOrg = baseUrl + '/' + filePath;
+
+            console.log('urlMdHtm:', urlMdHtm);
+            console.log('urlOrg:', urlOrg);
+
+            // check file exists with urlOrg
+            //`urlMdHtm` cannot be used to check file exists, it will not raise error because md.htm is valid url.
             var http = new XMLHttpRequest();
-            http.open('HEAD', urlOrg, false);   //`urlMdHtm` will not raise error because md.htm is valid url.
+            http.open('HEAD', urlOrg, false);
             http.send();
-            if (http.status != 404) {
-                //  do something
+            console.log('http.status:', http.status);
+
+            if (http.status == 404) {
+                alert('file not found: ' + urlOrg);
             }
             else {
-                alert('file not found');
+                return true;
             }
         }
 
