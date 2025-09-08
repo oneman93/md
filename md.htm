@@ -107,8 +107,8 @@
 
                 <button id="btnCopy" type="button" class="btn btn-primary btn-sm" onclick="CopyHTMLToClipboard()">
                     Copy</button>
-                <button id="btnCopied" type="button" class="btn btn-outline-success btn-sm"
-                    style="display: none;">Copied!</button>
+                <button id="btnCopyPath" type="button" class="btn btn-secondary btn-sm" onclick="CopyFilePath()">
+                    Copy Md Path</button>
 
                 <button id="btnImageFolder" type="button" class="btn btn-primary btn-sm invisible">
                     <span style=" font-size: 1em;color:white;"><i class="fa-solid fa-folder"></i></span>
@@ -125,6 +125,9 @@
         <div id="mdcontainer" style="width:70%; margin:0 auto; margin-top: 50px;">
             <!-- shadow dom will be cloned here -->
         </div>
+
+        <!-- Toast notification container -->
+        <div class="toast-container" id="toastContainer"></div>
 
 
 
@@ -146,6 +149,30 @@
             }
         };
 
+        // Toast notification function
+        function showToast(message, type = 'success') {
+            const toastContainer = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+
+            toastContainer.appendChild(toast);
+
+            // Trigger animation
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 10);
+
+            // Remove toast after 6 seconds
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.parentNode.removeChild(toast);
+                    }
+                }, 300);
+            }, 6000);
+        }
 
         //https://stackoverflow.com/questions/12982156/select-copy-text-using-javascript-or-jquery
         function CopyHTMLToClipboard() {
@@ -159,7 +186,17 @@
             //add to clipboard.
             document.execCommand('copy');
             document.execCommand("UnSelect", true);
-            $('#btnCopied').show().fadeOut('slow');
+            showToast('HTML content copied to clipboard!');
+        }
+
+        // Copy file path function
+        function CopyFilePath() {
+            const currentPath = window.location.href;
+            navigator.clipboard.writeText(currentPath).then(() => {
+                showToast(`File path copied: ${currentPath}`);
+            }).catch(() => {
+                showToast('Failed to copy path', 'error');
+            });
         }
 
         function getQuery(key) {
@@ -813,7 +850,7 @@
                     // wrap xxx.md file line
                     $('a').each(function () {
                         var oldUrl = $(this).attr("href");
-                        if (oldUrl.endsWith(".md")) {
+                        if (oldUrl.endsWith(".md") && oldUrl.includes('127.0.0.1')) {
                             // href to md files
                             var newUrl = oldUrl.replace("127.0.0.1:" + window.location.port + "/./", "127.0.0.1:" + window.location.port + "/md/md.htm?src=../");
                             var newUrl = newUrl.replace("127.0.0.1:" + window.location.port + "/_LoadingDocuments/", "127.0.0.1:" + window.location.port + "/md/md.htm?src=../_LoadingDocuments/");
@@ -977,6 +1014,11 @@
         }
 
         function addHistoryItem(tmpHref) {
+            // Check if tmpHref contains 127.0.0.1
+            if (!tmpHref.includes('127.0.0.1')) {
+                return false;
+            }
+
             var array = getHistoryArray();
             removeItemAll(array, tmpHref);
 
