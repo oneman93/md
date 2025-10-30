@@ -129,6 +129,12 @@
         <!-- Toast notification container -->
         <div class="toast-container" id="toastContainer"></div>
 
+        <!-- Floating Table Navigation -->
+        <div class="table-nav-container" id="tableNavContainer">
+            <div class="table-nav-title">Tables</div>
+            <div id="tableNavButtons"></div>
+        </div>
+
 
 
     </body>
@@ -197,6 +203,110 @@
             }).catch(() => {
                 showToast('Failed to copy path', 'error');
             });
+        }
+
+        // Table Navigation Functions
+        function createTableNavigation() {
+            const container = document.getElementById('tableNavContainer');
+            const buttonsContainer = document.getElementById('tableNavButtons');
+
+            // Clear existing buttons
+            buttonsContainer.innerHTML = '';
+
+            // Find all H1 and H2 elements that have tables as siblings or descendants
+            const headingsWithTables = [];
+
+            // Check H1 elements
+            document.querySelectorAll('h1').forEach((heading, index) => {
+                if (hasTableAfterHeading(heading)) {
+                    // Add ID if it doesn't exist
+                    if (!heading.id) {
+                        heading.id = `table-heading-h1-${index}`;
+                    }
+                    headingsWithTables.push({
+                        element: heading,
+                        text: heading.textContent.trim(),
+                        id: heading.id,
+                        level: 1
+                    });
+                }
+            });
+
+            // Check H2 elements
+            document.querySelectorAll('h2').forEach((heading, index) => {
+                if (hasTableAfterHeading(heading)) {
+                    // Add ID if it doesn't exist
+                    if (!heading.id) {
+                        heading.id = `table-heading-h2-${index}`;
+                    }
+                    headingsWithTables.push({
+                        element: heading,
+                        text: heading.textContent.trim(),
+                        id: heading.id,
+                        level: 2
+                    });
+                }
+            });
+
+            // Create buttons for each heading with tables
+            if (headingsWithTables.length > 0) {
+                headingsWithTables.forEach(heading => {
+                    const button = document.createElement('button');
+                    button.className = 'table-nav-button';
+                    button.textContent = heading.text;
+                    button.onclick = () => scrollToElement(heading.id);
+                    buttonsContainer.appendChild(button);
+                });
+
+                // Show the container
+                container.classList.add('show');
+            } else {
+                // Hide the container if no tables found
+                container.classList.remove('show');
+            }
+        }
+
+        function hasTableAfterHeading(heading) {
+            let nextElement = heading.nextElementSibling;
+
+            // Check the next few siblings for a table
+            let checkCount = 0;
+            while (nextElement && checkCount < 10) {
+                if (nextElement.tagName === 'TABLE') {
+                    return true;
+                }
+
+                // Also check if there's a table inside the next element
+                if (nextElement.querySelector && nextElement.querySelector('table')) {
+                    return true;
+                }
+
+                // Stop if we hit another heading
+                if (nextElement.tagName === 'H1' || nextElement.tagName === 'H2' || nextElement.tagName === 'H3') {
+                    break;
+                }
+
+                nextElement = nextElement.nextElementSibling;
+                checkCount++;
+            }
+
+            return false;
+        }
+
+        function scrollToElement(elementId) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+
+                // Optional: highlight the heading briefly
+                element.style.backgroundColor = '#fff3cd';
+                setTimeout(() => {
+                    element.style.backgroundColor = '';
+                }, 2000);
+            }
         }
 
         function getQuery(key) {
@@ -325,6 +435,9 @@
 
                 addImageFolderButton();
                 inputSearch.focus();
+
+                // Create table navigation buttons
+                createTableNavigation();
 
                 //-----------------------------
                 // ChangeBody done.

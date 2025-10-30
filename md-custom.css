@@ -142,3 +142,57 @@ code {
 .toast.info {
     background: #17a2b8;
 }
+
+/* Floating Table Navigation Buttons */
+.table-nav-container {
+    position: fixed;
+    right: 20px;
+    top: 30%;
+    z-index: 1000;
+    max-width: 250px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    padding: 10px;
+    display: none;
+}
+
+.table-nav-container.show {
+    display: block;
+}
+
+.table-nav-title {
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 8px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #eee;
+}
+
+.table-nav-button {
+    display: block;
+    width: 100%;
+    padding: 8px 12px;
+    margin-bottom: 4px;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    color: #495057;
+    text-decoration: none;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+}
+
+.table-nav-button:hover {
+    background: #007bff;
+    color: white;
+    text-decoration: none;
+}
+
+.table-nav-button:last-child {
+    margin-bottom: 0;
+}
