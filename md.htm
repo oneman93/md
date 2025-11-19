@@ -969,16 +969,22 @@
                     // wrap xxx.md file line
                     $('a').each(function () {
                         var oldUrl = $(this).attr("href");
-                        if (oldUrl.endsWith(".md") && oldUrl.includes('127.0.0.1')) {
-                            // href to md files
-                            var newUrl = oldUrl.replace("127.0.0.1:" + window.location.port + "/./", "127.0.0.1:" + window.location.port + "/md/md.htm?src=../");
-                            var newUrl = newUrl.replace("127.0.0.1:" + window.location.port + "/_LoadingDocuments/", "127.0.0.1:" + window.location.port + "/md/md.htm?src=../_LoadingDocuments/");
-                            $(this).attr("href", newUrl);
-                            //$(this).attr('target', '_blank'); // open in current page
-                        } else {
-                            // all other general href
-                            $(this).attr('target', '_blank');
-                        }
+                        if (oldUrl != undefined) {
+                            if (oldUrl.endsWith(".md") && oldUrl.includes('127.0.0.1')) {
+                                // href to md files
+                                var newUrl = oldUrl.replace("127.0.0.1:" + window.location.port + "/./", "127.0.0.1:" + window.location.port + "/md/md.htm?src=../");
+                                var newUrl = newUrl.replace("127.0.0.1:" + window.location.port + "/_LoadingDocuments/", "127.0.0.1:" + window.location.port + "/md/md.htm?src=../_LoadingDocuments/");
+                                $(this).attr("href", newUrl);
+                                //$(this).attr('target', '_blank'); // open in current page
+                            } 
+                            else if (oldUrl.startsWith("#")) {
+                                //markdown anchor -> do not change target
+                            }
+                            else {
+                                // all other general href
+                                $(this).attr('target', '_blank');
+                            }
+                        }                        
                     });
 
                     // get image width and height from source
