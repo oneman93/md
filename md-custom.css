@@ -196,3 +196,41 @@ code {
 .table-nav-button:last-child {
     margin-bottom: 0;
 }
+
+/* Mermaid diagram wrapper and buttons */
+.mermaid-wrapper {
+    position: relative;
+    margin: 1em 0;
+}
+
+.mermaid-buttons {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 10;
+    display: flex;
+    gap: 5px;
+    padding: 5px;
+}
+
+.mermaid-buttons .btn {
+    font-size: 12px;
+    padding: 4px 8px;
+    line-height: 1.2;
+}
+
+.mermaid-code-container {
+    position: relative;
+}
+
+.mermaid-preview-container {
+    min-height: 100px;
+    padding: 1em;
+    background: #f5f2f0;
+    border-radius: 4px;
+}
+
+.mermaid-preview-container svg {
+    max-width: 100%;
+    height: auto;
+}

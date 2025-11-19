@@ -81,6 +81,9 @@
         <script src="./dist/jspdf/jspdf-251.js"></script>
         <script src="./dist/jspdf/html2canvas.js"></script>
 
+        <!-- Mermaid -->
+        <script defer src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
     </head>
 
     <body>
@@ -438,6 +441,9 @@
 
                 // Create table navigation buttons
                 createTableNavigation();
+
+                // Initialize Mermaid diagrams
+                initializeMermaidDiagrams();
 
                 //-----------------------------
                 // ChangeBody done.
@@ -1035,6 +1041,301 @@
                     btnWrapIt.textContent = "Wrap with md.html"
                     btnWrapIt.classList.remove('btn-warning');
                     btnWrapIt.classList.add('btn-primary');
+                }
+
+                function initializeMermaidDiagrams() {
+                    // Wait for Mermaid library to be available
+                    if (typeof mermaid === 'undefined') {
+                        setTimeout(initializeMermaidDiagrams, 100);
+                        return;
+                    }
+
+                    // Initialize Mermaid
+                    mermaid.initialize({ startOnLoad: false, theme: 'default' });
+
+                    // Find all Mermaid code blocks
+                    var mermaidCodeBlocks = mdClone.querySelectorAll('pre.language-mermaid');
+                    
+                    mermaidCodeBlocks.forEach(function(preElement) {
+                        // Skip if already processed
+                        if (preElement.closest('.mermaid-wrapper')) {
+                            return;
+                        }
+
+                        var mermaidCode = preElement.textContent || preElement.innerText;
+                        
+                        // Create wrapper div
+                        var wrapper = document.createElement('div');
+                        wrapper.className = 'mermaid-wrapper';
+
+                        // Create buttons container
+                        var buttonsContainer = document.createElement('div');
+                        buttonsContainer.className = 'mermaid-buttons';
+
+                        // Create preview/code toggle button
+                        var toggleBtn = document.createElement('button');
+                        toggleBtn.type = 'button';
+                        toggleBtn.className = 'btn btn-primary btn-sm mermaid-toggle-btn';
+                        toggleBtn.textContent = 'code';
+                        toggleBtn.dataset.showing = 'preview'; // Initially showing preview
+
+                        // Create minimize button
+                        var minimizeBtn = document.createElement('button');
+                        minimizeBtn.type = 'button';
+                        minimizeBtn.className = 'btn btn-secondary btn-sm mermaid-minimize-btn';
+                        minimizeBtn.textContent = 'minimize';
+
+                        // Create PNG download button
+                        var pngBtn = document.createElement('button');
+                        pngBtn.type = 'button';
+                        pngBtn.className = 'btn btn-success btn-sm mermaid-png-btn';
+                        pngBtn.textContent = 'png';
+                        pngBtn.style.display = ''; // Show initially since preview is shown
+
+                        buttonsContainer.appendChild(toggleBtn);
+                        buttonsContainer.appendChild(pngBtn);
+                        buttonsContainer.appendChild(minimizeBtn);
+
+                        // Create code container
+                        var codeContainer = document.createElement('div');
+                        codeContainer.className = 'mermaid-code-container';
+                        codeContainer.style.display = 'none'; // Hide initially
+                        codeContainer.appendChild(preElement.cloneNode(true));
+
+                        // Create preview container
+                        var previewContainer = document.createElement('div');
+                        previewContainer.className = 'mermaid-preview-container';
+                        var previewId = 'mermaid-preview-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+                        
+                        // Create a temporary div with class "mermaid" for rendering
+                        var mermaidDiv = document.createElement('div');
+                        mermaidDiv.className = 'mermaid';
+                        mermaidDiv.id = previewId;
+                        mermaidDiv.textContent = mermaidCode.trim();
+                        
+                        previewContainer.appendChild(mermaidDiv);
+
+                        // Assemble wrapper
+                        wrapper.appendChild(buttonsContainer);
+                        wrapper.appendChild(previewContainer);
+                        wrapper.appendChild(codeContainer);
+
+                        // Replace original pre element with wrapper
+                        preElement.parentNode.replaceChild(wrapper, preElement);
+
+                        // Render Mermaid diagram - wait for DOM to be ready
+                        setTimeout(function() {
+                            if (typeof mermaid.run === 'function') {
+                                // Mermaid v10+ uses mermaid.run()
+                                mermaid.run({
+                                    nodes: [mermaidDiv]
+                                }).then(function() {
+                                    var svgElement = mermaidDiv.querySelector('svg');
+                                    if (svgElement) {
+                                        var svgClone = svgElement.cloneNode(true);
+                                        previewContainer.innerHTML = '';
+                                        previewContainer.appendChild(svgClone);
+                                        previewContainer.dataset.svgContent = new XMLSerializer().serializeToString(svgClone);
+                                    }
+                                }).catch(function(error) {
+                                    console.error('Mermaid run error:', error);
+                                    renderWithInit();
+                                });
+                            } else if (typeof mermaid.mermaidAPI !== 'undefined' && typeof mermaid.mermaidAPI.render === 'function') {
+                                // Mermaid v8-9 uses mermaid.mermaidAPI.render()
+                                mermaid.mermaidAPI.render(previewId, mermaidCode).then(function(result) {
+                                    previewContainer.innerHTML = result.svg;
+                                    previewContainer.dataset.svgContent = result.svg;
+                                }).catch(function(err) {
+                                    console.error('Mermaid API render error:', err);
+                                    renderWithInit();
+                                });
+                            } else {
+                                // Fallback: use mermaid.init() for older versions
+                                renderWithInit();
+                            }
+                            
+                            function renderWithInit() {
+                                // Use mermaid.init() - works with most versions
+                                try {
+                                    mermaid.init(undefined, mermaidDiv);
+                                    
+                                    // Check periodically for rendered SVG
+                                    var attempts = 0;
+                                    var maxAttempts = 50; // 5 seconds max
+                                    var checkInterval = setInterval(function() {
+                                        attempts++;
+                                        var svgElement = mermaidDiv.querySelector('svg');
+                                        if (svgElement) {
+                                            clearInterval(checkInterval);
+                                            var svgClone = svgElement.cloneNode(true);
+                                            previewContainer.innerHTML = '';
+                                            previewContainer.appendChild(svgClone);
+                                            previewContainer.dataset.svgContent = new XMLSerializer().serializeToString(svgClone);
+                                        } else if (attempts >= maxAttempts) {
+                                            clearInterval(checkInterval);
+                                            previewContainer.innerHTML = '<p style="color: red;">Error: Diagram did not render (timeout). Check console for errors.</p>';
+                                        }
+                                    }, 100);
+                                } catch (e) {
+                                    console.error('Mermaid init error:', e);
+                                    previewContainer.innerHTML = '<p style="color: red;">Error rendering diagram: ' + e.message + '</p>';
+                                }
+                            }
+                        }, 100);
+
+                        // Toggle button click handler
+                        toggleBtn.addEventListener('click', function() {
+                            var showing = this.dataset.showing;
+                            
+                            if (showing === 'preview') {
+                                // Switch to code view
+                                previewContainer.style.display = 'none';
+                                codeContainer.style.display = 'block';
+                                this.textContent = 'preview';
+                                this.dataset.showing = 'code';
+                                pngBtn.style.display = 'none'; // Hide PNG button when showing code
+                            } else {
+                                // Switch to preview view
+                                codeContainer.style.display = 'none';
+                                previewContainer.style.display = 'block';
+                                this.textContent = 'code';
+                                this.dataset.showing = 'preview';
+                                pngBtn.style.display = ''; // Show PNG button when showing preview
+                            }
+                        });
+
+                        // Minimize button click handler
+                        minimizeBtn.addEventListener('click', function() {
+                            var isMinimized = this.textContent === 'show';
+                            
+                            if (isMinimized) {
+                                // Show both containers
+                                previewContainer.style.display = '';
+                                codeContainer.style.display = '';
+                                // Restore the view based on toggle state
+                                var showing = toggleBtn.dataset.showing;
+                                if (showing === 'preview') {
+                                    previewContainer.style.display = 'block';
+                                    codeContainer.style.display = 'none';
+                                } else {
+                                    previewContainer.style.display = 'none';
+                                    codeContainer.style.display = 'block';
+                                }
+                                this.textContent = 'minimize';
+                            } else {
+                                // Hide both containers
+                                previewContainer.style.display = 'none';
+                                codeContainer.style.display = 'none';
+                                this.textContent = 'show';
+                            }
+                        });
+
+                        // PNG download button click handler
+                        pngBtn.addEventListener('click', function() {
+                            var svgElement = previewContainer.querySelector('svg');
+                            if (!svgElement) {
+                                showToast('No diagram to download', 'error');
+                                return;
+                            }
+
+                            // Use html2canvas which is already loaded and handles SVG properly
+                            if (typeof html2canvas !== 'undefined') {
+                                html2canvas(previewContainer, {
+                                    backgroundColor: null,
+                                    useCORS: true,
+                                    logging: false,
+                                    width: previewContainer.scrollWidth,
+                                    height: previewContainer.scrollHeight
+                                }).then(function(canvas) {
+                                    // Convert canvas to blob and download
+                                    canvas.toBlob(function(blob) {
+                                        if (!blob) {
+                                            showToast('Error creating PNG', 'error');
+                                            return;
+                                        }
+                                        var downloadUrl = URL.createObjectURL(blob);
+                                        var link = document.createElement('a');
+                                        link.href = downloadUrl;
+                                        link.download = 'mermaid-diagram-' + previewId + '.png';
+                                        document.body.appendChild(link);
+                                        link.click();
+                                        document.body.removeChild(link);
+                                        URL.revokeObjectURL(downloadUrl);
+                                        showToast('Diagram downloaded as PNG');
+                                    }, 'image/png');
+                                }).catch(function(error) {
+                                    console.error('html2canvas error:', error);
+                                    // Fallback to SVG data URL method
+                                    downloadSvgAsPngFallback();
+                                });
+                            } else {
+                                // Fallback method if html2canvas is not available
+                                downloadSvgAsPngFallback();
+                            }
+
+                            function downloadSvgAsPngFallback() {
+                                try {
+                                    var svgClone = svgElement.cloneNode(true);
+                                    
+                                    // Get SVG dimensions
+                                    var svgRect = svgElement.getBoundingClientRect();
+                                    var svgWidth = svgRect.width || parseInt(svgClone.getAttribute('width')) || 1200;
+                                    var svgHeight = svgRect.height || parseInt(svgClone.getAttribute('height')) || 800;
+
+                                    // Ensure SVG has explicit width and height
+                                    svgClone.setAttribute('width', svgWidth);
+                                    svgClone.setAttribute('height', svgHeight);
+                                    svgClone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+
+                                    // Serialize SVG and encode as data URL
+                                    var svgContent = new XMLSerializer().serializeToString(svgClone);
+                                    var svgDataUrl = 'data:image/svg+xml;charset=utf-8;base64,' + btoa(unescape(encodeURIComponent(svgContent)));
+
+                                    // Create canvas and load SVG as data URL
+                                    var canvas = document.createElement('canvas');
+                                    var ctx = canvas.getContext('2d');
+                                    var img = new Image();
+
+                                    img.onload = function() {
+                                        // Set canvas size
+                                        canvas.width = svgWidth;
+                                        canvas.height = svgHeight;
+
+                                        // Draw image on canvas
+                                        ctx.drawImage(img, 0, 0);
+
+                                        // Convert canvas to blob and download
+                                        canvas.toBlob(function(blob) {
+                                            if (!blob) {
+                                                showToast('Error creating PNG', 'error');
+                                                return;
+                                            }
+                                            var downloadUrl = URL.createObjectURL(blob);
+                                            var link = document.createElement('a');
+                                            link.href = downloadUrl;
+                                            link.download = 'mermaid-diagram-' + previewId + '.png';
+                                            document.body.appendChild(link);
+                                            link.click();
+                                            document.body.removeChild(link);
+                                            URL.revokeObjectURL(downloadUrl);
+                                            showToast('Diagram downloaded as PNG');
+                                        }, 'image/png');
+                                    };
+
+                                    img.onerror = function() {
+                                        showToast('Error converting diagram to PNG', 'error');
+                                    };
+
+                                    // Load SVG as data URL (this avoids tainting issues)
+                                    img.src = svgDataUrl;
+                                } catch (error) {
+                                    console.error('PNG download error:', error);
+                                    showToast('Error downloading diagram: ' + error.message, 'error');
+                                }
+                            }
+                        });
+                    });
                 }
 
                 function fnIsRootPage() {
