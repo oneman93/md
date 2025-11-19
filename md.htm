@@ -1037,9 +1037,11 @@
                 function unWrapWithMdHtml() {
                     $('a').each(function () {
                         var oldUrl = $(this).attr("href");
-                        var newUrl = oldUrl.replace("/md/md.htm?src=..", "");
-                        $(this).attr("href", newUrl);
-                        $(this).attr("target", "_blank");   //open in new tab, 2/11/23
+                        if (oldUrl != undefined) {
+                            var newUrl = oldUrl.replace("/md/md.htm?src=..", "");
+                            $(this).attr("href", newUrl);
+                            $(this).attr("target", "_blank");   //open in new tab, 2/11/23
+                        }
                     });
 
                     $('img').removeClass('sm');

@@ -59,8 +59,17 @@ h2 {
     border: 1px solid #ddd;
 } */
 
+/* Image snippets max height */
+.markdown-body img {
+    /*max-height: 200px;*/
+    width: auto;
+    height: auto;
+    object-fit: contain;
+}
+
 img.sm {
     width: 200px;
+    max-height: 200px;
     border: 1px solid #ccc !important;
     border-radius: 5px;
     cursor: pointer;
