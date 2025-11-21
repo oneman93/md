@@ -243,3 +243,10 @@ code {
     max-width: 100%;
     height: auto;
 }
+
+/* Hide the mermaid div initially until it's rendered - use visibility instead of display so Mermaid can render */
+div.mermaid {
+    visibility: hidden !important;
+    position: absolute !important;
+    left: -9999px !important;
+}

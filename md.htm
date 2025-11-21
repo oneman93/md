@@ -1120,6 +1120,10 @@
                         mermaidDiv.className = 'mermaid';
                         mermaidDiv.id = previewId;
                         mermaidDiv.textContent = mermaidCode.trim();
+                        // Hide visually but allow Mermaid to render (use visibility instead of display)
+                        mermaidDiv.style.visibility = 'hidden';
+                        mermaidDiv.style.position = 'absolute';
+                        mermaidDiv.style.left = '-9999px';
                         
                         previewContainer.appendChild(mermaidDiv);
 
@@ -1141,9 +1145,13 @@
                                     var svgElement = mermaidDiv.querySelector('svg');
                                     if (svgElement) {
                                         var svgClone = svgElement.cloneNode(true);
+                                        // Remove mermaid div after extracting SVG
                                         previewContainer.innerHTML = '';
                                         previewContainer.appendChild(svgClone);
                                         previewContainer.dataset.svgContent = new XMLSerializer().serializeToString(svgClone);
+                                    } else {
+                                        // If no SVG, show error
+                                        previewContainer.innerHTML = '<p style="color: red;">Error: Diagram did not render</p>';
                                     }
                                 }).catch(function(error) {
                                     console.error('Mermaid run error:', error);
@@ -1152,6 +1160,7 @@
                             } else if (typeof mermaid.mermaidAPI !== 'undefined' && typeof mermaid.mermaidAPI.render === 'function') {
                                 // Mermaid v8-9 uses mermaid.mermaidAPI.render()
                                 mermaid.mermaidAPI.render(previewId, mermaidCode).then(function(result) {
+                                    // Remove mermaid div after rendering
                                     previewContainer.innerHTML = result.svg;
                                     previewContainer.dataset.svgContent = result.svg;
                                 }).catch(function(err) {
@@ -1176,6 +1185,7 @@
                                         var svgElement = mermaidDiv.querySelector('svg');
                                         if (svgElement) {
                                             clearInterval(checkInterval);
+                                            // Remove mermaid div after extracting SVG
                                             var svgClone = svgElement.cloneNode(true);
                                             previewContainer.innerHTML = '';
                                             previewContainer.appendChild(svgClone);
