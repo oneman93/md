@@ -299,9 +299,18 @@
         function scrollToElement(elementId) {
             const element = document.getElementById(elementId);
             if (element) {
-                element.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
+                // Calculate offset for fixed header (search-wrapper)
+                const searchWrapper = document.querySelector('.search-wrapper');
+                const offset = searchWrapper ? searchWrapper.offsetHeight + 20 : 80; // Add 20px padding
+                
+                // Get the position of the element
+                const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+                const offsetPosition = elementPosition - offset;
+
+                // Scroll to the position with offset
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
                 });
 
                 // Optional: highlight the heading briefly
