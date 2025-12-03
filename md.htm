@@ -212,54 +212,66 @@
                 var clone = container.cloneNode(true);
                 
                 // Find and remove content from "Do not copy from here" onwards
-                var stopMarkers = [
+                // Look for h1, h2, or h3 elements containing the stop marker text
+                var stopMarkerTexts = [
                     'Do not copy from here',
-                    '# Do not copy from here',
-                    'Do not copy from here ----------',
-                    '# Do not copy from here ----------'
+                    'Do not copy from here ---'
                 ];
                 
-                var foundStopMarker = false;
+                var foundStopHeading = null;
                 
-                // Search through all elements to find the stop marker
-                function findAndRemoveStopMarker(element) {
-                    if (foundStopMarker) return;
+                // Find the heading element that contains the stop marker
+                var allHeadings = clone.querySelectorAll('h1, h2, h3');
+                for (var i = 0; i < allHeadings.length; i++) {
+                    var heading = allHeadings[i];
+                    var headingText = (heading.textContent || heading.innerText || '').trim();
                     
-                    var children = Array.from(element.children || []);
-                    for (var i = 0; i < children.length; i++) {
-                        var child = children[i];
-                        var text = child.textContent || child.innerText || '';
-                        
-                        // Check if this element contains the stop marker
-                        for (var j = 0; j < stopMarkers.length; j++) {
-                            if (text.trim().startsWith(stopMarkers[j]) || text.includes(stopMarkers[j])) {
-                                // Check if it's a heading or contains a heading
-                                var heading = child;
-                                if (heading.tagName && (heading.tagName === 'H1' || heading.tagName === 'H2' || heading.tagName === 'H3')) {
-                                    // Remove this heading and all following siblings
-                                    var parent = heading.parentNode;
-                                    if (parent) {
-                                        var nextSibling = heading.nextSibling;
-                                        while (nextSibling) {
-                                            var toRemove = nextSibling;
-                                            nextSibling = nextSibling.nextSibling;
-                                            parent.removeChild(toRemove);
-                                        }
-                                        parent.removeChild(heading);
-                                    }
-                                    foundStopMarker = true;
-                                    return;
-                                }
-                            }
+                    // Check if this heading contains any of the stop marker texts
+                    for (var j = 0; j < stopMarkerTexts.length; j++) {
+                        if (headingText.includes(stopMarkerTexts[j])) {
+                            foundStopHeading = heading;
+                            break;
                         }
-                        
-                        // Recursively check children
-                        findAndRemoveStopMarker(child);
-                        if (foundStopMarker) return;
                     }
+                    if (foundStopHeading) break;
                 }
                 
-                findAndRemoveStopMarker(clone);
+                // If we found the stop heading, remove it and everything after it
+                if (foundStopHeading) {
+                    // Find the parent h1-wrapper div (content is wrapped in div.h1-wrapper)
+                    var h1Wrapper = foundStopHeading.closest('.h1-wrapper');
+                    
+                    if (h1Wrapper) {
+                        // Find the parent container of the h1-wrapper
+                        var parent = h1Wrapper.parentNode;
+                        
+                        if (parent) {
+                            // Get all h1-wrapper siblings
+                            var siblings = Array.from(parent.children);
+                            var wrapperIndex = siblings.indexOf(h1Wrapper);
+                            
+                            // Remove this h1-wrapper and all following h1-wrapper siblings
+                            for (var k = siblings.length - 1; k >= wrapperIndex; k--) {
+                                parent.removeChild(siblings[k]);
+                            }
+                        } else {
+                            // If no parent, remove the wrapper itself
+                            h1Wrapper.parentNode.removeChild(h1Wrapper);
+                        }
+                    } else {
+                        // Fallback: if no h1-wrapper found, try to remove from heading's parent
+                        var parent = foundStopHeading.parentNode;
+                        if (parent) {
+                            var siblings = Array.from(parent.children);
+                            var headingIndex = siblings.indexOf(foundStopHeading);
+                            
+                            // Remove the heading and all following siblings
+                            for (var k = siblings.length - 1; k >= headingIndex; k--) {
+                                parent.removeChild(siblings[k]);
+                            }
+                        }
+                    }
+                }
                 
                 // Remove links to md files containing 'mermaid' or 'cursor'
                 var links = clone.querySelectorAll('a[href]');
