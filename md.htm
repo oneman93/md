@@ -110,6 +110,8 @@
 
                 <button id="btnCopy" type="button" class="btn btn-primary btn-sm" onclick="CopyHTMLToClipboard()">
                     Copy</button>
+                <button id="btnCopy2Conf" type="button" class="btn btn-primary btn-sm" onclick="CopyHTMLToClipboard2Conf()">
+                    Copy2Conf</button>
                 <button id="btnCopyPath" type="button" class="btn btn-secondary btn-sm" onclick="CopyFilePath()">
                     Copy Md Path</button>
 
@@ -196,6 +198,112 @@
             document.execCommand('copy');
             document.execCommand("UnSelect", true);
             showToast('HTML content copied to clipboard!');
+        }
+
+        function CopyHTMLToClipboard2Conf() {
+            try {
+                var container = document.getElementById('mdcontainer');
+                if (!container) {
+                    showToast('Container not found', 'error');
+                    return;
+                }
+
+                // Clone the container to avoid modifying the original
+                var clone = container.cloneNode(true);
+                
+                // Find and remove content from "Do not copy from here" onwards
+                var stopMarkers = [
+                    'Do not copy from here',
+                    '# Do not copy from here',
+                    'Do not copy from here ----------',
+                    '# Do not copy from here ----------'
+                ];
+                
+                var foundStopMarker = false;
+                
+                // Search through all elements to find the stop marker
+                function findAndRemoveStopMarker(element) {
+                    if (foundStopMarker) return;
+                    
+                    var children = Array.from(element.children || []);
+                    for (var i = 0; i < children.length; i++) {
+                        var child = children[i];
+                        var text = child.textContent || child.innerText || '';
+                        
+                        // Check if this element contains the stop marker
+                        for (var j = 0; j < stopMarkers.length; j++) {
+                            if (text.trim().startsWith(stopMarkers[j]) || text.includes(stopMarkers[j])) {
+                                // Check if it's a heading or contains a heading
+                                var heading = child;
+                                if (heading.tagName && (heading.tagName === 'H1' || heading.tagName === 'H2' || heading.tagName === 'H3')) {
+                                    // Remove this heading and all following siblings
+                                    var parent = heading.parentNode;
+                                    if (parent) {
+                                        var nextSibling = heading.nextSibling;
+                                        while (nextSibling) {
+                                            var toRemove = nextSibling;
+                                            nextSibling = nextSibling.nextSibling;
+                                            parent.removeChild(toRemove);
+                                        }
+                                        parent.removeChild(heading);
+                                    }
+                                    foundStopMarker = true;
+                                    return;
+                                }
+                            }
+                        }
+                        
+                        // Recursively check children
+                        findAndRemoveStopMarker(child);
+                        if (foundStopMarker) return;
+                    }
+                }
+                
+                findAndRemoveStopMarker(clone);
+                
+                // Remove links to md files containing 'mermaid' or 'cursor'
+                var links = clone.querySelectorAll('a[href]');
+                links.forEach(function(link) {
+                    var href = link.getAttribute('href') || '';
+                    var hrefLower = href.toLowerCase();
+                    
+                    // Check if href contains 'mermaid' or 'cursor' and points to an md file
+                    if ((hrefLower.includes('mermaid') || hrefLower.includes('cursor')) && 
+                        (hrefLower.includes('.md') || hrefLower.includes('mermaid') || hrefLower.includes('cursor'))) {
+                        // Replace link with just its text content
+                        var textNode = document.createTextNode(link.textContent || link.innerText);
+                        if (link.parentNode) {
+                            link.parentNode.replaceChild(textNode, link);
+                        }
+                    }
+                });
+                
+                // Create a temporary div to hold the filtered content
+                var tempDiv = document.createElement('div');
+                tempDiv.style.position = 'fixed';
+                tempDiv.style.left = '-9999px';
+                tempDiv.innerHTML = clone.innerHTML;
+                document.body.appendChild(tempDiv);
+                
+                // Select and copy
+                var selection = window.getSelection();
+                var range = document.createRange();
+                range.selectNodeContents(tempDiv);
+                selection.removeAllRanges();
+                selection.addRange(range);
+                
+                // Copy to clipboard
+                document.execCommand('copy');
+                document.execCommand("UnSelect", true);
+                
+                // Clean up
+                document.body.removeChild(tempDiv);
+                
+                showToast('Content copied to clipboard (excluding mermaid/cursor links and stop section)!');
+            } catch (error) {
+                console.error('Copy error:', error);
+                showToast('Error copying content', 'error');
+            }
         }
 
         // Copy file path function
