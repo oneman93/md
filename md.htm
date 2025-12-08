@@ -362,9 +362,36 @@
                     if (!heading.id) {
                         heading.id = `table-heading-h2-${index}`;
                     }
+                    
+                    // Find the parent h1 title for h2 headings
+                    var h1Title = '';
+                    var h1Wrapper = heading.closest('.h1-wrapper');
+                    if (h1Wrapper) {
+                        var h1Element = h1Wrapper.querySelector('h1');
+                        if (h1Element) {
+                            h1Title = h1Element.textContent.trim();
+                        }
+                    }
+                    
+                    // Fallback: if no h1 found in wrapper, find the previous h1 sibling
+                    if (!h1Title) {
+                        var prevSibling = heading.previousElementSibling;
+                        while (prevSibling) {
+                            if (prevSibling.tagName === 'H1') {
+                                h1Title = prevSibling.textContent.trim();
+                                break;
+                            }
+                            prevSibling = prevSibling.previousElementSibling;
+                        }
+                    }
+                    
+                    // Create text as "h1Title-h2Title" format
+                    var h2Title = heading.textContent.trim();
+                    var displayText = h1Title ? (h1Title + ' - ' + h2Title) : h2Title;
+                    
                     headingsWithTables.push({
                         element: heading,
-                        text: heading.textContent.trim(),
+                        text: displayText,
                         id: heading.id,
                         level: 2
                     });
