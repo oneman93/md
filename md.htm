@@ -519,16 +519,16 @@
                     var version = '';
                     for (var i = 0; i < lines.length; i++) {
                         var line = lines[i].trim();
-                        // Look for version header like # v1.0.0
-                        if (line.startsWith('# v') || line.startsWith('#v')) {
+                        // Look for version header like # v1.0.0 or # mdv1.0.0
+                        if (line.startsWith('# v') || line.startsWith('#v') || line.startsWith('# mdv') || line.startsWith('#mdv')) {
                             version = line.replace(/^#\s*/, ''); // Remove # and any space
                             break;
                         }
                     }
                     if (version) {
-                        versionDisplay.textContent = 'md' + version;
+                        versionDisplay.textContent = version;
                     } else {
-                        versionDisplay.textContent = 'mdv?.?.?';
+                        versionDisplay.textContent = 'v?.?.?';
                     }
                 })
                 .catch(function(error) {
