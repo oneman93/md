@@ -84,17 +84,20 @@
         <!-- Mermaid -->
         <script defer src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
 
+        <!-- Production-specific custom functions -->
+        <script src="./moh93-custom.js"></script>
+
     </head>
 
     <body>
         <div class="search-wrapper d-flex justify-content-between">
             <DIV id="divLeft">
-                <span id="versionDisplay" class="version-display" style="margin-right: 10px; font-weight: bold; color: #6c757d;"></span>
                 <input id="inputSearch" type="text" placeholder="type to search..." />
                 <button id="btnReset" type="button" class="btn btn-primary btn-sm">Reset</button>
                 <button id="btnHome" type="button" class="btn btn-danger btn-sm">
                     <span style="font-size: 1em;color:white;"><i class="fa-solid fa-house"></i></span>
                     Go Home</button>
+                <span id="versionDisplay" class="version-display" style="margin-left: 10px; font-weight: bold; color: #6c757d;"></span>
 
 
             </DIV>
@@ -151,6 +154,9 @@
         var _expandedNth = "ls-expanded-nth";
         var _searchText = "ls-search-text";
         var _isWrapped = "ls-is-wrapper";
+
+        // Production hostname
+        var _productionHostname = "home.moh93.com";
 
         // File paths
         var indexMdFile = '../_work-index.md';
@@ -520,9 +526,9 @@
                         }
                     }
                     if (version) {
-                        versionDisplay.textContent = version;
+                        versionDisplay.textContent = 'md' + version;
                     } else {
-                        versionDisplay.textContent = 'v?.?.?';
+                        versionDisplay.textContent = 'mdv?.?.?';
                     }
                 })
                 .catch(function(error) {
@@ -536,7 +542,17 @@
             loadVersion();
 
             md = document.createElement("zero-md")
-            md.setAttribute("src", getQuery("src"))
+            // Use getQuery2 for production or when src contains a full URL (may have query params)
+            // Use getQuery for simple relative paths in localhost
+            var queryString = window.location.search.substring(1);
+            var srcParamIndex = queryString.indexOf("src=");
+            var afterSrc = srcParamIndex >= 0 ? queryString.substring(srcParamIndex + 4) : "";
+            // Check if src value starts with http://, https://, or URL-encoded version
+            var isFullUrl = afterSrc.indexOf("http://") === 0 || afterSrc.indexOf("https://") === 0 || afterSrc.indexOf("https%3A") === 0;
+            var srcValue = (window.location.hostname.startsWith(_productionHostname) || isFullUrl)
+                ? getQuery2("src") 
+                : getQuery("src");
+            md.setAttribute("src", srcValue)
             md.setAttribute("no-shadow", "")
             document.getElementById("mdcontainer").append(md)
 
@@ -1673,9 +1689,17 @@
             console.log('filePath:', filePath);
 
             var urlMdHtm = window.location.href;
-            // Fix: Construct proper URL with hostname and port
-            var baseUrl = window.location.protocol + '//' + window.location.host;
-            var urlOrg = baseUrl + '/' + filePath;
+            var urlOrg;
+            
+            // Check if filePath is already a full URL (starts with http:// or https://)
+            if (filePath.startsWith('http://') || filePath.startsWith('https://')) {
+                // It's already a full URL, use it directly
+                urlOrg = filePath;
+            } else {
+                // Fix: Construct proper URL with hostname and port
+                var baseUrl = window.location.protocol + '//' + window.location.host;
+                urlOrg = baseUrl + '/' + filePath;
+            }
 
             console.log('urlMdHtm:', urlMdHtm);
             console.log('urlOrg:', urlOrg);
