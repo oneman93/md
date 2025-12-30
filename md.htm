@@ -494,13 +494,13 @@
         //     e.preventDefault();
         // }, false);
 
-        // Function to load and display version from version-history.md
+        // Function to load and display version from mdhtm-version-history.md
         function loadVersion() {
             var versionDisplay = document.getElementById('versionDisplay');
             if (!versionDisplay) return;
 
-            // Try to fetch version-history.md
-            fetch('version-history.md')
+            // Try to fetch mdhtm-version-history.md
+            fetch('mdhtm-version-history.md')
                 .then(function(response) {
                     if (!response.ok) {
                         throw new Error('Version file not found');
