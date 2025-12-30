@@ -89,6 +89,7 @@
     <body>
         <div class="search-wrapper d-flex justify-content-between">
             <DIV id="divLeft">
+                <span id="versionDisplay" class="version-display" style="margin-right: 10px; font-weight: bold; color: #6c757d;"></span>
                 <input id="inputSearch" type="text" placeholder="type to search..." />
                 <button id="btnReset" type="button" class="btn btn-primary btn-sm">Reset</button>
                 <button id="btnHome" type="button" class="btn btn-danger btn-sm">
@@ -493,7 +494,47 @@
         //     e.preventDefault();
         // }, false);
 
+        // Function to load and display version from version-history.md
+        function loadVersion() {
+            var versionDisplay = document.getElementById('versionDisplay');
+            if (!versionDisplay) return;
+
+            // Try to fetch version-history.md
+            fetch('version-history.md')
+                .then(function(response) {
+                    if (!response.ok) {
+                        throw new Error('Version file not found');
+                    }
+                    return response.text();
+                })
+                .then(function(text) {
+                    // Extract the first line (version)
+                    var lines = text.split('\n');
+                    var version = '';
+                    for (var i = 0; i < lines.length; i++) {
+                        var line = lines[i].trim();
+                        // Look for version header like # v1.0.0
+                        if (line.startsWith('# v') || line.startsWith('#v')) {
+                            version = line.replace(/^#\s*/, ''); // Remove # and any space
+                            break;
+                        }
+                    }
+                    if (version) {
+                        versionDisplay.textContent = version;
+                    } else {
+                        versionDisplay.textContent = 'v?.?.?';
+                    }
+                })
+                .catch(function(error) {
+                    console.log('Could not load version:', error);
+                    versionDisplay.textContent = '';
+                });
+        }
+
         window.onload = function () {
+            // Load version on page load
+            loadVersion();
+
             md = document.createElement("zero-md")
             md.setAttribute("src", getQuery("src"))
             md.setAttribute("no-shadow", "")
@@ -638,6 +679,55 @@
                     // Apply filter only in root page.
                     searchText();
                 }
+
+                // Handle anchor navigation after page is fully loaded
+                // Wait a bit for all content to render, then scroll to anchor
+                setTimeout(function() {
+                    var hash = window.location.hash;
+                    if (hash) {
+                        // Remove the # from hash
+                        var anchorId = hash.substring(1);
+                        
+                        // Try to find the element by ID
+                        var targetElement = document.getElementById(anchorId);
+                        
+                        if (!targetElement) {
+                            // If not found by ID, try to find by text content in headings
+                            var headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+                            for (var i = 0; i < headings.length; i++) {
+                                var headingText = (headings[i].textContent || headings[i].innerText || '').trim().toLowerCase();
+                                var anchorText = anchorId.toLowerCase();
+                                // Check if heading text matches anchor (with or without spaces/hyphens)
+                                if (headingText === anchorText || 
+                                    headingText.replace(/\s+/g, '-') === anchorText ||
+                                    headingText.replace(/\s+/g, '') === anchorText.replace(/-/g, '')) {
+                                    targetElement = headings[i];
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        if (targetElement) {
+                            // Calculate offset for fixed header
+                            var searchWrapper = document.querySelector('.search-wrapper');
+                            var offset = searchWrapper ? searchWrapper.offsetHeight + 20 : 80;
+                            
+                            var elementPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
+                            var offsetPosition = elementPosition - offset;
+                            
+                            window.scrollTo({
+                                top: offsetPosition,
+                                behavior: 'smooth'
+                            });
+                            
+                            // Highlight the element briefly
+                            targetElement.style.backgroundColor = '#fff3cd';
+                            setTimeout(function() {
+                                targetElement.style.backgroundColor = '';
+                            }, 2000);
+                        }
+                    }
+                }, 500); // Wait 500ms for content to render
 
                 //-----------------------
                 // FUNCTIONS
@@ -1126,12 +1216,35 @@
                     $('a').each(function () {
                         var oldUrl = $(this).attr("href");
                         if (oldUrl != undefined) {
-                            if (oldUrl.endsWith(".md") && oldUrl.includes('127.0.0.1')) {
+                            // Check if URL contains .md (not just ends with it, to handle anchors like .md#anchor)
+                            if (oldUrl.includes(".md") && oldUrl.includes('127.0.0.1')) {
+                                // Extract anchor if present (e.g., #supplementary)
+                                var anchorPart = '';
+                                var anchorIndex = oldUrl.indexOf('#');
+                                if (anchorIndex > 0) {
+                                    anchorPart = oldUrl.substring(anchorIndex);
+                                    oldUrl = oldUrl.substring(0, anchorIndex);
+                                }
+                                
                                 // href to md files
                                 var newUrl = oldUrl.replace("127.0.0.1:" + window.location.port + "/./", "127.0.0.1:" + window.location.port + "/md/md.htm?src=../");
                                 var newUrl = newUrl.replace("127.0.0.1:" + window.location.port + "/_LoadingDocuments/", "127.0.0.1:" + window.location.port + "/md/md.htm?src=../_LoadingDocuments/");
+                                
+                                // Append anchor back if it existed
+                                if (anchorPart) {
+                                    newUrl = newUrl + anchorPart;
+                                }
+                                
                                 $(this).attr("href", newUrl);
-                                //$(this).attr('target', '_blank'); // open in current page
+                                
+                                // If link source starts with "cursor" and ends with ".md", open in new tab
+                                // Check the original URL path (extract filename from URL)
+                                var urlPath = oldUrl.toLowerCase();
+                                var fileName = urlPath.split('/').pop().split('#')[0]; // Get filename without anchor
+                                if (fileName.startsWith('cursor') && fileName.endsWith('.md')) {
+                                    $(this).attr('target', '_blank');
+                                }
+                                // Otherwise, open in current page (no target attribute)
                             } 
                             else if (oldUrl.startsWith("#")) {
                                 //markdown anchor -> do not change target
