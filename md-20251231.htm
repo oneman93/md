@@ -4,8 +4,6 @@
 <html lang="en-us">
 
     <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
         <script type="module" src="https://cdn.jsdelivr.net/gh/zerodevx/zero-md@2/dist/zero-md.min.js"></script>
 
         <!-- Todo: convert to local cdn -->
@@ -21,33 +19,8 @@
             integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
 
-        <link rel="stylesheet" href="md-main.css" />
+        <link rel="stylesheet" href="md-custom.css" />
         <link rel="stylesheet" href="github.css" />
-        
-        <!-- Conditionally load moh93-custom.css only for moh93 project -->
-        <script>
-            (function() {
-                try {
-                    // Determine if this is moh93 project
-                    var queryString = window.location.search.substring(1);
-                    var srcParamIndex = queryString.indexOf("src=");
-                    var afterSrc = srcParamIndex >= 0 ? queryString.substring(srcParamIndex + 4) : "";
-                    var isFullUrl = afterSrc.indexOf("http://") === 0 || afterSrc.indexOf("https://") === 0 || afterSrc.indexOf("https%3A") === 0;
-                    var _productionHostname = "home.moh93.com";
-                    window._isMoh93Project = window.location.hostname.startsWith(_productionHostname) || isFullUrl;
-                    
-                    // Only load moh93-custom.css for moh93 project
-                    if (window._isMoh93Project) {
-                        var link = document.createElement("link");
-                        link.rel = "stylesheet";
-                        link.href = "./moh93-custom.css";
-                        document.head.appendChild(link);
-                    }
-                } catch (e) {
-                    console.error('Error loading moh93-custom.css:', e);
-                }
-            })();
-        </script>
 
         <!-- These two stylesheets were created by zero-md dynamically under shadow root: #shadow-root
         I copied here manually to use with <zero-md-clone></zero-md-clone> -->
@@ -117,70 +90,44 @@
     </head>
 
     <body>
-        <div class="top-menu-wrapper d-flex justify-content-between">
-            <DIV id="divLeft" class="top-menu-left">
+        <div class="search-wrapper d-flex justify-content-between">
+            <DIV id="divLeft">
                 <input id="inputSearch" type="text" placeholder="type to search..." />
-                <span id="versionDisplay" class="version-display" style="margin-left: 10px; font-weight: bold; color: #6c757d;"></span>
-                
-                <!-- Hamburger menu button (visible on mobile only) -->
-                <button id="btnHamburger" type="button" class="btn btn-secondary btn-sm hamburger-btn" aria-label="Toggle menu">
-                    <i class="fa-solid fa-bars"></i>
-                </button>
-            </DIV>
-            
-            <!-- Desktop menu items (hidden on mobile) -->
-            <DIV id="divRight" class="top-menu-right desktop-menu">
                 <button id="btnReset" type="button" class="btn btn-primary btn-sm">Reset</button>
                 <button id="btnHome" type="button" class="btn btn-danger btn-sm">
                     <span style="font-size: 1em;color:white;"><i class="fa-solid fa-house"></i></span>
                     Go Home</button>
-                <button id="btnExit" type="button" class="btn btn-warning btn-sm" style="margin-left: 10px; display: none;">
-                    Exit
-                </button>
+                <span id="versionDisplay" class="version-display" style="margin-left: 10px; font-weight: bold; color: #6c757d;"></span>
+
+
+            </DIV>
+            <DIV id="divRight">
+
+
                 <a id="btnLocalVideos" type="button" class="btn btn-info btn-sm"
                     href="https://laureateaus-my.sharepoint.com/personal/matthew_oh_torrens_edu_au/_layouts/15/onedrive.aspx?id=%2Fpersonal%2Fmatthew%5Foh%5Ftorrens%5Fedu%5Fau%2FDocuments%2FLocalVideos&view=0">
                     Local Videos</a>
+
+
+
                 <button id="btnWrapIt" type="button" class="btn btn-primary btn-sm">Wrap with md.htm</button>
+
                 <button id="btnCopy" type="button" class="btn btn-primary btn-sm" onclick="CopyHTMLToClipboard()">
                     Copy</button>
                 <button id="btnCopy2Conf" type="button" class="btn btn-primary btn-sm" onclick="CopyHTMLToClipboard2Conf()">
                     Copy2Conf</button>
                 <button id="btnCopyPath" type="button" class="btn btn-secondary btn-sm" onclick="CopyFilePath()">
                     Copy Md Path</button>
+
                 <button id="btnImageFolder" type="button" class="btn btn-primary btn-sm invisible">
                     <span style=" font-size: 1em;color:white;"><i class="fa-solid fa-folder"></i></span>
                     Copy</button>
+
                 <button id="btnPDF" type="button" class="btn btn-dark btn-sm">PDF</button>
+
                 <button id="btnH1Only" type="button" class="btn btn-primary btn-sm">Show H1 Only</button>
+
             </DIV>
-            
-            <!-- Mobile menu overlay (hidden by default) -->
-            <div id="mobileMenuOverlay" class="mobile-menu-overlay">
-                <div class="mobile-menu-content">
-                    <button id="btnMobileReset" type="button" class="btn btn-primary btn-sm btn-block">Reset</button>
-                    <button id="btnMobileHome" type="button" class="btn btn-danger btn-sm btn-block">
-                        <span style="font-size: 1em;color:white;"><i class="fa-solid fa-house"></i></span>
-                        Go Home</button>
-                    <button id="btnMobileExit" type="button" class="btn btn-warning btn-sm btn-block" style="display: none;">
-                        Exit
-                    </button>
-                    <a id="btnMobileLocalVideos" type="button" class="btn btn-info btn-sm btn-block"
-                        href="https://laureateaus-my.sharepoint.com/personal/matthew_oh_torrens_edu_au/_layouts/15/onedrive.aspx?id=%2Fpersonal%2Fmatthew%5Foh%5Ftorrens%5Fedu%5Fau%2FDocuments%2FLocalVideos&view=0">
-                        Local Videos</a>
-                    <button id="btnMobileWrapIt" type="button" class="btn btn-primary btn-sm btn-block">Wrap with md.htm</button>
-                    <button id="btnMobileCopy" type="button" class="btn btn-primary btn-sm btn-block" onclick="CopyHTMLToClipboard()">
-                        Copy</button>
-                    <button id="btnMobileCopy2Conf" type="button" class="btn btn-primary btn-sm btn-block" onclick="CopyHTMLToClipboard2Conf()">
-                        Copy2Conf</button>
-                    <button id="btnMobileCopyPath" type="button" class="btn btn-secondary btn-sm btn-block" onclick="CopyFilePath()">
-                        Copy Md Path</button>
-                    <button id="btnMobileImageFolder" type="button" class="btn btn-primary btn-sm btn-block invisible">
-                        <span style=" font-size: 1em;color:white;"><i class="fa-solid fa-folder"></i></span>
-                        Copy</button>
-                    <button id="btnMobilePDF" type="button" class="btn btn-dark btn-sm btn-block">PDF</button>
-                    <button id="btnMobileH1Only" type="button" class="btn btn-primary btn-sm btn-block">Show H1 Only</button>
-                </div>
-            </div>
 
         </div>
 
@@ -210,11 +157,9 @@
 
         // Production hostname
         var _productionHostname = "home.moh93.com";
-        
-        // isMoh93Project is already defined in the head script section
 
         // File paths
-        var _indexMdFile = '../_work-index.md';
+        var indexMdFile = '../_work-index.md';
 
         var specialElementHandlers = {
             '#editor': function (element, renderer) {
@@ -530,21 +475,7 @@
             }
         }
 
-        /**
-         * Gets a query parameter value from the URL.
-         * Parses all query parameters and returns the value for the specified key.
-         * Returns empty string if the parameter is not found.
-         * 
-         * Example:
-         * - URL: "?src=page.md&other=value"
-         *   getQueryParam("src") returns: "page.md"
-         *   getQueryParam("other") returns: "value"
-         *   getQueryParam("missing") returns: ""
-         * 
-         * @param {string} key - The query parameter key
-         * @returns {string} The value of the query parameter, or empty string if not found
-         */
-        function getQueryParam(key) {
+        function getQuery(key) {
             var query = window.location.search.substring(1);
             var key_values = query.split("&");
             var params = {};
@@ -574,9 +505,8 @@
             var versionDisplay = document.getElementById('versionDisplay');
             if (!versionDisplay) return;
 
-            // Try to fetch mdhtm-version-history.md with cache-busting parameter
-            var cacheBuster = '?t=' + new Date().getTime();
-            fetch('mdhtm-version-history.md' + cacheBuster)
+            // Try to fetch mdhtm-version-history.md
+            fetch('mdhtm-version-history.md')
                 .then(function(response) {
                     if (!response.ok) {
                         throw new Error('Version file not found');
@@ -597,17 +527,8 @@
                     }
                     if (version) {
                         versionDisplay.textContent = version;
-                        // Also update the version display after home icon if it exists (for root pages)
-                        var versionDisplayAfterHome = document.querySelector('.version-display-after-home');
-                        if (versionDisplayAfterHome) {
-                            versionDisplayAfterHome.textContent = version;
-                        }
                     } else {
                         versionDisplay.textContent = 'v?.?.?';
-                        var versionDisplayAfterHome = document.querySelector('.version-display-after-home');
-                        if (versionDisplayAfterHome) {
-                            versionDisplayAfterHome.textContent = 'v?.?.?';
-                        }
                     }
                 })
                 .catch(function(error) {
@@ -621,135 +542,38 @@
             loadVersion();
 
             md = document.createElement("zero-md")
-            // Use getQueryParamSuffix for production or when src contains a full URL (may have query params)
-            // Use getQueryParam for simple relative paths in localhost
+            // Use getQuery2 for production or when src contains a full URL (may have query params)
+            // Use getQuery for simple relative paths in localhost
             var queryString = window.location.search.substring(1);
             var srcParamIndex = queryString.indexOf("src=");
             var afterSrc = srcParamIndex >= 0 ? queryString.substring(srcParamIndex + 4) : "";
             // Check if src value starts with http://, https://, or URL-encoded version
             var isFullUrl = afterSrc.indexOf("http://") === 0 || afterSrc.indexOf("https://") === 0 || afterSrc.indexOf("https%3A") === 0;
             var srcValue = (window.location.hostname.startsWith(_productionHostname) || isFullUrl)
-                ? getQueryParamSuffix("src") 
-                : getQueryParam("src");
+                ? getQuery2("src") 
+                : getQuery("src");
             md.setAttribute("src", srcValue)
             md.setAttribute("no-shadow", "")
             document.getElementById("mdcontainer").append(md)
 
             // my code trial begins ----
             const app = document.querySelector('zero-md')
-            
-            /**
-             * Display restricted document message
-             */
-            function showRestrictedMessage() {
-                const mdcontainer = document.getElementById('mdcontainer');
-                if (mdcontainer) {
-                    mdcontainer.innerHTML = `
-                        <div style="padding: 40px; text-align: center; color: #dc3545;">
-                            <h2 style="color: #dc3545; margin-bottom: 20px;">Access Restricted</h2>
-                            <p style="font-size: 18px;">The requested document is restricted.</p>
-                        </div>
-                    `;
-                }
-            }
-            
             const run = async () => {
 
                 const _url = window.location.href;
                 console.log('app.src: ', app.src);
 
                 if (app.src == '') {
-                    app.src = _indexMdFile;
+                    app.src = indexMdFile;
                 }
-                
-                // Listen for zero-md error events (including 403 Forbidden from server)
-                app.addEventListener('zero-md-error', (ev) => {
-                    console.log('zero-md-error event fired:', ev.detail);
-                    if (ev.detail.status === 403) {
-                        console.log('❌ Document access denied by server (403 Forbidden)');
-                        console.log('Server response indicates: The requested document is restricted.');
-                        showRestrictedMessage();
-                    } else if (ev.detail.status) {
-                        console.error('❌ Error loading markdown - HTTP status:', ev.detail.status, ev.detail.msg);
-                    } else {
-                        console.error('❌ Error loading markdown:', ev.detail.msg);
-                    }
-                });
-                
-                // Check response headers for access control debugging (when 403 occurs)
-                app.addEventListener('zero-md-error', async (ev) => {
-                    if (ev.detail.status === 403) {
-                        // Try to fetch the same URL to check response headers
-                        try {
-                            const response = await fetch(app.src, { method: 'HEAD' });
-                            const s3Bucket = response.headers.get('X-S3-Bucket');
-                            const s3Key = response.headers.get('X-S3-Key');
-                            const accessHeader = response.headers.get('X-Document-Access');
-                            const metadataKeys = response.headers.get('X-Document-Metadata-Keys');
-                            const documentLevelValue = response.headers.get('X-Document-Level-Value');
-                            
-                            console.log('🔍 Debug - Access denied details:');
-                            if (s3Bucket && s3Key) {
-                                console.log('  📦 Reading from S3:');
-                                console.log('    Bucket:', s3Bucket);
-                                console.log('    Key:', s3Key);
-                            }
-                            console.log('  Reason:', accessHeader || 'unknown');
-                            if (metadataKeys) {
-                                console.log('  Metadata keys found:', metadataKeys);
-                                if (!metadataKeys.toLowerCase().includes('documentlevel')) {
-                                    console.warn('  ⚠️ documentLevel key NOT found in metadata');
-                                    console.warn('  ⚠️ Available keys:', metadataKeys);
-                                }
-                            } else {
-                                console.log('  No metadata keys found (metadata not parsed)');
-                            }
-                            if (documentLevelValue) {
-                                console.log('  documentLevel value:', documentLevelValue);
-                            }
-                        } catch (e) {
-                            console.error('Error fetching debug headers:', e);
-                        }
-                    }
-                });
-                
-                // Also log S3 info on successful loads
-                app.addEventListener('zero-md-rendered', async (ev) => {
-                    try {
-                        const response = await fetch(app.src, { method: 'HEAD' });
-                        const s3Bucket = response.headers.get('X-S3-Bucket');
-                        const s3Key = response.headers.get('X-S3-Key');
-                        if (s3Bucket && s3Key) {
-                            console.log('✅ Document loaded from S3:');
-                            console.log('  Bucket:', s3Bucket);
-                            console.log('  Key:', s3Key);
-                        }
-                    } catch (e) {
-                        // Ignore errors
-                    }
-                });
 
                 var isRootPage = false;
-                // Use fnIsRootPage() function which handles both moh93 and non-moh93 projects
-                if (fnIsRootPage()) {
+                if (app.src.toLowerCase() == indexMdFile) {
                     isRootPage = true;
 
                     $('#btnHome').addClass('invisible');
                     const homeIcon = '<span style="font-size: 1em;color:blue;"><i class="fa-solid fa-house"></i></span>';
-                    const homeIconSpan = $(homeIcon);
-                    $('#divLeft').append(homeIconSpan);
-                    // Move version display to right after home icon for root page
-                    var versionText = $('#versionDisplay').text();
-                    if (versionText) {
-                        $('#versionDisplay').hide();
-                        var versionSpan = $('<span class="version-display" style="margin-left: 10px; font-weight: bold; color: #6c757d;">' + versionText + '</span>');
-                        homeIconSpan.after(versionSpan);
-                    } else {
-                        // If version not loaded yet, create empty span and it will be updated by loadVersion
-                        var versionSpan = $('<span class="version-display version-display-after-home" style="margin-left: 10px; font-weight: bold; color: #6c757d;"></span>');
-                        homeIconSpan.after(versionSpan);
-                        $('#versionDisplay').hide();
-                    }
+                    $('#divLeft').append(homeIcon);
                     $('#mdcontainer').addClass('work-index');
                 }
 
@@ -789,39 +613,6 @@
                 const btnWrapIt = document.getElementById("btnWrapIt");
                 const btnPDF = document.getElementById("btnPDF");
                 const btnH1Only = document.getElementById("btnH1Only");
-                const btnExit = document.getElementById("btnExit");
-                
-                // Mobile menu elements
-                const btnHamburger = document.getElementById("btnHamburger");
-                const mobileMenuOverlay = document.getElementById("mobileMenuOverlay");
-                const btnMobileHome = document.getElementById("btnMobileHome");
-                const btnMobileReset = document.getElementById("btnMobileReset");
-                const btnMobileWrapIt = document.getElementById("btnMobileWrapIt");
-                const btnMobilePDF = document.getElementById("btnMobilePDF");
-                const btnMobileH1Only = document.getElementById("btnMobileH1Only");
-                const btnMobileExit = document.getElementById("btnMobileExit");
-
-                // Show Exit button only for moh93 project
-                if (window._isMoh93Project) {
-                    btnExit.style.display = 'inline-block';
-                    btnMobileExit.style.display = 'block';
-                }
-
-                // Hamburger menu toggle function
-                function toggleMobileMenu() {
-                    mobileMenuOverlay.classList.toggle('show');
-                }
-                
-                function closeMobileMenu() {
-                    mobileMenuOverlay.classList.remove('show');
-                }
-                
-                // Close mobile menu when clicking outside
-                mobileMenuOverlay.addEventListener('click', function(e) {
-                    if (e.target === mobileMenuOverlay) {
-                        closeMobileMenu();
-                    }
-                });
 
                 //-----------------------------
                 // Event Handler
@@ -833,53 +624,6 @@
                 btnWrapIt.addEventListener("click", toggleWrap);
                 btnPDF.addEventListener("click", convert2PDF);
                 btnH1Only.addEventListener("click", toggleH1Only);
-                btnExit.addEventListener("click", function() {
-                    // Redirect to root URL
-                    window.location.href = window.location.protocol + '//' + window.location.host + '/';
-                });
-                
-                // Hamburger menu toggle
-                if (btnHamburger) {
-                    btnHamburger.addEventListener("click", toggleMobileMenu);
-                }
-                
-                // Wire up mobile menu buttons to same handlers
-                if (btnMobileHome) {
-                    btnMobileHome.addEventListener("click", function() {
-                        closeMobileMenu();
-                        goHome();
-                    });
-                }
-                if (btnMobileReset) {
-                    btnMobileReset.addEventListener("click", function() {
-                        closeMobileMenu();
-                        resetText();
-                    });
-                }
-                if (btnMobileWrapIt) {
-                    btnMobileWrapIt.addEventListener("click", function() {
-                        closeMobileMenu();
-                        toggleWrap();
-                    });
-                }
-                if (btnMobilePDF) {
-                    btnMobilePDF.addEventListener("click", function() {
-                        closeMobileMenu();
-                        convert2PDF();
-                    });
-                }
-                if (btnMobileH1Only) {
-                    btnMobileH1Only.addEventListener("click", function() {
-                        closeMobileMenu();
-                        toggleH1Only();
-                    });
-                }
-                if (btnMobileExit) {
-                    btnMobileExit.addEventListener("click", function() {
-                        closeMobileMenu();
-                        window.location.href = window.location.protocol + '//' + window.location.host + '/';
-                    });
-                }
 
 
 
@@ -906,19 +650,7 @@
                 applyCustomCss();
 
                 addImageFolderButton();
-                
-                // Skip focus on mobile devices to avoid keyboard blocking the screen
-                function isMobileDevice() {
-                    // Check for touch capability
-                    var hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-                    // Check for small screen width (mobile breakpoint)
-                    var isSmallScreen = window.innerWidth <= 768;
-                    return hasTouch && isSmallScreen;
-                }
-                
-                if (!isMobileDevice()) {
-                    inputSearch.focus();
-                }
+                inputSearch.focus();
 
                 // Create table navigation buttons
                 createTableNavigation();
@@ -932,13 +664,8 @@
 
                 // Button `Wrap with md.htm` clicked already?
                 var isWrapped = localStorage.getItem(_isWrapped);
-                // For moh93 project, always wrap links to use src parameter format
-                if (isWrapped == "1" || window._isMoh93Project) {
+                if (isWrapped == "1") {
                     wrapWithMdHtml();
-                    // Ensure localStorage is set for moh93 project
-                    if (window._isMoh93Project) {
-                        localStorage.setItem(_isWrapped, '1');
-                    }
                 }
 
                 var strNth = localStorage.getItem(_expandedNth);
@@ -1051,175 +778,14 @@
                 // Change mdBody structure nested from plain
                 // Before: <h1/> <ul/> <h2/> <h1/>
                 // After: <h1><ul/><h2></h1> <h1></h1>
-                /**
-                 * Extract and handle markdown frontmatter metadata from rendered HTML
-                 * Metadata appears as h1/h2 elements with key:value patterns (e.g., "documentLevel: public")
-                 * @param {jQuery|HTMLElement} mdBody - The markdown body element
-                 * @returns {HTMLElement|null} - Metadata container element, or null if no metadata found
-                 */
-                function extractMetadata(mdBody) {
-                    var metadataElements = [];
-                    var $mdBody = $(mdBody);
-                    
-                    // Metadata typically has pattern: "key: value" or multiple keys on one line
-                    function looksLikeMetadata(text) {
-                        if (!text || text.trim().length === 0) return false;
-                        var trimmed = text.trim();
-                        var hasColon = trimmed.includes(':');
-                        var isShort = trimmed.length < 150; // Metadata is typically short
-                        var hasMetadataKeywords = /^(documentLevel|title|author|date|tags|category|description):/i.test(trimmed);
-                        return hasColon && (isShort || hasMetadataKeywords);
-                    }
-                    
-                    // Track HR elements that need to be removed (between metadata elements)
-                    var hrElementsToRemove = [];
-                    
-                    // Check ALL h1 and h2 elements to find metadata (metadata should be at the beginning)
-                    // Check both h1 and h2 elements for metadata (metadata can be in either)
-                    // Metadata is always at the beginning of the document
-                    
-                    // First, check if the first element is an h1 that looks like metadata
-                    var firstH1 = $mdBody.find('h1').first();
-                    if (firstH1.length > 0) {
-                        var h1Text = firstH1.text().trim();
-                        console.log('Checking first h1:', h1Text);
-                        if (looksLikeMetadata(h1Text)) {
-                            console.log('Found metadata h1:', h1Text);
-                            metadataElements.push(firstH1[0]);
-                            
-                            // Check for h2 that follows (could be separated by hr)
-                            var nextSibling = firstH1.next();
-                            if (nextSibling.length > 0 && nextSibling[0].tagName === 'HR') {
-                                var hrElem = nextSibling[0];
-                                var afterHr = nextSibling.next();
-                                if (afterHr.length > 0 && afterHr[0].tagName === 'H2') {
-                                    var h2Text = afterHr.text().trim();
-                                    console.log('Found h2 after hr:', h2Text);
-                                    if (looksLikeMetadata(h2Text)) {
-                                        metadataElements.push(afterHr[0]);
-                                        hrElementsToRemove.push(hrElem);
-                                    }
-                                }
-                            } else if (nextSibling.length > 0 && nextSibling[0].tagName === 'H2') {
-                                var h2Text = nextSibling.text().trim();
-                                console.log('Found h2 directly after h1:', h2Text);
-                                if (looksLikeMetadata(h2Text)) {
-                                    metadataElements.push(nextSibling[0]);
-                                }
-                            }
-                        }
-                    }
-                    
-                    // Also check if the first h2 (or early h2) contains metadata
-                    // This handles cases where metadata is only in h2, not h1
-                    if (metadataElements.length === 0) {
-                        var firstH2 = $mdBody.find('h2').first();
-                        if (firstH2.length > 0) {
-                            var h2Text = firstH2.text().trim();
-                            console.log('Checking first h2:', h2Text);
-                            if (looksLikeMetadata(h2Text)) {
-                                console.log('Found metadata h2:', h2Text);
-                                metadataElements.push(firstH2[0]);
-                            }
-                        }
-                    }
-                    
-                    console.log('Metadata elements found:', metadataElements.length);
-                    
-                    // If we found metadata elements, create a container and remove them from mdBody
-                    if (metadataElements.length === 0) {
-                        return null;
-                    }
-                    
-                    var metadataContainer = document.createElement('div');
-                    metadataContainer.className = 'markdown-metadata';
-                    
-                    // Extract metadata text and remove elements from DOM BEFORE they can be wrapped in h1-wrapper
-                    // Use native DOM removal for reliability (works better with shadow DOM)
-                    var isFirstLine = true;
-                    metadataElements.forEach(function(elem) {
-                        var text = elem.textContent.trim();
-                        console.log('Removing metadata element:', text);
-                        var span = document.createElement('span');
-                        span.className = 'metadata-line';
-                        span.textContent = text;
-                        metadataContainer.appendChild(span);
-                        
-                        // After the first metadata line, add the current file key as the second line
-                        if (isFirstLine && app && app.src) {
-                            var currentDocKey = '';
-                            if (typeof getCurrentDocumentKey === 'function') {
-                                currentDocKey = getCurrentDocumentKey(app);
-                            } else {
-                                // Fallback: try to extract key directly
-                                try {
-                                    var keyMatch = app.src.match(/[?&]key=([^&]+)/);
-                                    if (keyMatch) {
-                                        currentDocKey = decodeURIComponent(keyMatch[1]);
-                                    }
-                                } catch (e) {
-                                    console.log('Could not extract current document key for metadata:', e);
-                                }
-                            }
-                            
-                            if (currentDocKey) {
-                                var keySpan = document.createElement('span');
-                                keySpan.className = 'metadata-line';
-                                keySpan.textContent = 'key: ' + currentDocKey;
-                                metadataContainer.appendChild(keySpan);
-                            }
-                            isFirstLine = false;
-                        }
-                        
-                        // Remove from DOM using native method (more reliable than jQuery for shadow DOM)
-                        if (elem.parentNode) {
-                            elem.parentNode.removeChild(elem);
-                        }
-                    });
-                    
-                    // Remove hr elements that were between metadata (must be done after removing h1/h2 elements)
-                    hrElementsToRemove.forEach(function(hrElem) {
-                        if (hrElem.parentNode) {
-                            hrElem.parentNode.removeChild(hrElem);
-                        }
-                    });
-                    
-                    // Also remove any hr elements near the beginning of the document (they're usually from markdown separators)
-                    $mdBody.find('hr').each(function() {
-                        var $hr = $(this);
-                        // Remove hr elements that are among the first few children
-                        var allChildren = $mdBody.children();
-                        var hrIndex = allChildren.index(this);
-                        if (hrIndex >= 0 && hrIndex < 5) { // Within first 5 elements
-                            if (this.parentNode) {
-                                this.parentNode.removeChild(this);
-                            }
-                        }
-                    });
-                    
-                    console.log('Metadata removed. Remaining h1 count:', $mdBody.find('h1').length);
-                    
-                    return metadataContainer;
-                }
-
                 function changeBody() {
-                    // Extract metadata FIRST, before any processing that creates h1-wrapper
-                    var metadataContainer = extractMetadata(mdBody);
-                    
                     // To help search result better, add some css class for h1, h2
                     console.log('length', $(mdBody).find('h1').length);
 
                     var divAll = document.createElement("div");
                     divAll.classList.add('all');
 
-                    // Add metadata container at the beginning, separate from h1-wrapper elements
-                    if (metadataContainer) {
-                        divAll.appendChild(metadataContainer);
-                    }
-
                     // `Document start ~ first h1` was not be shown in <zero-md-clone>
-                    // Note: Metadata has already been removed from mdBody by extractMetadata(), 
-                    // so noTagElems will not contain metadata text
                     var noTagElems = $(mdBody).html().split('<h1')[0];
                     if (noTagElems.length > 0 && !noTagElems.startsWith('<h1')) {
                         //console.log('noTagElems:', noTagElems);
@@ -1327,172 +893,115 @@
                     // 13/1/25 i don't like it anymore because it nullifies loading css etc >> commented
                     //applyHighlightCss();
 
+                    // But search is available only in home page
+                    if (!fnIsRootPage()) return;
+
                     if (filter == "") {
                         // Reset button clicked >> show all content
-                        if (fnIsRootPage()) {
-                            // Root page: show all h1-wrapper content
-                            $('#mdcontainer').find('[style*="display: none"]').slideDown();
-                            $('.btn-expand').remove();
-                        } else {
-                            // Non-root page: show all h1 tags
-                            var allH1s = mdClone.querySelectorAll("h1");
-                            $(allH1s).show();
-                            // Show all content within h1 sections
-                            var allContent = mdClone.querySelectorAll("*");
-                            $(allContent).show();
-                        }
+                        $('#mdcontainer').find('[style*="display: none"]').slideDown();
+                        $('.btn-expand').remove();
                         return;
                     }
 
-                    // For root page, use the existing complex logic with h1-wrapper
-                    if (fnIsRootPage()) {
-                        // Todo: make it better to: 
-                        // (1) show entire h1 paragraph by adding 'Show all' button to h1, h2, ul 
-                        // (2) higlight text
-                        tags = mdClone.querySelectorAll("h1,h2,li");
+                    // Todo: make it better to: 
+                    // (1) show entire h1 paragraph by adding 'Show all' button to h1, h2, ul 
+                    // (2) higlight text
+                    tags = mdClone.querySelectorAll("h1,h2,li");
 
-                        // All other tags will be hidden unless filter is reset to "".
-                        var otherTags = mdClone.querySelectorAll("table,pre");
-                        $(otherTags).hide();
+                    // All other tags will be hidden unless filter is reset to "".
+                    var otherTags = mdClone.querySelectorAll("table,pre");
+                    $(otherTags).hide();
 
-                        console.log('tags length: ', tags.length);
-                        for (i = 0; i < tags.length; i++) {
-                            elem = tags[i];
-                            var elemTagName = elem.tagName;
-                            txtValue = elem.textContent || elem.innerText;
-                            var searchMatching = txtValue.toUpperCase().indexOf(filter) >= 0;
+                    console.log('tags length: ', tags.length);
+                    for (i = 0; i < tags.length; i++) {
+                        elem = tags[i];
+                        var elemTagName = elem.tagName;
+                        txtValue = elem.textContent || elem.innerText;
+                        var searchMatching = txtValue.toUpperCase().indexOf(filter) >= 0;
 
-                            if (searchMatching) {
-                                //$(elem).addClass('highlight');
-                                //console.log('txtValue', txtValue);
-                                var div = $(elem).closest('.h1-wrapper');
+                        if (searchMatching) {
+                            //$(elem).addClass('highlight');
+                            //console.log('txtValue', txtValue);
+                            var div = $(elem).closest('.h1-wrapper');
 
-                                // elem is matching with search criteria
-                                $(elem).slideDown();
-                                if (elemTagName != "H1") {
-                                    // h2, li matching
-                                    var h1 = div.find('h1');
-                                    if (!h1.is(':visible')) {
-                                        h1.show();
-                                    }
+                            // elem is matching with search criteria
+                            $(elem).slideDown();
+                            if (elemTagName != "H1") {
+                                // h2, li matching
+                                var h1 = div.find('h1');
+                                if (!h1.is(':visible')) {
+                                    h1.show();
                                 }
+                            }
 
-                                // Ensure tables remain hidden within this h1-wrapper
-                                div.find('table,pre').hide();
-
-                                // Show button
-                                var btnExpand = div.find('.btn-ex-collapse');
+                            // Show button
+                            var btnExpand = div.find('.btn-ex-collapse');
 
 
-                                //------------------
-                                // btnExpand
-                                //------------------
-                                if (btnExpand.length <= 0) {
-                                    // if button does not exist, create one.
-                                    console.log('Creating Expand button for h1-wrapper', div);
-                                    let btn = document.createElement('button');
-                                    btn.innerHTML = "Expand";
-                                    btn.classList.add("btn", "btn-sm", "btn-expand", "btn-success", "btn-ex-collapse");  // green expand button
-                                    btn.addEventListener("click", function () {
+                            //------------------
+                            // btnExpand
+                            //------------------
+                            if (btnExpand.length <= 0) {
+                                // if button does not exist, create one.
+                                let btn = document.createElement('button');
+                                btn.innerHTML = "Expand";
+                                btn.classList.add("btn", "btn-sm", "btn-expand", "btn-success", "btn-ex-collapse");  // green expand button
+                                btn.addEventListener("click", function () {
 
-                                        var isExpand = this.innerHTML == 'Expand';
-                                        console.log('isExpand', isExpand);
-                                        console.log('yo, li');
-                                        // find more than one level
-                                        // https://stackoverflow.com/questions/7648761/how-to-select-all-children-in-any-level-from-a-parent-in-jquery
+                                    var isExpand = this.innerHTML == 'Expand';
+                                    console.log('isExpand', isExpand);
+                                    console.log('yo, li');
+                                    // find more than one level
+                                    // https://stackoverflow.com/questions/7648761/how-to-select-all-children-in-any-level-from-a-parent-in-jquery
 
-                                        // Have to define again here.
-                                        var div = $(this).closest('.h1-wrapper');
-                                        var children = div.find('*');
-                                        console.log('children', children.length);
+                                    // Have to define again here.
+                                    var div = $(this).closest('.h1-wrapper');
+                                    var children = div.find('*');
+                                    console.log('children', children.length);
 
-                                        //https://stackoverflow.com/questions/13550079/how-to-find-nth-element-when-a-click-is-activated
-                                        var divs = $('.h1-wrapper');
-                                        var divIndex = divs.index(div);
+                                    //https://stackoverflow.com/questions/13550079/how-to-find-nth-element-when-a-click-is-activated
+                                    var divs = $('.h1-wrapper');
+                                    var divIndex = divs.index(div);
 
-                                        if (isExpand) {
-                                            // Expand button clicked - show all content including tables
-                                            children.slideDown();
-                                            // Explicitly show tables when expanding
-                                            div.find('table,pre').show();
-                                            btn.innerHTML = 'Collapse';
-                                            btn.classList.remove('btn-success');
-                                            btn.classList.add('btn-danger');
+                                    if (isExpand) {
+                                        // Expand button clicked
+                                        children.slideDown();
+                                        btn.innerHTML = 'Collapse';
+                                        btn.classList.remove('btn-success');
+                                        btn.classList.add('btn-danger');
 
-                                            var strArray = localStorage.getItem(_expandedNth);
-                                            var array = [];
-                                            if (strArray != null) {
-                                                array = strArray.split(',').map(function (item) {
-                                                    return parseInt(item, 10);
-                                                });
-                                            }
-                                            console.log('array:', array);
-                                            console.log('divIndex:', divIndex);
-
-                                            var nth = divIndex + 1;
-                                            if (!array.includes(nth)) {
-                                                array.push(nth);
-                                                localStorage.setItem(_expandedNth, array.toString());
-                                            }
-
-                                        } else {
-                                            // Collapse button clicked
-                                            searchText();
-                                            btn.innerHTML = 'Expand';
-                                            btn.classList.add('btn-success');
-                                            btn.classList.remove('btn-danger');
-
-                                            localStorage.removeItem(_expandedNth);
+                                        var strArray = localStorage.getItem(_expandedNth);
+                                        var array = [];
+                                        if (strArray != null) {
+                                            array = strArray.split(',').map(function (item) {
+                                                return parseInt(item, 10);
+                                            });
                                         }
-                                    });
-                                    // Ensure h1 element exists before appending button
-                                    var h1Element = div.find('h1');
-                                    if (h1Element.length > 0) {
-                                        h1Element.append(btn);
-                                        console.log('Expand button appended to h1 element');
+                                        console.log('array:', array);
+                                        console.log('divIndex:', divIndex);
+
+                                        var nth = divIndex + 1;
+                                        if (!array.includes(nth)) {
+                                            array.push(nth);
+                                            localStorage.setItem(_expandedNth, array.toString());
+                                        }
+
                                     } else {
-                                        console.warn('h1 element not found in h1-wrapper, cannot append Expand button. div:', div, 'div HTML:', div.html());
+                                        // Collapse button clicked
+                                        searchText();
+                                        btn.innerHTML = 'Expand';
+                                        btn.classList.add('btn-success');
+                                        btn.classList.remove('btn-danger');
+
+                                        localStorage.removeItem(_expandedNth);
                                     }
-                                }
-
-                            } else {
-                                // elem doesn't contain search string
-                                $(elem).hide();
+                                });
+                                div.find('h1').append(btn);
                             }
-                        }
-                        
-                        // Ensure all tables remain hidden after filtering
-                        var allTables = mdClone.querySelectorAll("table,pre");
-                        $(allTables).hide();
-                    } else {
-                        // Non-root page: filter h1 tags only
-                        tags = mdClone.querySelectorAll("h1");
-                        console.log('h1 tags length: ', tags.length);
-                        
-                        for (i = 0; i < tags.length; i++) {
-                            elem = tags[i];
-                            txtValue = elem.textContent || elem.innerText;
-                            var searchMatching = txtValue.toUpperCase().indexOf(filter) >= 0;
 
-                            if (searchMatching) {
-                                // Show this h1 and its content
-                                $(elem).show();
-                                // Show all following siblings until next h1
-                                var nextSibling = elem.nextElementSibling;
-                                while (nextSibling && nextSibling.tagName !== 'H1') {
-                                    $(nextSibling).show();
-                                    nextSibling = nextSibling.nextElementSibling;
-                                }
-                            } else {
-                                // Hide this h1 and its content
-                                $(elem).hide();
-                                // Hide all following siblings until next h1
-                                var nextSibling = elem.nextElementSibling;
-                                while (nextSibling && nextSibling.tagName !== 'H1') {
-                                    $(nextSibling).hide();
-                                    nextSibling = nextSibling.nextElementSibling;
-                                }
-                            }
+                        } else {
+                            // elem doesn't contain search string
+                            $(elem).hide();
                         }
                     }
                 }
@@ -1627,13 +1136,7 @@
                     // localStorage.removeItem(_searchText);
                     // inputSearch.value = localStorage.getItem(_searchText);
 
-                    if (window._isMoh93Project) {
-                        // For moh93 project, navigate to LoadingDocs page
-                        location.href = window.location.protocol + '//' + window.location.host + '/LoadingDocs';
-                    } else {
-                        // For other projects, use the original localhost path
-                        location.href = 'http://127.0.0.1:' + window.location.port + '/md/md.htm';
-                    }
+                    location.href = 'http://127.0.0.1:' + window.location.port + '/md/md.htm';
                 }
 
                 //moh, 13/3/25, no one seems to call this.
@@ -1725,115 +1228,23 @@
 
                 // When button `Wrap with md.htm` is clicked, you do some css changes+DOM changes
                 function wrapWithMdHtml() {
-                    // Extract current document's key from app.src (function is defined in moh93-custom.js)
-                    var currentDocKey = '';
-                    if (window._isMoh93Project && app && app.src) {
-                        currentDocKey = getCurrentDocumentKey(app);
-                        // Debug logging
-                        if (currentDocKey) {
-                            var baseDir = '';
-                            var lastSlashIndex = currentDocKey.lastIndexOf('/');
-                            if (lastSlashIndex >= 0) {
-                                baseDir = currentDocKey.substring(0, lastSlashIndex + 1);
-                            }
-                            if (baseDir) {
-                                console.log('Current document base directory:', baseDir, 'from key:', currentDocKey);
-                            }
-                        }
-                    }
-                    
                     // wrap xxx.md file line
                     $('a').each(function () {
                         var oldUrl = $(this).attr("href");
                         if (oldUrl != undefined) {
                             // Check if URL contains .md (not just ends with it, to handle anchors like .md#anchor)
-                            if (oldUrl.includes(".md")) {
+                            if (oldUrl.includes(".md") && oldUrl.includes('127.0.0.1')) {
                                 // Extract anchor if present (e.g., #supplementary)
                                 var anchorPart = '';
                                 var anchorIndex = oldUrl.indexOf('#');
-                                var urlWithoutAnchor = oldUrl;
                                 if (anchorIndex > 0) {
                                     anchorPart = oldUrl.substring(anchorIndex);
-                                    urlWithoutAnchor = oldUrl.substring(0, anchorIndex);
+                                    oldUrl = oldUrl.substring(0, anchorIndex);
                                 }
                                 
-                                var newUrl = '';
-                                
-                                if (window._isMoh93Project) {
-                                    // For moh93 project: convert to md-project/md.htm?src=https://home.moh93.com/LoadingDocs?handler=Markdown&key=...
-                                    var baseUrl = window.location.protocol + '//' + window.location.host;
-                                    var mdPath = '';
-                                    //console.log('old url:', oldUrl);
-    
-                                    // resolveRelativePath function is defined in moh93-custom.js
-                                    
-                                    if (urlWithoutAnchor.startsWith('http://') || urlWithoutAnchor.startsWith('https://')) {
-                                        // Full URL - extract the path
-                                        try {
-                                            var urlObj = new URL(urlWithoutAnchor);
-                                            
-                                            // If the URL points to LoadingDocs with a key parameter, extract and use that key directly
-                                            if (urlObj.searchParams.has('key')) {
-                                                mdPath = urlObj.searchParams.get('key');
-                                            } else {
-                                                // Extract pathname
-                                                mdPath = urlObj.pathname;
-                                                // Remove leading slash if present
-                                                if (mdPath.startsWith('/')) {
-                                                    mdPath = mdPath.substring(1);
-                                                }
-                                                // Remove md-project/ or md/ prefix if present (these are just web paths, not S3 keys)
-                                                mdPath = mdPath.replace(/^md-project\//, '').replace(/^md\//, '');
-                                                
-                                                // Handle relative indicators (./ or ../) in the path
-                                                mdPath = resolveRelativePath(mdPath, currentDocKey);
-                                                
-                                                // If path doesn't start with _LoadingDocuments and has slashes, it might be a web path
-                                                // Extract just the filename and re-apply base directory logic
-                                                if (!mdPath.startsWith('_LoadingDocuments') && mdPath.indexOf('/') >= 0) {
-                                                    var lastSlashIndex = mdPath.lastIndexOf('/');
-                                                    var filename = mdPath.substring(lastSlashIndex + 1);
-                                                    // Check if the part before filename is a valid directory (not just web path)
-                                                    var pathBeforeFile = mdPath.substring(0, lastSlashIndex);
-                                                    if (pathBeforeFile === 'LoadingDocuments' || pathBeforeFile.startsWith('_LoadingDocuments')) {
-                                                        // This is an S3 key path, use as-is
-                                                        mdPath = mdPath;
-                                                    } else {
-                                                        // This is a web path, extract filename and apply base directory
-                                                        mdPath = resolveRelativePath(filename, currentDocKey);
-                                                    }
-                                                }
-                                            }
-                                        } catch (e) {
-                                            // If URL parsing fails, extract path and resolve relative indicators
-                                            mdPath = urlWithoutAnchor.replace(/^https?:\/\/[^\/]+/, '').replace(/^\//, '').replace(/^md-project\//, '').replace(/^md\//, '');
-                                            mdPath = resolveRelativePath(mdPath, currentDocKey);
-                                            // Extract filename if path still has web path components
-                                            var lastSlashIndex = mdPath.lastIndexOf('/');
-                                            if (lastSlashIndex >= 0 && !mdPath.startsWith('_LoadingDocuments')) {
-                                                var filename = mdPath.substring(lastSlashIndex + 1);
-                                                mdPath = resolveRelativePath(filename, currentDocKey);
-                                            }
-                                        }
-                                    } else {
-                                        // Relative path (not http:// or https://) - resolve relative indicators
-                                        mdPath = resolveRelativePath(urlWithoutAnchor, currentDocKey);
-                                    }
-                                    
-                                    // Construct the LoadingDocs URL
-                                    var loadingDocsUrl = baseUrl + '/LoadingDocs?handler=Markdown&key=' + encodeURIComponent(mdPath);
-                                    newUrl = baseUrl + '/md-project/md.htm?src=' + encodeURIComponent(loadingDocsUrl);
-                                } else {
-                                    // For non-moh93 projects: original localhost logic with 127.0.0.1
-                                    if (oldUrl.includes('127.0.0.1')) {
-                                        // href to md files
-                                        newUrl = urlWithoutAnchor.replace("127.0.0.1:" + window.location.port + "/./", "127.0.0.1:" + window.location.port + "/md/md.htm?src=../");
-                                        newUrl = newUrl.replace("127.0.0.1:" + window.location.port + "/_LoadingDocuments/", "127.0.0.1:" + window.location.port + "/md/md.htm?src=../_LoadingDocuments/");
-                                    } else {
-                                        // Not a localhost URL, skip wrapping
-                                        return;
-                                    }
-                                }
+                                // href to md files
+                                var newUrl = oldUrl.replace("127.0.0.1:" + window.location.port + "/./", "127.0.0.1:" + window.location.port + "/md/md.htm?src=../");
+                                var newUrl = newUrl.replace("127.0.0.1:" + window.location.port + "/_LoadingDocuments/", "127.0.0.1:" + window.location.port + "/md/md.htm?src=../_LoadingDocuments/");
                                 
                                 // Append anchor back if it existed
                                 if (anchorPart) {
@@ -1844,7 +1255,7 @@
                                 
                                 // If link source starts with "cursor" and ends with ".md", open in new tab
                                 // Check the original URL path (extract filename from URL)
-                                var urlPath = urlWithoutAnchor.toLowerCase();
+                                var urlPath = oldUrl.toLowerCase();
                                 var fileName = urlPath.split('/').pop().split('#')[0]; // Get filename without anchor
                                 if (fileName.startsWith('cursor') && fileName.endsWith('.md')) {
                                     $(this).attr('target', '_blank');
@@ -1869,98 +1280,32 @@
                         img.src = url;
                     };
 
-                    // Function to wrap images with photoswipe links
-                    function wrapImagesWithPhotoswipe() {
-                        // wrap each img tag with hyperlink
-                        $('img').not('.photoswipe img').addClass('sm');
+                    // wrap each img tag with hyperlink
+                    $('img').addClass('sm');
 
-                        var Photos = "";
-                        $('img.sm').each(function () {
-                            var $img = $(this);
-                            getMeta($img.attr('src'), (err, img) => {
-                                if (img != undefined) {
-                                    // console.log('img width/height:', img.naturalWidth, img.naturalHeight);
+                    var Photos = "";
+                    $('img.sm').each(function () {
+                        getMeta(this.src, (err, img) => {
+                            if (img != undefined) {
+                                // console.log('img width/height:', img.naturalWidth, img.naturalHeight);
 
-                                    if (img.naturalWidth < 200) {
-                                        // really small img >> keep original width
-                                        $img.removeClass('sm');
-                                    }
-
-                                    var newLink = $("<a />", {
-                                        href: $img.attr('src')
-                                    });
-                                    newLink.attr('data-pswp-width', img.naturalWidth);
-                                    newLink.attr('data-pswp-height', img.naturalHeight);
-                                    newLink.addClass('photoswipe');
-
-                                    newLink.append($img.clone());
-                                    $img.replaceWith(newLink);
+                                if (img.naturalWidth < 200) {
+                                    // really small img >> keep original width
+                                    $(this).removeClass('sm');
                                 }
-                            });
-                        });
-                    }
 
-                    // For moh93 project: convert image src attributes to use LoadingDocs handler
-                    if (window._isMoh93Project) {
-                        var imagePromises = [];
-                        $('img').each(function() {
-                            var $img = $(this);
-                            var imgSrc = $img.attr('src');
-                            // Skip if already using LoadingDocs, data URI, or already a presigned S3 URL
-                            if (imgSrc && !imgSrc.includes('LoadingDocs') && !imgSrc.startsWith('data:') && !imgSrc.includes('.s3.amazonaws.com')) {
-                                var baseUrl = window.location.protocol + '//' + window.location.host;
-                                var imgPath = '';
-                                
-                                if (imgSrc.startsWith('http://') || imgSrc.startsWith('https://')) {
-                                    // Full URL - extract the path
-                                    try {
-                                        var urlObj = new URL(imgSrc);
-                                        imgPath = urlObj.pathname;
-                                        // Remove leading slash if present
-                                        if (imgPath.startsWith('/')) {
-                                            imgPath = imgPath.substring(1);
-                                        }
-                                        // Remove leading ./ if present
-                                        imgPath = imgPath.replace(/^\.\//, '');
-                                    } catch (e) {
-                                        // If URL parsing fails, use the original path
-                                        imgPath = imgSrc.replace(/^https?:\/\/[^\/]+/, '').replace(/^\//, '').replace(/^\.\//, '');
-                                    }
-                                } else {
-                                    // Relative path - use as is
-                                    imgPath = imgSrc;
-                                    // Remove leading ./ or ../
-                                    imgPath = imgPath.replace(/^\.\//, '').replace(/^\.\.\//, '');
-                                }
-                                
-                                // Ensure image path includes _LoadingDocuments prefix if not already present
-                                if (!imgPath.startsWith('_LoadingDocuments/')) {
-                                    imgPath = '_LoadingDocuments/' + imgPath;
-                                }
-                                
-                                // Fetch the presigned URL from LoadingDocs handler
-                                var loadingDocsUrl = baseUrl + '/LoadingDocs?handler=Image&key=' + encodeURIComponent(imgPath);
-                                var promise = $.ajax({
-                                    url: loadingDocsUrl,
-                                    method: 'GET'
-                                }).then(function(presignedUrl) {
-                                    // Set the presigned URL as the image src
-                                    $img.attr('src', presignedUrl);
-                                }).catch(function(xhr, status, error) {
-                                    console.error('Failed to get presigned URL for image:', imgPath, error);
+                                var newLink = $("<a />", {
+                                    href: this.src
                                 });
-                                imagePromises.push(promise);
+                                newLink.attr('data-pswp-width', img.naturalWidth);
+                                newLink.attr('data-pswp-height', img.naturalHeight);
+                                newLink.addClass('photoswipe');
+
+                                newLink.append($(this).clone());
+                                $(this).replaceWith(newLink);
                             }
                         });
-                        
-                        // Wait for all image URLs to be fetched before wrapping with photoswipe
-                        Promise.all(imagePromises).then(function() {
-                            wrapImagesWithPhotoswipe();
-                        });
-                    } else {
-                        // For non-moh93 projects, wrap images immediately
-                        wrapImagesWithPhotoswipe();
-                    }
+                    });
 
 
                     // img click event > replaced by photoswipe
@@ -2298,22 +1643,8 @@
 
                 function fnIsRootPage() {
                     var isRootPage = false;
-                    var srcLower = app.src.toLowerCase();
-                    var indexFileLower = _indexMdFile.toLowerCase();
-                    
-                    // For moh93 project, app.src is a full URL, so check if it contains the index filename
-                    // For other projects, app.src is just a filename, so do exact match
-                    if (window._isMoh93Project) {
-                        // Check if URL contains the index filename (e.g., "_work-index.md")
-                        var indexFileName = indexFileLower.replace('../', '').replace('./', '');
-                        if (srcLower.includes(indexFileName)) {
-                            isRootPage = true;
-                        }
-                    } else {
-                        // Exact match for non-moh93 projects
-                        if (srcLower == indexFileLower) {
-                            isRootPage = true;
-                        }
+                    if (app.src.toLowerCase() == indexMdFile) {
+                        isRootPage = true;
                     }
                     return isRootPage;
                 }

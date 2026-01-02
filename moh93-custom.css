@@ -1,0 +1,295 @@
+/* moh93-custom.css - Project-specific CSS fixes for AWSServerlessPersonal */
+
+/* Table CSS fixes - ensure Bootstrap table styles work correctly */
+.markdown-body table.table,
+.markdown-body .table {
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 1rem;
+    background-color: transparent;
+    border-collapse: collapse;
+}
+
+.markdown-body table.table th,
+.markdown-body table.table td,
+.markdown-body .table th,
+.markdown-body .table td {
+    padding: 0.75rem;
+    vertical-align: top;
+    border-top: 1px solid #dee2e6;
+}
+
+.markdown-body table.table thead th,
+.markdown-body .table thead th {
+    vertical-align: bottom;
+    border-bottom: 2px solid #dee2e6;
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+.markdown-body table.table tbody + tbody,
+.markdown-body .table tbody + tbody {
+    border-top: 2px solid #dee2e6;
+}
+
+.markdown-body table.table.table-sm th,
+.markdown-body table.table.table-sm td,
+.markdown-body .table.table-sm th,
+.markdown-body .table.table-sm td {
+    padding: 0.3rem;
+}
+
+.markdown-body table.table.table-bordered,
+.markdown-body .table.table-bordered {
+    border: 1px solid #dee2e6;
+}
+
+.markdown-body table.table.table-bordered th,
+.markdown-body table.table.table-bordered td,
+.markdown-body .table.table-bordered th,
+.markdown-body .table.table-bordered td {
+    border: 1px solid #dee2e6;
+}
+
+.markdown-body table.table.table-bordered thead th,
+.markdown-body table.table.table-bordered thead td,
+.markdown-body .table.table-bordered thead th,
+.markdown-body .table.table-bordered thead td {
+    border-bottom-width: 2px;
+}
+
+.markdown-body table.table.table-striped tbody tr:nth-of-type(odd),
+.markdown-body .table.table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.markdown-body table.table.table-hover tbody tr:hover,
+.markdown-body .table.table-hover tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.075);
+}
+
+.markdown-body table.table.table-dark,
+.markdown-body .table.table-dark {
+    color: #fff;
+    background-color: #212529;
+}
+
+.markdown-body table.table.table-dark th,
+.markdown-body table.table.table-dark td,
+.markdown-body table.table.table-dark thead th,
+.markdown-body .table.table-dark th,
+.markdown-body .table.table-dark td,
+.markdown-body .table.table-dark thead th {
+    border-color: #32383e;
+}
+
+.markdown-body table.table.table-dark.table-striped tbody tr:nth-of-type(odd),
+.markdown-body .table.table-dark.table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.markdown-body table.table.table-dark.table-hover tbody tr:hover,
+.markdown-body .table.table-dark.table-hover tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.075);
+}
+
+/* Ensure tables are displayed as table (without !important to allow JavaScript filtering) */
+.markdown-body table,
+.markdown-body .table {
+    display: table;
+}
+
+.markdown-body table thead,
+.markdown-body .table thead {
+    display: table-header-group;
+}
+
+.markdown-body table tbody,
+.markdown-body .table tbody {
+    display: table-row-group;
+}
+
+.markdown-body table tr,
+.markdown-body .table tr {
+    display: table-row;
+}
+
+.markdown-body table th,
+.markdown-body table td,
+.markdown-body .table th,
+.markdown-body .table td {
+    display: table-cell;
+}
+
+/* Ensure Expand/Collapse buttons are visible */
+.h1-wrapper .btn-ex-collapse,
+.h1-wrapper .btn-expand {
+    display: inline-block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Different background color for top-menu-wrapper in moh93 project */
+.top-menu-wrapper {
+    background: #96bae1 !important;
+}
+
+/* Hide certain buttons in moh93 project */
+#btnLocalVideos,
+#btnWrapIt,
+#btnCopy,
+#btnCopy2Conf,
+#btnCopyPath,
+#btnPDF,
+#btnH1Only,
+#btnMobileLocalVideos,
+#btnMobileWrapIt,
+#btnMobileCopy,
+#btnMobileCopy2Conf,
+#btnMobileCopyPath,
+#btnMobilePDF,
+#btnMobileH1Only {
+    display: none !important;
+}
+
+/* Hamburger menu button - hidden on desktop, shown on mobile for moh93 project */
+.hamburger-btn {
+    display: none;
+    margin-left: 10px;
+}
+
+/* Mobile menu overlay - hidden by default */
+.mobile-menu-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 2000;
+}
+
+.mobile-menu-overlay.show {
+    display: block;
+}
+
+.mobile-menu-content {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 70%;
+    max-width: 300px;
+    height: 100%;
+    background: white;
+    padding: 20px;
+    overflow-y: auto;
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.mobile-menu-content .btn-block {
+    width: 100%;
+    margin-bottom: 10px;
+    display: block;
+}
+
+/* Mobile responsive styles for hamburger menu */
+@media (max-width: 768px) {
+    .hamburger-btn {
+        display: inline-block;
+    }
+    
+    .desktop-menu {
+        display: none !important;
+    }
+    
+    .top-menu-left {
+        display: flex !important;
+        align-items: center !important;
+        flex-wrap: nowrap !important;
+        gap: 8px !important;
+        width: 100% !important;
+        min-width: 0 !important;
+    }
+    
+    .top-menu-wrapper {
+        padding: 8px !important;
+    }
+    
+    #inputSearch {
+        flex: 0 0 auto !important; /* Don't grow or shrink */
+        width: calc(100vw - 160px) !important; /* Fixed width: viewport minus space for versionDisplay (~70px) and hamburger button (~50px) and padding (~40px) */
+        max-width: calc(100vw - 160px) !important;
+        min-width: 0 !important;
+        font-size: 16px !important; /* Prevents zoom on iOS */
+        box-sizing: border-box !important;
+    }
+    
+    .version-display {
+        white-space: nowrap !important;
+        margin-left: 0 !important;
+        flex-shrink: 0 !important;
+        flex-grow: 0 !important;
+        width: auto !important;
+    }
+    
+    .hamburger-btn {
+        flex-shrink: 0 !important;
+        flex-grow: 0 !important;
+        width: auto !important;
+    }
+    
+    /* Scroll to top button - fixed position, always visible on bottom left */
+    .scroll-to-top-btn {
+        position: fixed !important;
+        bottom: 20px !important;
+        left: 20px !important;
+        z-index: 1001 !important;
+        width: 50px !important;
+        height: 50px !important;
+        border-radius: 50%;
+        background: #96bae1;
+        color: white;
+        border: none;
+        cursor: pointer;
+        display: flex !important; /* Always show on mobile */
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        margin-bottom: 0; /* No margin needed, positioned with bottom */
+    }
+    
+    .scroll-to-top-btn.show {
+        display: flex !important;
+    }
+    
+    /* Table sidebar - left side, middle height */
+    .table-nav-container {
+        position: fixed;
+        top: 50%;
+        left: 10px;
+        transform: translateY(-50%);
+        right: auto;
+        bottom: auto;
+        max-width: 200px;
+        max-height: 40vh;
+    }
+    
+    .scroll-to-top-btn:hover {
+        background: #7aa8d0;
+        transform: translateY(-2px);
+    }
+    
+    .scroll-to-top-btn.show {
+        display: flex !important;
+    }
+}
+
+/* Scroll to top button - hidden on desktop */
+@media (min-width: 769px) {
+    .scroll-to-top-btn {
+        display: none !important;
+    }
+}
+

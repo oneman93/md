@@ -9,15 +9,16 @@
 .bg-red {
     background-color: red;
 }
-.search-wrapper {
+.top-menu-wrapper {
     position: fixed;
     top: 0px;    
     width: 100%;
     background: black;
     padding: 5px;
+    z-index: 1000;
 }
 
-.search-wrapper input {
+.top-menu-wrapper input {
     padding: 0.25rem 0.5rem;
 }
 
@@ -250,3 +251,133 @@ div.mermaid {
     position: absolute !important;
     left: -9999px !important;
 }
+
+/* Mobile responsive styles (continued) */
+@media screen and (max-width: 768px) {
+    /* Adjust font sizes for mobile */
+    h1 {
+        font-size: 1.5rem !important;
+    }
+
+    h2 {
+        font-size: 1.25rem !important;
+    }
+
+    /* Make tables scrollable on mobile */
+    .markdown-body table {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        width: 100%;
+    }
+
+    .markdown-body table thead,
+    .markdown-body table tbody,
+    .markdown-body table tr {
+        display: table;
+        width: 100%;
+        table-layout: fixed;
+    }
+
+    /* Floating table navigation - make it mobile-friendly */
+    .table-nav-container {
+        position: fixed;
+        right: 10px;
+        left: 10px;
+        top: auto;
+        bottom: 10px;
+        max-width: none;
+        max-height: 40vh;
+        overflow-y: auto;
+    }
+
+    /* Image sizing on mobile */
+    img.sm {
+        width: 100%;
+        max-width: 200px;
+        height: auto;
+    }
+
+    .markdown-body img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    /* Toast notifications - adjust position for mobile */
+    .toast-container {
+        top: auto;
+        bottom: 20px;
+        right: 10px;
+        left: 10px;
+        max-width: calc(100% - 20px);
+    }
+
+    /* Mermaid buttons - stack on mobile */
+    .mermaid-buttons {
+        position: relative;
+        justify-content: flex-start;
+        margin-bottom: 5px;
+    }
+
+    /* Work index list - stack on mobile */
+    .work-index .markdown-body ul {
+        flex-direction: column !important;
+        gap: 10px 0 !important;
+    }
+
+    /* Content padding for mobile - adjust for non-fixed header */
+    body {
+        padding-top: 0 !important;
+    }
+
+    #mdcontainer {
+        padding-top: 10px !important;
+        margin-top: 0 !important;
+    }
+}
+
+/* Small mobile devices (phones in portrait) */
+@media screen and (max-width: 480px) {
+    h1 {
+        font-size: 1.25rem !important;
+    }
+
+    h2 {
+        font-size: 1.1rem !important;
+    }
+
+    #divLeft button,
+    #divRight button,
+    #divRight a {
+        font-size: 11px;
+        padding: 4px 6px;
+    }
+
+    #versionDisplay {
+        font-size: 10px;
+    }
+
+    .btn-expand {
+        font-size: 12px;
+        padding: 4px 8px;
+    }
+}
+
+/* Style markdown metadata (frontmatter) - make it less visible, small font, single line */
+.markdown-metadata {
+    font-size: 0.85em !important;
+    color: #6c757d !important;
+    font-family: 'Courier New', Consolas, monospace !important;
+    line-height: 1.4 !important;
+    margin-bottom: 0.5rem !important;
+    padding: 0.25rem 0 !important;
+}
+
+.markdown-metadata .metadata-line {
+    display: block !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    margin-bottom: 0.1rem !important;
+}
+
