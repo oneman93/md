@@ -2558,8 +2558,37 @@
 
             for (var i = 0; i < array.length; i++) {
                 var url = array[i];
-                var filename = url.split('/').pop();
-                div = div + `<li><a href="${url}">${filename}</li>`;
+                var filename = '';
+                
+                // Check if URL is in md.htm?src=... format
+                if (url.includes('md.htm?src=')) {
+                    // Extract the src parameter
+                    var srcIndex = url.indexOf('src=');
+                    if (srcIndex >= 0) {
+                        var srcValue = url.substring(srcIndex + 4);
+                        // Decode URL encoding
+                        try {
+                            srcValue = decodeURIComponent(srcValue);
+                        } catch (e) {
+                            // If decoding fails, use as-is
+                        }
+                        // Extract filename from path (handle both ../path/file.md and path/file.md)
+                        var pathParts = srcValue.split('/');
+                        filename = pathParts[pathParts.length - 1];
+                    }
+                } else {
+                    // For regular URLs, extract filename from path
+                    filename = url.split('/').pop();
+                    // Remove query string and hash if present
+                    filename = filename.split('?')[0].split('#')[0];
+                }
+                
+                // Fallback to URL if filename extraction failed
+                if (!filename || filename === '') {
+                    filename = url;
+                }
+                
+                div = div + `<li><a href="${url}">${filename}</a></li>`;
             }
             div = div + '</div>';
             return div;
