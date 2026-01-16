@@ -252,8 +252,25 @@ div.mermaid {
     left: -9999px !important;
 }
 
-/* Mobile responsive styles (continued) */
+/* Hide mobile menu on desktop for non-moh93 projects */
+.mobile-menu-overlay {
+    display: none !important;
+}
+
+.hamburger-btn {
+    display: none !important;
+}
+
+/* Show mobile menu and hamburger on mobile */
 @media screen and (max-width: 768px) {
+    .hamburger-btn {
+        display: inline-block !important;
+    }
+    
+    .desktop-menu {
+        display: none !important;
+    }
+    
     /* Adjust font sizes for mobile */
     h1 {
         font-size: 1.5rem !important;

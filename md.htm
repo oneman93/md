@@ -121,6 +121,10 @@
             <DIV id="divLeft" class="top-menu-left">
                 <input id="inputSearch" type="text" placeholder="type to search..." />
                 <span id="versionDisplay" class="version-display" style="margin-left: 10px; font-weight: bold; color: #6c757d;"></span>
+                <button id="btnReset" type="button" class="btn btn-primary btn-sm">Reset</button>
+                <button id="btnHome" type="button" class="btn btn-danger btn-sm">
+                    <span style="font-size: 1em;color:white;"><i class="fa-solid fa-house"></i></span>
+                    Go Home</button>
                 
                 <!-- Hamburger menu button (visible on mobile only) -->
                 <button id="btnHamburger" type="button" class="btn btn-secondary btn-sm hamburger-btn" aria-label="Toggle menu">
@@ -130,10 +134,6 @@
             
             <!-- Desktop menu items (hidden on mobile) -->
             <DIV id="divRight" class="top-menu-right desktop-menu">
-                <button id="btnReset" type="button" class="btn btn-primary btn-sm">Reset</button>
-                <button id="btnHome" type="button" class="btn btn-danger btn-sm">
-                    <span style="font-size: 1em;color:white;"><i class="fa-solid fa-house"></i></span>
-                    Go Home</button>
                 <button id="btnExit" type="button" class="btn btn-warning btn-sm" style="margin-left: 10px; display: none;">
                     Exit
                 </button>
@@ -550,7 +550,14 @@
             var params = {};
             key_values.map(function (key_val) {
                 var key_val_arr = key_val.split("=");
-                params[key_val_arr[0]] = key_val_arr[1];
+                var paramKey = key_val_arr[0];
+                var paramValue = key_val_arr.length > 1 ? key_val_arr.slice(1).join("=") : "";
+                // Decode the parameter value
+                try {
+                    params[paramKey] = decodeURIComponent(paramValue);
+                } catch (e) {
+                    params[paramKey] = paramValue;
+                }
             });
             if (typeof params[key] != "undefined") {
                 return params[key];
@@ -569,14 +576,14 @@
         //     e.preventDefault();
         // }, false);
 
-        // Function to load and display version from mdhtm-version-history.md
+        // Function to load and display version from local-version-history.md
         function loadVersion() {
             var versionDisplay = document.getElementById('versionDisplay');
             if (!versionDisplay) return;
 
-            // Try to fetch mdhtm-version-history.md with cache-busting parameter
+            // Try to fetch local-version-history.md with cache-busting parameter
             var cacheBuster = '?t=' + new Date().getTime();
-            fetch('mdhtm-version-history.md' + cacheBuster)
+            fetch('local-version-history.md' + cacheBuster)
                 .then(function(response) {
                     if (!response.ok) {
                         throw new Error('Version file not found');
@@ -590,7 +597,7 @@
                     for (var i = 0; i < lines.length; i++) {
                         var line = lines[i].trim();
                         // Look for version header like # v1.0.0 or # mdv1.0.0
-                        if (line.startsWith('# v') || line.startsWith('#v') || line.startsWith('# mdv') || line.startsWith('#mdv')) {
+                        if (line.startsWith('# v') || line.startsWith('#v') || line.startsWith('# localv') || line.startsWith('#localv')) {
                             version = line.replace(/^#\s*/, ''); // Remove # and any space
                             break;
                         }
@@ -631,6 +638,20 @@
             var srcValue = (window.location.hostname.startsWith(_productionHostname) || isFullUrl)
                 ? getQueryParamSuffix("src") 
                 : getQueryParam("src");
+            
+            // Ensure relative paths without ./ or ../ are treated as relative to md.htm's directory
+            // If srcValue doesn't start with http://, https://, ../, ./, or /, prepend ../
+            if (srcValue && 
+                !srcValue.startsWith('http://') && 
+                !srcValue.startsWith('https://') && 
+                !srcValue.startsWith('../') && 
+                !srcValue.startsWith('./') && 
+                !srcValue.startsWith('/')) {
+                // Paths like "SQLQueries/Wisenet/file.md" should be "../SQLQueries/Wisenet/file.md"
+                // relative to md/ directory where md.htm is located
+                srcValue = '../' + srcValue;
+            }
+            
             md.setAttribute("src", srcValue)
             md.setAttribute("no-shadow", "")
             document.getElementById("mdcontainer").append(md)
@@ -1165,7 +1186,7 @@
                             if (currentDocKey) {
                                 var keySpan = document.createElement('span');
                                 keySpan.className = 'metadata-line';
-                                keySpan.textContent = 'key: ' + currentDocKey;
+                                keySpan.textContent = 'S3 key: ' + currentDocKey;
                                 metadataContainer.appendChild(keySpan);
                             }
                             isFirstLine = false;
@@ -1316,6 +1337,26 @@
                 //---------------------
                 // On keyup, search    
                 //---------------------             
+                // Helper function to check if text matches search filter (supports % separator for multiple keywords)
+                function matchesSearchFilter(text, filter) {
+                    // Split filter by '%' to get multiple keywords
+                    var keywords = filter.split('%').map(function(k) { return k.trim(); }).filter(function(k) { return k.length > 0; });
+                    
+                    if (keywords.length === 0) return false;
+                    if (keywords.length === 1) {
+                        // Single keyword - simple match
+                        return text.indexOf(keywords[0]) >= 0;
+                    } else {
+                        // Multiple keywords - ALL must be present (AND logic)
+                        for (var j = 0; j < keywords.length; j++) {
+                            if (text.indexOf(keywords[j]) < 0) {
+                                return false;
+                            }
+                        }
+                        return true;
+                    }
+                }
+
                 function searchText() {
 
                     var input, filter, ul, tags, a, i, txtValue, elem;
@@ -1360,7 +1401,7 @@
                             elem = tags[i];
                             var elemTagName = elem.tagName;
                             txtValue = elem.textContent || elem.innerText;
-                            var searchMatching = txtValue.toUpperCase().indexOf(filter) >= 0;
+                            var searchMatching = matchesSearchFilter(txtValue.toUpperCase(), filter);
 
                             if (searchMatching) {
                                 //$(elem).addClass('highlight');
@@ -1472,7 +1513,7 @@
                         for (i = 0; i < tags.length; i++) {
                             elem = tags[i];
                             txtValue = elem.textContent || elem.innerText;
-                            var searchMatching = txtValue.toUpperCase().indexOf(filter) >= 0;
+                            var searchMatching = matchesSearchFilter(txtValue.toUpperCase(), filter);
 
                             if (searchMatching) {
                                 // Show this h1 and its content
@@ -1723,6 +1764,59 @@
                 }
 
 
+                // Convert a markdown file URL to md.htm?src= format for non-moh93 projects
+                // Returns the converted URL string, or null if the URL should be skipped (external or already wrapped)
+                function createMdHtmUrl(urlWithoutAnchor) {
+                    var baseUrl = window.location.protocol + '//' + window.location.host;
+                    var mdBasePath = baseUrl + '/md/md.htm?src=';
+                    
+                    // Check if it's already a full URL (starts with http:// or https://)
+                    if (urlWithoutAnchor.startsWith('http://') || urlWithoutAnchor.startsWith('https://')) {
+                        // Full URL - check if it's localhost
+                        if (urlWithoutAnchor.includes('127.0.0.1') || urlWithoutAnchor.includes('localhost')) {
+                            // Extract the path from the URL
+                            try {
+                                var urlObj = new URL(urlWithoutAnchor);
+                                var path = urlObj.pathname;
+                                // Remove leading slash
+                                if (path.startsWith('/')) {
+                                    path = path.substring(1);
+                                }
+                                // Remove md/ prefix if present (already wrapped)
+                                if (path.startsWith('md/md.htm')) {
+                                    // Already wrapped, skip
+                                    return null;
+                                }
+                                // Convert to md.htm?src= format
+                                return mdBasePath + encodeURIComponent(path);
+                            } catch (e) {
+                                // URL parsing failed, try string replacement
+                                if (urlWithoutAnchor.includes('127.0.0.1:' + window.location.port)) {
+                                    // Extract path after host:port
+                                    var pathMatch = urlWithoutAnchor.match(/127\.0\.0\.1:\d+\/(.+)/);
+                                    if (pathMatch && pathMatch[1]) {
+                                        var path = pathMatch[1];
+                                        // Remove md/ prefix if present
+                                        if (path.startsWith('md/md.htm')) {
+                                            return null;
+                                        }
+                                        return mdBasePath + encodeURIComponent(path);
+                                    }
+                                }
+                            }
+                        } else {
+                            // External URL, skip wrapping
+                            return null;
+                        }
+                    } else {
+                        // Relative path (starts with ./ or ../ or just a filename/path)
+                        // Convert relative path to md.htm?src= format
+                        return mdBasePath + encodeURIComponent(urlWithoutAnchor);
+                    }
+                    
+                    return null;
+                }
+
                 // When button `Wrap with md.htm` is clicked, you do some css changes+DOM changes
                 function wrapWithMdHtml() {
                     // Extract current document's key from app.src (function is defined in moh93-custom.js)
@@ -1825,13 +1919,22 @@
                                     newUrl = baseUrl + '/md-project/md.htm?src=' + encodeURIComponent(loadingDocsUrl);
                                 } else {
                                     // For non-moh93 projects: original localhost logic with 127.0.0.1
-                                    if (oldUrl.includes('127.0.0.1')) {
-                                        // href to md files
-                                        newUrl = urlWithoutAnchor.replace("127.0.0.1:" + window.location.port + "/./", "127.0.0.1:" + window.location.port + "/md/md.htm?src=../");
-                                        newUrl = newUrl.replace("127.0.0.1:" + window.location.port + "/_LoadingDocuments/", "127.0.0.1:" + window.location.port + "/md/md.htm?src=../_LoadingDocuments/");
-                                    } else {
-                                        // Not a localhost URL, skip wrapping
+                                    newUrl = createMdHtmUrl(urlWithoutAnchor);
+                                    if (newUrl === null) {
+                                        // Should skip wrapping (external URL or already wrapped)
                                         return;
+                                    }
+                                    
+                                    // If newUrl is still empty, fall back to old logic for backward compatibility
+                                    if (!newUrl) {
+                                        if (oldUrl.includes('127.0.0.1')) {
+                                            // href to md files
+                                            newUrl = urlWithoutAnchor.replace("127.0.0.1:" + window.location.port + "/./", "127.0.0.1:" + window.location.port + "/md/md.htm?src=../");
+                                            newUrl = newUrl.replace("127.0.0.1:" + window.location.port + "/_LoadingDocuments/", "127.0.0.1:" + window.location.port + "/md/md.htm?src=../_LoadingDocuments/");
+                                        } else {
+                                            // Not a localhost URL, skip wrapping
+                                            return;
+                                        }
                                     }
                                 }
                                 
