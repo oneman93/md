@@ -1162,41 +1162,45 @@
                     var metadataContainer = document.createElement('div');
                     metadataContainer.className = 'markdown-metadata';
                     
-                    // Extract metadata text and remove elements from DOM BEFORE they can be wrapped in h1-wrapper
-                    // Use native DOM removal for reliability (works better with shadow DOM)
-                    var isFirstLine = true;
+                    // Extract metadata text and combine into single line separated by commas
+                    var allMetadataParts = [];
                     metadataElements.forEach(function(elem) {
                         var text = elem.textContent.trim();
                         console.log('Removing metadata element:', text);
-                        var span = document.createElement('span');
-                        span.className = 'metadata-line';
-                        span.textContent = text;
-                        metadataContainer.appendChild(span);
-                        
-                        // After the first metadata line, add the current file key as the second line
-                        if (isFirstLine && app && app.src) {
-                            var currentDocKey = '';
-                            if (typeof getCurrentDocumentKey === 'function') {
-                                currentDocKey = getCurrentDocumentKey(app);
-                            } else {
-                                // Fallback: try to extract key directly
-                                try {
-                                    var keyMatch = app.src.match(/[?&]key=([^&]+)/);
-                                    if (keyMatch) {
-                                        currentDocKey = decodeURIComponent(keyMatch[1]);
-                                    }
-                                } catch (e) {
-                                    console.log('Could not extract current document key for metadata:', e);
-                                }
-                            }
+                        if (text) {
+                            // Parse metadata text to extract individual key:value pairs
+                            // Handle formats like "key1: value1 key2: value2" or "key1: value1, key2: value2"
+                            // Split on spaces that come before a word followed by colon (new key)
+                            // This regex looks for: space(s) followed by word(s) followed by colon
+                            var parts = text.split(/\s+(?=[a-zA-Z][a-zA-Z0-9]*\s*:)/);
                             
-                            if (currentDocKey) {
-                                var keySpan = document.createElement('span');
-                                keySpan.className = 'metadata-line';
-                                keySpan.textContent = 'S3 key: ' + currentDocKey;
-                                metadataContainer.appendChild(keySpan);
+                            // If splitting didn't work (maybe already comma-separated or single item), use the whole text
+                            if (parts.length === 1) {
+                                // Check if it contains multiple key:value pairs without separators
+                                // Try to split on pattern: "word: value" followed by space and another "word:"
+                                var keyValuePattern = /([a-zA-Z][a-zA-Z0-9]*\s*:[^:]+?)(?=\s+[a-zA-Z][a-zA-Z0-9]*\s*:|$)/g;
+                                var matches = text.match(keyValuePattern);
+                                if (matches && matches.length > 1) {
+                                    // Found multiple key:value pairs, use them
+                                    matches.forEach(function(match) {
+                                        var trimmed = match.trim();
+                                        if (trimmed) {
+                                            allMetadataParts.push(trimmed);
+                                        }
+                                    });
+                                } else {
+                                    // Single item or already formatted, use as-is
+                                    allMetadataParts.push(text);
+                                }
+                            } else {
+                                // Successfully split into parts
+                                parts.forEach(function(part) {
+                                    part = part.trim();
+                                    if (part) {
+                                        allMetadataParts.push(part);
+                                    }
+                                });
                             }
-                            isFirstLine = false;
                         }
                         
                         // Remove from DOM using native method (more reliable than jQuery for shadow DOM)
@@ -1204,6 +1208,36 @@
                             elem.parentNode.removeChild(elem);
                         }
                     });
+                    
+                    // Add S3 key if available
+                    if (app && app.src) {
+                        var currentDocKey = '';
+                        if (typeof getCurrentDocumentKey === 'function') {
+                            currentDocKey = getCurrentDocumentKey(app);
+                        } else {
+                            // Fallback: try to extract key directly
+                            try {
+                                var keyMatch = app.src.match(/[?&]key=([^&]+)/);
+                                if (keyMatch) {
+                                    currentDocKey = decodeURIComponent(keyMatch[1]);
+                                }
+                            } catch (e) {
+                                console.log('Could not extract current document key for metadata:', e);
+                            }
+                        }
+                        
+                        if (currentDocKey) {
+                            allMetadataParts.push('S3 key: ' + currentDocKey);
+                        }
+                    }
+                    
+                    // Create a single span with all metadata separated by commas
+                    if (allMetadataParts.length > 0) {
+                        var span = document.createElement('span');
+                        span.className = 'metadata-line';
+                        span.textContent = allMetadataParts.join(', ');
+                        metadataContainer.appendChild(span);
+                    }
                     
                     // Remove hr elements that were between metadata (must be done after removing h1/h2 elements)
                     hrElementsToRemove.forEach(function(hrElem) {
