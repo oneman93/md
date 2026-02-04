@@ -72,34 +72,41 @@
                 children: 'a.photoswipe',
                 pswpModule: () => import('./dist/photoswipe.esm.js')
             };
-            const lightbox = new PhotoSwipeLightbox(options);
-            lightbox.on('uiRegister', function () {
-                lightbox.pswp.ui.registerElement({
+            window.photoSwipeLightbox = new PhotoSwipeLightbox(options);
+            window.photoSwipeLightbox.on('uiRegister', function () {
+                window.photoSwipeLightbox.pswp.ui.registerElement({
                     name: 'custom-caption',
                     order: 9,
                     isButton: false,
                     appendTo: 'root',
                     html: 'Caption text',
                     onInit: (el, pswp) => {
-                        lightbox.pswp.on('change', () => {
-                            const currSlideElement = lightbox.pswp.currSlide.data.element;
-                            let captionHTML = '';
-                            if (currSlideElement) {
-                                const hiddenCaption = currSlideElement.querySelector('.hidden-caption-content');
-                                if (hiddenCaption) {
-                                    // get caption from element with class hidden-caption-content
-                                    captionHTML = hiddenCaption.innerHTML;
-                                } else {
-                                    // get caption from alt attribute
-                                    captionHTML = currSlideElement.querySelector('img').getAttribute('title');
+                        window.photoSwipeLightbox.pswp.on('change', () => {
+                            // Check if currSlide exists before accessing its properties
+                            if (window.photoSwipeLightbox.pswp && window.photoSwipeLightbox.pswp.currSlide && window.photoSwipeLightbox.pswp.currSlide.data) {
+                                const currSlideElement = window.photoSwipeLightbox.pswp.currSlide.data.element;
+                                let captionHTML = '';
+                                if (currSlideElement) {
+                                    const hiddenCaption = currSlideElement.querySelector('.hidden-caption-content');
+                                    if (hiddenCaption) {
+                                        // get caption from element with class hidden-caption-content
+                                        captionHTML = hiddenCaption.innerHTML;
+                                    } else {
+                                        // get caption from alt attribute
+                                        const img = currSlideElement.querySelector('img');
+                                        if (img) {
+                                            captionHTML = img.getAttribute('title') || '';
+                                        }
+                                    }
                                 }
+                                el.innerHTML = captionHTML || '';
                             }
-                            el.innerHTML = captionHTML || '';
                         });
                     }
                 });
             });
-            lightbox.init();
+            // PhotoSwipe will be initialized after images are wrapped
+            // Event delegation will handle clicks on dynamically added links
         </script>
 
         <link rel="stylesheet" href="./dist/photoswipe.css">
@@ -1995,6 +2002,42 @@
                                     newLink.attr('data-pswp-width', img.naturalWidth);
                                     newLink.attr('data-pswp-height', img.naturalHeight);
                                     newLink.addClass('photoswipe');
+                                    
+                                    // Prevent default navigation and manually trigger PhotoSwipe
+                                    newLink.on('click', function(e) {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        
+                                        if (window.photoSwipeLightbox) {
+                                            // Get all photoswipe links in the gallery
+                                            var allLinks = document.querySelectorAll('#mdcontainer a.photoswipe');
+                                            var clickedIndex = -1;
+                                            for (var j = 0; j < allLinks.length; j++) {
+                                                if (allLinks[j] === this) {
+                                                    clickedIndex = j;
+                                                    break;
+                                                }
+                                            }
+                                            
+                                            if (clickedIndex >= 0) {
+                                                // Create data source from the gallery
+                                                var dataSource = {
+                                                    gallery: document.querySelector('#mdcontainer')
+                                                };
+                                                
+                                                // Get initial point for animation
+                                                var initialPoint = {
+                                                    x: e.clientX || 0,
+                                                    y: e.clientY || 0
+                                                };
+                                                
+                                                // Load and open PhotoSwipe
+                                                window.photoSwipeLightbox.loadAndOpen(clickedIndex, dataSource, initialPoint);
+                                            }
+                                        }
+                                        
+                                        return false;
+                                    });
 
                                     newLink.append($img.clone());
                                     $img.replaceWith(newLink);
@@ -2059,10 +2102,24 @@
                         // Wait for all image URLs to be fetched before wrapping with photoswipe
                         Promise.all(imagePromises).then(function() {
                             wrapImagesWithPhotoswipe();
+                            // Initialize PhotoSwipe after images are wrapped (only once)
+                            setTimeout(function() {
+                                if (window.photoSwipeLightbox && !window.photoSwipeLightbox._initialized) {
+                                    window.photoSwipeLightbox.init();
+                                    window.photoSwipeLightbox._initialized = true;
+                                }
+                            }, 100);
                         });
                     } else {
                         // For non-moh93 projects, wrap images immediately
                         wrapImagesWithPhotoswipe();
+                        // Initialize PhotoSwipe after images are wrapped (only once)
+                        setTimeout(function() {
+                            if (window.photoSwipeLightbox && !window.photoSwipeLightbox._initialized) {
+                                window.photoSwipeLightbox.init();
+                                window.photoSwipeLightbox._initialized = true;
+                            }
+                        }, 100);
                     }
 
 
