@@ -119,7 +119,8 @@
         <script defer src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
 
         <!-- Production-specific custom functions -->
-        <script src="./moh93-custom.js"></script>
+        <script src="./js/moh93-custom.js"></script>
+        <script src="./js/copy-clipboard-button.js"></script>
 
     </head>
 
@@ -934,7 +935,10 @@
                 applyCustomCss();
 
                 addImageFolderButton();
-                
+                addSourceFolderGoButton();
+                // Run after a short delay so pre elements are in the DOM
+                setTimeout(function () { addBannerCredentialCopyButtons(app); }, 150);
+
                 // Skip focus on mobile devices to avoid keyboard blocking the screen
                 function isMobileDevice() {
                     // Check for touch capability
@@ -1074,6 +1078,38 @@
                     });
 
                     $('p').find('img:last').after(btnClone);
+                }
+
+                /**
+                 * Scans all tables for a "source folder" row and adds a "Go" button
+                 * after each such table. Clicking "Go" opens the folder in Windows Explorer
+                 * via the custom "openexplorer:" protocol (register-explorer-protocol.reg).
+                 */
+                function addSourceFolderGoButton() {
+                    $('table').each(function () {
+                        var $table = $(this);
+                        var folderPath = null;
+
+                        $table.find('tr').each(function () {
+                            var $cells = $(this).find('td');
+                            if ($cells.length >= 2) {
+                                var label = $cells.first().text().trim().toLowerCase();
+                                if (label === 'source folder') {
+                                    folderPath = $cells.eq(1).text().trim();
+                                    return false; // break each
+                                }
+                            }
+                        });
+
+                        if (folderPath) {
+                            var path = folderPath;
+                            var $btn = $('<button class="btn btn-outline-danger btn-sm" style="margin-top:8px;">Go</button>');
+                            $btn.on('click', function () {
+                                window.location.href = 'openexplorer:' + path;
+                            });
+                            $table.after($btn);
+                        }
+                    });
                 }
 
                 // Change mdBody structure nested from plain

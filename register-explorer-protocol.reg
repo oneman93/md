@@ -1,0 +1,21 @@
+Windows Registry Editor Version 5.00
+
+; Registers the "openexplorer:" custom URL protocol so that
+; clicking the "Go" button in md.htm opens Windows Explorer.
+;
+; HOW TO USE:
+;   1. Double-click this .reg file and confirm the UAC prompt.
+;   2. Done — the "Go" button in md.htm will now open folders in Explorer.
+;
+; NOTE: Update the path below if you move open-explorer.ps1.
+
+[HKEY_CLASSES_ROOT\openexplorer]
+@="URL:Open Explorer Protocol"
+"URL Protocol"=""
+
+[HKEY_CLASSES_ROOT\openexplorer\shell]
+
+[HKEY_CLASSES_ROOT\openexplorer\shell\open]
+
+[HKEY_CLASSES_ROOT\openexplorer\shell\open\command]
+@="powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -File \"C:\\Works\\md\\open-explorer.ps1\" \"%1\""

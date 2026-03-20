@@ -1,0 +1,41 @@
+{
+  "version": "2.0",
+  "lastUpdated": "2026-03-20T00:14:53.833Z",
+  "activeFeatures": [
+    "md"
+  ],
+  "primaryFeature": "md",
+  "features": {
+    "md": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-03-20T00:14:53.832Z",
+        "lastUpdated": "2026-03-20T00:14:53.832Z"
+      },
+      "lastFile": "C:\\Works\\md\\open-explorer.ps1"
+    }
+  },
+  "pipeline": {
+    "currentPhase": 1,
+    "level": "Dynamic",
+    "phaseHistory": []
+  },
+  "session": {
+    "startedAt": "2026-03-20T00:09:52.220Z",
+    "onboardingCompleted": false,
+    "lastActivity": "2026-03-20T00:14:53.833Z"
+  },
+  "history": [
+    {
+      "timestamp": "2026-03-20T00:14:53.832Z",
+      "feature": "md",
+      "phase": "do",
+      "action": "updated"
+    }
+  ]
+}

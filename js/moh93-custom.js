@@ -246,4 +246,3 @@ function resolveRelativePath(path, currentKey) {
         toggleScrollButton();
     }
 })();
-
