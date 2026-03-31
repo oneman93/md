@@ -59,7 +59,7 @@ try {
 }
 ```
 
-Place this at: `C:\Works\md\open-explorer.ps1`
+Place this at: `C:\Works\md\powershell\open-explorer.ps1`
 
 ---
 

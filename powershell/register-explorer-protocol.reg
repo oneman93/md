@@ -18,4 +18,4 @@ Windows Registry Editor Version 5.00
 [HKEY_CLASSES_ROOT\openexplorer\shell\open]
 
 [HKEY_CLASSES_ROOT\openexplorer\shell\open\command]
-@="powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -File \"C:\\Works\\md\\open-explorer.ps1\" \"%1\""
+@="powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -File \"C:\\Works\\md\\powershell\\open-explorer.ps1\" \"%1\""

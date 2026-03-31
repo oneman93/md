@@ -1081,34 +1081,38 @@
                 }
 
                 /**
-                 * Scans all tables for a "source folder" row and adds a "Go" button
-                 * after each such table. Clicking "Go" opens the folder in Windows Explorer
+                 * Scans all tables for rows with folder-related keywords and adds a "Go" button
+                 * for each match. Clicking "Go" opens the folder in Windows Explorer
                  * via the custom "openexplorer:" protocol (register-explorer-protocol.reg).
+                 * Keywords (case-insensitive): "source folder", "source", "local folder", "folder"
                  */
                 function addSourceFolderGoButton() {
+                    var folderKeywords = ['source folder', 'source', 'local folder', 'folder'];
+
                     $('table').each(function () {
                         var $table = $(this);
-                        var folderPath = null;
+                        var folderPaths = [];
 
                         $table.find('tr').each(function () {
                             var $cells = $(this).find('td');
                             if ($cells.length >= 2) {
                                 var label = $cells.first().text().trim().toLowerCase();
-                                if (label === 'source folder') {
-                                    folderPath = $cells.eq(1).text().trim();
-                                    return false; // break each
+                                if (folderKeywords.indexOf(label) !== -1) {
+                                    var path = $cells.eq(1).text().trim();
+                                    if (path) {
+                                        folderPaths.push(path);
+                                    }
                                 }
                             }
                         });
 
-                        if (folderPath) {
-                            var path = folderPath;
-                            var $btn = $('<button class="btn btn-outline-danger btn-sm" style="margin-top:8px;">Go</button>');
+                        folderPaths.forEach(function (path) {
+                            var $btn = $('<button class="btn btn-outline-danger btn-sm" style="margin-top:8px; margin-right:4px;">Go ' + path + '</button>');
                             $btn.on('click', function () {
                                 window.location.href = 'openexplorer:' + path;
                             });
                             $table.after($btn);
-                        }
+                        });
                     });
                 }
 
