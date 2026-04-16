@@ -1087,7 +1087,7 @@
                  * Keywords (case-insensitive): "source folder", "source", "local folder", "folder"
                  */
                 function addSourceFolderGoButton() {
-                    var folderKeywords = ['source folder', 'source', 'local folder', 'folder'];
+                    var folderKeywords = ['source folder', 'source', 'local folder', 'folder', 'local'];
 
                     $('table').each(function () {
                         var $table = $(this);
@@ -1097,7 +1097,7 @@
                             var $cells = $(this).find('td');
                             if ($cells.length >= 2) {
                                 var label = $cells.first().text().trim().toLowerCase();
-                                if (folderKeywords.indexOf(label) !== -1) {
+                                if (folderKeywords.some(function(kw) { return label.includes(kw); })) {
                                     var path = $cells.eq(1).text().trim();
                                     if (path) {
                                         folderPaths.push(path);
