@@ -1106,13 +1106,17 @@
                             }
                         });
 
-                        folderPaths.forEach(function (path) {
-                            var $btn = $('<button class="btn btn-outline-danger btn-sm" style="margin-top:8px; margin-right:4px;">Go ' + path + '</button>');
-                            $btn.on('click', function () {
-                                window.location.href = 'openexplorer:' + path;
+                        if (folderPaths.length > 0) {
+                            var $div = $('<div class="go-btn-container" style="margin-top:8px; max-width:100%; overflow:hidden;"></div>');
+                            folderPaths.forEach(function (path) {
+                                var $btn = $('<button class="btn btn-outline-danger btn-sm" style="margin-right:4px; margin-bottom:4px; max-width:100%; word-break:break-all; white-space:normal; text-align:left;">Go ' + path + '</button>');
+                                $btn.on('click', function () {
+                                    window.location.href = 'openexplorer:' + path;
+                                });
+                                $div.append($btn);
                             });
-                            $table.after($btn);
-                        });
+                            $table.after($div);
+                        }
                     });
                 }
 
