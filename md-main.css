@@ -179,6 +179,44 @@ code {
     margin-bottom: 8px;
     padding-bottom: 5px;
     border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.table-nav-close {
+    background: none;
+    border: none;
+    font-size: 16px;
+    line-height: 1;
+    color: #999;
+    cursor: pointer;
+    padding: 0 2px;
+}
+
+.table-nav-close:hover {
+    color: #333;
+}
+
+.table-nav-toggle {
+    display: none;
+    position: fixed;
+    right: 0;
+    top: 30%;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid #ddd;
+    border-right: none;
+    border-radius: 6px 0 0 6px;
+    box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.12);
+    padding: 8px 10px;
+    font-size: 16px;
+    cursor: pointer;
+    color: #555;
+}
+
+.table-nav-toggle:hover {
+    background: #f0f0f0;
 }
 
 .table-nav-button {
@@ -205,6 +243,24 @@ code {
 
 .table-nav-button:last-child {
     margin-bottom: 0;
+}
+
+/* Copy code button for pre blocks */
+.copy-code-wrapper {
+    position: relative;
+}
+
+.copy-code-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    font-size: 12px;
+    opacity: 0.6;
+    z-index: 10;
+}
+
+.copy-code-btn:hover {
+    opacity: 1;
 }
 
 /* Mermaid diagram wrapper and buttons */

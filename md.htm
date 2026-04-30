@@ -201,9 +201,13 @@
 
         <!-- Floating Table Navigation -->
         <div class="table-nav-container" id="tableNavContainer">
-            <div class="table-nav-title">Tables</div>
+            <div class="table-nav-title">
+                Tables
+                <button class="table-nav-close" id="tableNavClose" onclick="tableNavCollapse()" title="Close">&times;</button>
+            </div>
             <div id="tableNavButtons"></div>
         </div>
+        <button class="table-nav-toggle" id="tableNavToggle" onclick="tableNavExpand()" title="Show Tables" style="display:none;">&#9776;</button>
 
 
 
@@ -478,12 +482,26 @@
                     buttonsContainer.appendChild(button);
                 });
 
-                // Show the container
-                container.classList.add('show');
+                // Tables found — show toggle button (collapsed by default)
+                const toggle = document.getElementById('tableNavToggle');
+                if (toggle) toggle.style.display = 'block';
+                container.classList.remove('show');
             } else {
                 // Hide the container if no tables found
                 container.classList.remove('show');
+                const toggle = document.getElementById('tableNavToggle');
+                if (toggle) toggle.style.display = 'none';
             }
+        }
+
+        function tableNavCollapse() {
+            document.getElementById('tableNavContainer').classList.remove('show');
+            document.getElementById('tableNavToggle').style.display = 'block';
+        }
+
+        function tableNavExpand() {
+            document.getElementById('tableNavContainer').classList.add('show');
+            document.getElementById('tableNavToggle').style.display = 'none';
         }
 
         function hasTableAfterHeading(heading) {
@@ -938,6 +956,13 @@
                 addSourceFolderGoButton();
                 // Run after a short delay so pre elements are in the DOM
                 setTimeout(function () { addBannerCredentialCopyButtons(app); }, 150);
+                setTimeout(function () { addCopyCodeButtons(); }, 300);
+
+                // Restore Show H1 Only state across page refreshes
+                if (localStorage.getItem('md-h1-only-state') === '1') {
+                    btnH1Only.innerHTML = 'Show ALL';
+                    showH1Only();
+                }
 
                 // Skip focus on mobile devices to avoid keyboard blocking the screen
                 function isMobileDevice() {
@@ -1091,32 +1116,64 @@
 
                     $('table').each(function () {
                         var $table = $(this);
-                        var folderPaths = [];
+                        var $tdRows = $table.find('tr').filter(function () {
+                            return $(this).find('td').length >= 2;
+                        });
+                        var rowsWithButton = [];
+                        var rowsWithoutButton = [];
 
-                        $table.find('tr').each(function () {
+                        $tdRows.each(function () {
                             var $cells = $(this).find('td');
-                            if ($cells.length >= 2) {
-                                var label = $cells.first().text().trim().toLowerCase();
-                                if (folderKeywords.some(function(kw) { return label.includes(kw); })) {
-                                    var path = $cells.eq(1).text().trim();
-                                    if (path) {
-                                        folderPaths.push(path);
-                                    }
+                            var label = $cells.first().text().trim().toLowerCase();
+                            if (folderKeywords.some(function(kw) { return label.includes(kw); })) {
+                                var path = $cells.eq(1).text().trim();
+                                if (path) {
+                                    var $btn = $('<button class="btn btn-outline-danger btn-sm">Go</button>');
+                                    $btn.on('click', (function(p) {
+                                        return function () { window.location.href = 'openexplorer:' + p; };
+                                    })(path));
+                                    var $td = $('<td style="width:1%; white-space:nowrap; padding:4px;"></td>').append($btn);
+                                    $(this).append($td);
+                                    rowsWithButton.push(this);
+                                    return;
                                 }
                             }
+                            rowsWithoutButton.push(this);
                         });
 
-                        if (folderPaths.length > 0) {
-                            var $div = $('<div class="go-btn-container" style="margin-top:8px; max-width:100%; overflow:hidden;"></div>');
-                            folderPaths.forEach(function (path) {
-                                var $btn = $('<button class="btn btn-outline-danger btn-sm" style="margin-right:4px; margin-bottom:4px; max-width:100%; word-break:break-all; white-space:normal; text-align:left;">Go ' + path + '</button>');
-                                $btn.on('click', function () {
-                                    window.location.href = 'openexplorer:' + path;
-                                });
-                                $div.append($btn);
+                        if (rowsWithButton.length > 0) {
+                            rowsWithoutButton.forEach(function(row) {
+                                $(row).append('<td style="width:1%; white-space:nowrap; padding:4px;"></td>');
                             });
-                            $table.after($div);
                         }
+                    });
+                }
+
+                function addCopyCodeButtons() {
+                    var h1OnlyActive = localStorage.getItem('md-h1-only-state') === '1';
+                    mdClone.querySelectorAll('pre').forEach(function(pre) {
+                        if (pre.closest('.mermaid-wrapper') || pre.closest('.copy-code-wrapper')) return;
+
+                        var codeEl = pre.querySelector('code') || pre;
+                        var codeText = codeEl.textContent || codeEl.innerText;
+
+                        var wrapper = document.createElement('div');
+                        wrapper.className = 'copy-code-wrapper';
+                        pre.parentNode.insertBefore(wrapper, pre);
+                        wrapper.appendChild(pre);
+
+                        var btn = document.createElement('button');
+                        btn.type = 'button';
+                        btn.className = 'btn btn-sm btn-outline-secondary copy-code-btn';
+                        btn.textContent = 'Copy code';
+                        if (h1OnlyActive) btn.style.display = 'none';
+                        btn.addEventListener('click', function() {
+                            navigator.clipboard.writeText(codeText).then(function() {
+                                btn.textContent = 'Copied!';
+                                setTimeout(function() { btn.textContent = 'Copy code'; }, 2000);
+                            }).catch(function() {});
+                        });
+                        wrapper.appendChild(btn);
                     });
                 }
 
@@ -1671,7 +1728,7 @@
                     tags = mdClone.querySelectorAll("h1");
 
                     // All other tags will be hidden unless filter is reset to "". 24/10/24, img added.
-                    var otherTags = mdClone.querySelectorAll("table,pre,h2,li,img");
+                    var otherTags = mdClone.querySelectorAll("table,pre,h2,h3,li,img,p,hr,blockquote,ul,ol,.copy-code-btn");
                     $(otherTags).hide();
 
                     console.log('tags length: ', tags.length);
@@ -1798,12 +1855,15 @@
                     }
                 }
 
+                var _h1OnlyKey = 'md-h1-only-state';
+
                 function toggleH1Only() {
                     if (btnH1Only.getHTML() == "Show H1 Only") {
                         btnH1Only.innerHTML = 'Show ALL';
-                        $('h1').addClass('font-size-normal');
+                        localStorage.setItem(_h1OnlyKey, '1');
                         showH1Only();
                     } else {
+                        localStorage.removeItem(_h1OnlyKey);
                         location.reload();
                     }
                 }
