@@ -54,3 +54,8 @@
 * See [](./imgs/errors/copy-code-ui.png): copy code button should be hidden on `Show H1 Only` mode.
 * See [](./imgs/errors/button-still-show.png): copy code button still shows in `Show H1 Only` mode.
 
+# `code` button
+
+* Created `code` button next to `Go Home` button on top.
+* When clicked, open visual code to edit the matching markdown file of the url.
+* For example, if current url is `http://127.0.0.1:5500/md/md.htm?src=_LoadingDocuments%2Fclone-date-loading.md`, open code to edit `c:\works\_LoadingDocuments%2Fclone-date-loading.md`

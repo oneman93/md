@@ -133,7 +133,10 @@
                 <button id="btnHome" type="button" class="btn btn-danger btn-sm">
                     <span style="font-size: 1em;color:white;"><i class="fa-solid fa-house"></i></span>
                     Go Home</button>
-                
+                <button id="btnCode" type="button" class="btn btn-secondary btn-sm" style="display:none;">
+                    <i class="fa-solid fa-code"></i>
+                    code</button>
+
                 <!-- Hamburger menu button (visible on mobile only) -->
                 <button id="btnHamburger" type="button" class="btn btn-secondary btn-sm hamburger-btn" aria-label="Toggle menu">
                     <i class="fa-solid fa-bars"></i>
@@ -169,6 +172,9 @@
                     <button id="btnMobileHome" type="button" class="btn btn-danger btn-sm btn-block">
                         <span style="font-size: 1em;color:white;"><i class="fa-solid fa-house"></i></span>
                         Go Home</button>
+                    <button id="btnMobileCode" type="button" class="btn btn-secondary btn-sm btn-block" style="display:none;">
+                        <i class="fa-solid fa-code"></i>
+                        code</button>
                     <button id="btnMobileExit" type="button" class="btn btn-warning btn-sm btn-block" style="display: none;">
                         Exit
                     </button>
@@ -837,6 +843,8 @@
                 const btnPDF = document.getElementById("btnPDF");
                 const btnH1Only = document.getElementById("btnH1Only");
                 const btnExit = document.getElementById("btnExit");
+                const btnCode = document.getElementById("btnCode");
+                const btnMobileCode = document.getElementById("btnMobileCode");
                 
                 // Mobile menu elements
                 const btnHamburger = document.getElementById("btnHamburger");
@@ -884,12 +892,34 @@
                     // Redirect to root URL
                     window.location.href = window.location.protocol + '//' + window.location.host + '/';
                 });
-                
+
+                // Open in VS Code
+                function openInVSCode() {
+                    var srcParam = getQueryParam("src");
+                    if (!srcParam) return;
+                    // Build absolute path: c:\works\{src}
+                    var filePath = 'c:/works/' + srcParam.replace(/\\/g, '/');
+                    window.location.href = 'vscode://file/' + filePath;
+                }
+
+                // Show code button only when a local src file is loaded
+                (function() {
+                    var srcParam = getQueryParam("src");
+                    if (srcParam && srcParam.indexOf('http') !== 0) {
+                        if (btnCode) btnCode.style.display = 'inline-block';
+                        if (btnMobileCode) btnMobileCode.style.display = 'block';
+                    }
+                })();
+
+                if (btnCode) {
+                    btnCode.addEventListener("click", openInVSCode);
+                }
+
                 // Hamburger menu toggle
                 if (btnHamburger) {
                     btnHamburger.addEventListener("click", toggleMobileMenu);
                 }
-                
+
                 // Wire up mobile menu buttons to same handlers
                 if (btnMobileHome) {
                     btnMobileHome.addEventListener("click", function() {
@@ -925,6 +955,12 @@
                     btnMobileExit.addEventListener("click", function() {
                         closeMobileMenu();
                         window.location.href = window.location.protocol + '//' + window.location.host + '/';
+                    });
+                }
+                if (btnMobileCode) {
+                    btnMobileCode.addEventListener("click", function() {
+                        closeMobileMenu();
+                        openInVSCode();
                     });
                 }
 
