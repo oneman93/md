@@ -128,14 +128,11 @@
         <div class="top-menu-wrapper d-flex justify-content-between">
             <DIV id="divLeft" class="top-menu-left">
                 <input id="inputSearch" type="text" placeholder="type to search..." />
-                <span id="versionDisplay" class="version-display" style="margin-left: 10px; font-weight: bold; color: #6c757d;"></span>
                 <button id="btnReset" type="button" class="btn btn-primary btn-sm">Reset</button>
                 <button id="btnHome" type="button" class="btn btn-danger btn-sm">
                     <span style="font-size: 1em;color:white;"><i class="fa-solid fa-house"></i></span>
                     Go Home</button>
-                <button id="btnCode" type="button" class="btn btn-secondary btn-sm" style="display:none;">
-                    <i class="fa-solid fa-code"></i>
-                    code</button>
+                <span id="versionDisplay" class="version-display" style="margin-left: 10px; font-weight: bold; color: #6c757d;"></span>
 
                 <!-- Hamburger menu button (visible on mobile only) -->
                 <button id="btnHamburger" type="button" class="btn btn-secondary btn-sm hamburger-btn" aria-label="Toggle menu">
@@ -145,6 +142,9 @@
             
             <!-- Desktop menu items (hidden on mobile) -->
             <DIV id="divRight" class="top-menu-right desktop-menu">
+                <button id="btnCode" type="button" class="btn btn-secondary btn-sm" style="display:none;">
+                    <i class="fa-solid fa-code"></i>
+                    code</button>
                 <button id="btnExit" type="button" class="btn btn-warning btn-sm" style="margin-left: 10px; display: none;">
                     Exit
                 </button>
@@ -656,6 +656,8 @@
         }
 
         window.onload = function () {
+
+
             // Load version on page load
             loadVersion();
 
@@ -896,20 +898,12 @@
                 // Open in VS Code
                 function openInVSCode() {
                     var srcParam = getQueryParam("src");
+                    console.log('openInVSCode called, srcParam:', srcParam);
                     if (!srcParam) return;
-                    // Build absolute path: c:\works\{src}
-                    var filePath = 'c:/works/' + srcParam.replace(/\\/g, '/');
-                    window.location.href = 'vscode://file/' + filePath;
+
                 }
 
-                // Show code button only when a local src file is loaded
-                (function() {
-                    var srcParam = getQueryParam("src");
-                    if (srcParam && srcParam.indexOf('http') !== 0) {
-                        if (btnCode) btnCode.style.display = 'inline-block';
-                        if (btnMobileCode) btnMobileCode.style.display = 'block';
-                    }
-                })();
+                // btnCode is hidden until vscode:// protocol works reliably in Chrome
 
                 if (btnCode) {
                     btnCode.addEventListener("click", openInVSCode);

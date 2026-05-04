@@ -56,6 +56,46 @@
 
 # `code` button
 
-* Created `code` button next to `Go Home` button on top.
+* Move `code` button to `divRight` section as the first button:
+  * [](./imgs/ui-code-button.png)
 * When clicked, open visual code to edit the matching markdown file of the url.
 * For example, if current url is `http://127.0.0.1:5500/md/md.htm?src=_LoadingDocuments%2Fclone-date-loading.md`, open code to edit `c:\works\_LoadingDocuments%2Fclone-date-loading.md`
+* Button clicking does not do anything.
+  * Leave console js log after line 902 in [](../md.htm) to confirm that it ran successfully.
+  * [](./imgs/ui-menu/code-does-nothing.png)
+```
+  window.location.href = 'vscode://file/' + filePath;
+```
+* Clicking `code` button still does nothing. Add log in line 899 as well.
+* After popup screen, [](./imgs/ui-menu/code-does-nothing.png), there is no js log in console. Investigate.
+* Still does nothing [](./imgs/ui-menu/does-nothing2.png). Url seems correct though. It does not open markdown file in vscode. It does not show js log in chrome console.
+* Edge worked perfectly:
+  * [](./imgs/ui-menu/edge-wroked.png)
+  * [](./imgs/ui-menu/edge-worked2.png)
+* But Chrome did nothing.
+
+```
+  Chrome blocks external protocol launches unless explicitly permitted. The fix is a one-time Chrome setting:
+
+  Option 1 — In the Chrome dialog:
+  Next time the "Open Visual Studio Code?" dialog appears, check "Always allow http://127.0.0.1:5500 to open links of this type" before clicking "Open Visual Studio Code".
+
+  Option 2 — Chrome settings:
+  Go to chrome://settings/content/handlers and add vscode:// as an allowed handler for 127.0.0.1:5500.
+
+  The current code (location.href = vsCodeUrl) is the correct implementation — it works in Edge and will work in Chrome once the protocol is allowed. No code change needed.
+```
+
+* `vscode` protocol does not work directly from `chrome` url.
+```
+vscode://file///c:/works/_LoadingDocuments/synctool-release-note.md
+```
+* Hide `btnCode` button currently.
+
+
+# UI - version number
+
+* Version number should show right to Home button:
+  * [](./imgs/ui-menu/version1.png) is correct
+  * [](./imgs/ui-menu/version2.png) is incorrect.
+
