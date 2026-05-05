@@ -250,13 +250,31 @@ code {
     position: relative;
 }
 
-.copy-code-btn {
+.copy-code-btns {
     position: absolute;
     top: 8px;
     right: 8px;
-    font-size: 12px;
-    opacity: 0.6;
+    display: flex;
+    gap: 6px;
+    align-items: center;
     z-index: 10;
+}
+
+.copy-code-btns button {
+    margin: 0 !important;
+    font-size: 12px !important;
+    padding: 2px 6px !important;
+    line-height: 1.4 !important;
+}
+
+/* Blur password values in pre blocks */
+.password-blur {
+    filter: blur(4px);
+    user-select: none;
+}
+
+.copy-code-btn {
+    opacity: 0.6;
 }
 
 .copy-code-btn:hover {

@@ -70,6 +70,34 @@ function addBannerCredentialCopyButtons(app) {
         return btn;
     }
 
+    function blurPasswordInPre(preEl, password) {
+        if (!password || !preEl) return;
+        // Walk all text nodes inside the pre and wrap the password value in a blur span
+        var walker = document.createTreeWalker(preEl, NodeFilter.SHOW_TEXT, null, false);
+        var textNodes = [];
+        var node;
+        while ((node = walker.nextNode())) {
+            if (node.textContent.indexOf(password) >= 0) {
+                textNodes.push(node);
+            }
+        }
+        textNodes.forEach(function(textNode) {
+            var text = textNode.textContent;
+            var idx = text.indexOf(password);
+            if (idx < 0) return;
+            var before = text.substring(0, idx);
+            var after = text.substring(idx + password.length);
+            var span = document.createElement('span');
+            span.className = 'password-blur';
+            span.textContent = password;
+            var parent = textNode.parentNode;
+            if (before) parent.insertBefore(document.createTextNode(before), textNode);
+            parent.insertBefore(span, textNode);
+            if (after) parent.insertBefore(document.createTextNode(after), textNode);
+            parent.removeChild(textNode);
+        });
+    }
+
     function fallbackCopy(text, btn, originalLabel) {
         try {
             var ta = document.createElement('textarea');
@@ -104,8 +132,17 @@ function addBannerCredentialCopyButtons(app) {
             var password = extractPasswordFromPre(text);
             if (password) {
                 var btn = makeCopyButton('Copy Password', password);
-                insertButtonAfter(pre, btn);
-                console.log('[BannerCopy] Added Copy Password below pre[' + i + ']');
+                var wrapper = pre.closest('.copy-code-wrapper');
+                var btnContainer = wrapper ? wrapper.querySelector('.copy-code-btns') : null;
+                if (btnContainer) {
+                    btn.style.cssText = 'opacity: 0.6;';
+                    btnContainer.appendChild(btn);
+                    console.log('[BannerCopy] Added Copy Password into .copy-code-btns for pre[' + i + ']');
+                } else {
+                    insertButtonAfter(pre, btn);
+                    console.log('[BannerCopy] Fallback: Added Copy Password after pre[' + i + ']');
+                }
+                blurPasswordInPre(pre, password);
             }
         }
     }

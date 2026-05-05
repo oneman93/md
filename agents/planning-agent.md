@@ -1,4 +1,6 @@
-# Plan
+# DONE
+
+# 'Go' button
 
 * You create `Go` button when you look at the key words [](#key-words) in table.
 
@@ -90,7 +92,16 @@
 ```
 vscode://file///c:/works/_LoadingDocuments/synctool-release-note.md
 ```
-* Hide `btnCode` button currently.
+* Restore `btnCode` button
+
+# UI - `Wrap with md.html` 
+* `Wrap with md.html` button wraps `href` url with `?src=xxx.md` paraemter. This url modification should not be applied to other protocol eg, `vscode`.
+* For example, below href url should not be changed by `Wrap with md.html` button:
+```
+<!-- Simple Link -->
+<a href="vscode://file/C:/works/_LoadingDocuments/synctool-release-note.md">Open File in VS Code (you have to unwrap)</a>
+```
+
 
 
 # UI - version number
@@ -99,3 +110,26 @@ vscode://file///c:/works/_LoadingDocuments/synctool-release-note.md
   * [](./imgs/ui-menu/version1.png) is correct
   * [](./imgs/ui-menu/version2.png) is incorrect.
 
+
+# UI - `Copy password` button
+
+* Move copy password button from outside of `<pre>` to inside of `<pre>` next to `Copy code` button:
+  * [](./imgs/copy-password-btn.png)
+* Copy password button is still in old position outside of <pre> tag.
+  * [](./imgs/errors/still-out-pre.png)
+  * Add js console log if debug is required.
+
+
+# UI - Blur password value
+
+* `extractPasswordFromPre()` extracts password value. When <pre> has password values, blur those text by css.
+* Copy password button will copy text value correctly as it is.
+
+# TODO
+
+* Update `Copy code` button to have same height as `Copy password`:
+  * [](./imgs/copy-code-vs-pass.png)
+* Both buttons seemed growing height and still different height:
+  * [](./imgs/errors/btn-height.png)
+* Make these two buttons small button.
+  * [](./imgs/errors/small-btn.png)

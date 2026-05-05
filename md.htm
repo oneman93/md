@@ -864,6 +864,12 @@
                     btnMobileExit.style.display = 'block';
                 }
 
+                // Show code button when viewing a specific file (non-root page)
+                if (!isRootPage && srcValue) {
+                    if (btnCode) btnCode.style.display = 'inline-block';
+                    if (btnMobileCode) btnMobileCode.style.display = 'block';
+                }
+
                 // Hamburger menu toggle function
                 function toggleMobileMenu() {
                     mobileMenuOverlay.classList.toggle('show');
@@ -901,6 +907,14 @@
                     console.log('openInVSCode called, srcParam:', srcParam);
                     if (!srcParam) return;
 
+                    // Remove leading ../ to get path relative to C:\Works\
+                    var filePath = srcParam.replace(/^\.\.\//, '');
+                    var absPath = 'c:/Works/' + filePath;
+                    var vsCodeUrl = 'vscode://file///' + absPath;
+                    console.log('Opening in VSCode:', vsCodeUrl);
+                    
+                    // Above console log seems disappearing by below line.
+                    window.location.href = vsCodeUrl;
                 }
 
                 // btnCode is hidden until vscode:// protocol works reliably in Chrome
@@ -985,8 +999,8 @@
                 addImageFolderButton();
                 addSourceFolderGoButton();
                 // Run after a short delay so pre elements are in the DOM
-                setTimeout(function () { addBannerCredentialCopyButtons(app); }, 150);
-                setTimeout(function () { addCopyCodeButtons(); }, 300);
+                setTimeout(function () { addCopyCodeButtons(); }, 150);
+                setTimeout(function () { addBannerCredentialCopyButtons(app); }, 300);
 
                 // Restore Show H1 Only state across page refreshes
                 if (localStorage.getItem('md-h1-only-state') === '1') {
@@ -1196,14 +1210,17 @@
                         btn.type = 'button';
                         btn.className = 'btn btn-sm btn-outline-secondary copy-code-btn';
                         btn.textContent = 'Copy code';
-                        if (h1OnlyActive) btn.style.display = 'none';
                         btn.addEventListener('click', function() {
                             navigator.clipboard.writeText(codeText).then(function() {
                                 btn.textContent = 'Copied!';
                                 setTimeout(function() { btn.textContent = 'Copy code'; }, 2000);
                             }).catch(function() {});
                         });
-                        wrapper.appendChild(btn);
+                        var btnContainer = document.createElement('div');
+                        btnContainer.className = 'copy-code-btns';
+                        if (h1OnlyActive) btnContainer.style.display = 'none';
+                        btnContainer.appendChild(btn);
+                        wrapper.appendChild(btnContainer);
                     });
                 }
 
@@ -1758,7 +1775,7 @@
                     tags = mdClone.querySelectorAll("h1");
 
                     // All other tags will be hidden unless filter is reset to "". 24/10/24, img added.
-                    var otherTags = mdClone.querySelectorAll("table,pre,h2,h3,li,img,p,hr,blockquote,ul,ol,.copy-code-btn");
+                    var otherTags = mdClone.querySelectorAll("table,pre,h2,h3,li,img,p,hr,blockquote,ul,ol,.copy-code-btns");
                     $(otherTags).hide();
 
                     console.log('tags length: ', tags.length);
@@ -2015,6 +2032,8 @@
                     $('a').each(function () {
                         var oldUrl = $(this).attr("href");
                         if (oldUrl != undefined) {
+                            // Skip vscode:// and other non-http protocols
+                            if (oldUrl.startsWith('vscode://')) return;
                             // Check if URL contains .md (not just ends with it, to handle anchors like .md#anchor)
                             if (oldUrl.includes(".md")) {
                                 // Extract anchor if present (e.g., #supplementary)
