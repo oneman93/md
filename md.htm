@@ -61,7 +61,7 @@
 
         <meta charset="utf-8">
         <title>md.htm</title>
-        <link rel="icon" type="image/x-icon" href="/md/images/favicon.png">
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='12' fill='%23212529'/><text x='50' y='68' font-family='monospace,Arial' font-size='52' font-weight='bold' text-anchor='middle' fill='%23ffc107'>md</text></svg>">
 
         <!-- photo swipe -->
         <script type="module">
@@ -1172,7 +1172,7 @@
                             if (folderKeywords.some(function(kw) { return label.includes(kw); })) {
                                 var path = $cells.eq(1).text().trim();
                                 if (path) {
-                                    var $btn = $('<button class="btn btn-outline-danger btn-sm">Go</button>');
+                                    var $btn = $('<button class="btn btn-info btn-sm">Go</button>');
                                     $btn.on('click', (function(p) {
                                         return function () { window.location.href = 'openexplorer:' + p; };
                                     })(path));

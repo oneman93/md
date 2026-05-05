@@ -120,16 +120,27 @@ vscode://file///c:/works/_LoadingDocuments/synctool-release-note.md
   * Add js console log if debug is required.
 
 
-# UI - Blur password value
-
-* `extractPasswordFromPre()` extracts password value. When <pre> has password values, blur those text by css.
-* Copy password button will copy text value correctly as it is.
-
-# TODO
-
 * Update `Copy code` button to have same height as `Copy password`:
   * [](./imgs/copy-code-vs-pass.png)
 * Both buttons seemed growing height and still different height:
   * [](./imgs/errors/btn-height.png)
 * Make these two buttons small button.
   * [](./imgs/errors/small-btn.png)
+
+
+
+# UI - Blur password value
+
+* `extractPasswordFromPre()` extracts password value. When <pre> has password values, blur those text by css.
+* Copy password button will copy text value correctly as it is.
+
+
+# TODO
+
+# UI - favicon etc
+
+* Let favicon be something interesting not just plain document icon:
+  * [](./imgs/favicon.png)
+  * I like your new [](./imgs/new-favicon.png), but let `md` text be yellow-ish color.
+* Let `Go` button be `btn-info` color theme:
+  * [](./imgs/go-theme.png)
