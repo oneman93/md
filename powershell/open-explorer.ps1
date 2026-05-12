@@ -14,8 +14,12 @@ try {
     # Normalize: replace forward slashes with backslashes
     $path = $path -replace '/', '\'
 
-    if (Test-Path $path) {
+    if (Test-Path $path -PathType Container) {
+        # It's a folder — open it directly
         Start-Process explorer.exe -ArgumentList $path
+    } elseif (Test-Path $path -PathType Leaf) {
+        # It's a file — open Explorer with the file selected
+        Start-Process explorer.exe -ArgumentList "/select,`"$path`""
     } else {
         # Path doesn't exist — open parent if possible, else show error
         $parent = Split-Path $path -Parent

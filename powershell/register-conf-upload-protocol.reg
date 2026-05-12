@@ -1,0 +1,21 @@
+Windows Registry Editor Version 5.00
+
+; Registers the "confupload:" custom URL protocol so that
+; Copy2Conf in md.htm can upload images to Confluence via PowerShell.
+;
+; HOW TO USE:
+;   1. Double-click this .reg file and confirm the UAC prompt (one-time setup).
+;   2. Done — Copy2Conf will now upload images permanently to Confluence.
+;
+; NOTE: Update paths below if you move the powershell/ folder.
+
+[HKEY_CLASSES_ROOT\confupload]
+@="URL:Conf Upload Protocol"
+"URL Protocol"=""
+
+[HKEY_CLASSES_ROOT\confupload\shell]
+
+[HKEY_CLASSES_ROOT\confupload\shell\open]
+
+[HKEY_CLASSES_ROOT\confupload\shell\open\command]
+@="wscript.exe //B \"C:\\Works\\md\\powershell\\launch-upload.vbs\" \"%1\""

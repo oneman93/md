@@ -135,7 +135,6 @@ vscode://file///c:/works/_LoadingDocuments/synctool-release-note.md
 * Copy password button will copy text value correctly as it is.
 
 
-# TODO
 
 # UI - favicon etc
 
@@ -144,3 +143,121 @@ vscode://file///c:/works/_LoadingDocuments/synctool-release-note.md
   * I like your new [](./imgs/new-favicon.png), but let `md` text be yellow-ish color.
 * Let `Go` button be `btn-info` color theme:
   * [](./imgs/go-theme.png)
+
+# DONE
+
+# `inputSearch` text box fire
+
+* `inputSearch-triggers.md` written.
+* Fix: `keyup` guarded with `if (isSearchPage)`, non-search pages get empty value on load.
+
+# Folder icon
+
+* Opens Windows Explorer with the image file selected via `openexplorer:` protocol.
+* Fix: use `imgLast[0].src` (absolute URL) instead of `imgLast.attr('src')` (may be relative).
+
+# Do not copy from here
+
+* Already case-insensitive: `headingTextLower.includes(stopMarkerTexts[j].toLowerCase())`.
+
+# Copy2Conf — image placeholder + link line removal
+
+* `.md` links: remove entire `<li>` or `<p>` container (not just the link text).
+* `.mp4` links: replace link with plain text, keep the line.
+* Images: unwrap PhotoSwipe `<a>` wrapper first, then replace `<img>` with empty `<p>`.
+* Empty `<p>` keeps section structure (so H1 headings don't disappear in Confluence paste).
+
+# Copy2Conf — link filtering
+
+* `.md` and `.mp4` links replaced with plain text (link removed, text kept).
+* External links (e.g. `https://torrens.atlassian.net/...`) kept as-is.
+* Regex: `/\.md(\?|#|&|$)/` and `/\.mp4(\?|#|&|$)/` to avoid false positives.
+
+# Copy2Conf — text only (no image upload)
+
+* Copy2Conf now strips all `<img>` elements before copying to clipboard.
+* No PowerShell upload triggered. User drags images manually into Confluence.
+* `btnConfigSettings` kept as-is.
+
+# Copy2Conf URL fix
+
+* Simple URL (no params) → 404 on Confluence Cloud. `api=v2` param is required.
+* Fix: use full versioned URL from API response (`?version=N&modificationDate=...&api=v2`).
+* Root cause of "Preview unavailable": Confluence Fabric editor treats pasted `<img src>` as external images, not internal attachments. It does not auto-convert to `<ac:image>` references, so previews from Confluence's media service fail.
+* Workaround that works: drag images individually from md.htm into Confluence Edit view (Confluence uploads as blob attachment).
+
+# Copy2Conf
+
+* Root cause: Confluence migrated from TinyMCE editor to Fabric editor.
+  * Old TinyMCE: auto-uploaded pasted images as page attachments (why it used to work).
+  * New Fabric editor: uses `src` URL as-is, does NOT fetch/upload on paste.
+* Fix applied:
+  * Unwrapped PhotoSwipe `<a class="photoswipe">` wrappers so images render (not shown as link text).
+  * Changed container from `#mdcontainer` to `zero-md-clone > div.all` to avoid duplicate invisible content.
+* Current state: images show in Confluence while local server is running.
+* Known limitation: images disappear when server is off (localhost URLs).
+* Permanent workaround: drag individual images from md.htm page to Confluence — Confluence fetches and uploads as attachment (blob → permanent file). Cannot be automated via clipboard API (browser security prevents putting binary file data in clipboard HTML for multiple images).
+
+# Go button `` handling
+
+* Sometimes, path is quoted with quotation or even presented as unix format. Below samples should be interpreted to a path:
+
+```
+/c/Users/matthew.oh/scripts
+`/c/Users/matthew.oh/scripts`
+-> C:\Works\matthew.oh\scripts
+```
+
+# DONE
+
+* I have hard time in:
+* id.atlassian.com → Security → API tokens
+* id.atlassian.com redirects to:
+```
+https://home.atlassian.com/o/38fbec1d-48cd-4024-91f7-7ab0e7bd4766/?utm_source=identity&cloudId=cf0e281f-66b6-4a6f-ac30-d393342753a4
+```
+* Do not delete # TODO section automatically. I will move them to # DONE section when done.
+* I got image upload error [](./imgs/errors/image-upload-error.png)
+* I got another error [](./imgs/errors/image-upload-error2.png)
+* I got error [](./imgs/errors/powershell-error.png)
+* Succeed on setting button, but when copied to confluence, images do not show:
+  * [](./imgs/errors/no-image1.png)
+  * [](./imgs/errors/no-image2.png)
+* Image still broken: 
+  * [](./imgs/errors/no-image3.png)
+* Also keep popup dialog showing [](./imgs/errors/pop-up-keep.png) until success message comes up.
+* Still failed:
+  * [](./imgs/errors/failed.png)
+  * Some were showing because of localhost: [](./imgs/errors/some-were-showing.png)
+  * No localhost image should be showing.
+* Still no image shows [](./imgs/errors/still-no-image.png)
+* Uploading popup does not show any progress. Show 1/27, 2/27 ... etc
+* When success dialog comes up, the popup can hide.
+  * [](./imgs/errors/uploading-does-not-progress.png)
+* Image still corrupted:
+  * [](./imgs/errors/image-corrupt.png)
+* Still not working [](./imgs/errors/v4-fail.png)
+* Don't you need some logs to confirm?
+* Image still not showing. Review with log files:
+  * [](./imgs/errors/fail1.png)
+  * [](./imgs/errors/fail2.png)
+  * [](../tmp/copy2conf-debug.log)
+  * [](../tmp/copy2conf-status.json)
+* Waited 1 min, but no good:
+  * [](./imgs/errors/wait1min.png)
+  * [](./imgs/errors/wait1min2.png)
+* Now I got [](./imgs/errors/grm-error.png)
+
+# TODO
+
+* Do not delete # TODO section automatically. I will move them to # DONE section when done.
+
+
+# Mermaid
+
+* When you see <pre> section, add `Create Mermaid` button on top right corner, if the nearest <h1> title contains text eg, `flow` or `diagram`.
+* When button clicked, the text inside <pre> will be converted mermaid text and shows mermaid diagram on popup.
+* Popup dialog will have mermaid image on load. The popup will have 3 buttons - view code, copy code, png.
+	* view code will show mermaid syntax
+	* copy code will copy mermaid syntax
+	* png will save current diagram into png and download

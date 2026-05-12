@@ -156,6 +156,7 @@
                     Copy</button>
                 <button id="btnCopy2Conf" type="button" class="btn btn-primary btn-sm" onclick="CopyHTMLToClipboard2Conf()">
                     Copy2Conf</button>
+                <button id="btnConfSettings" type="button" class="btn btn-secondary btn-sm" onclick="showConfSettings()" title="Confluence Settings">&#9881;</button>
                 <button id="btnCopyPath" type="button" class="btn btn-secondary btn-sm" onclick="CopyFilePath()">
                     Copy Md Path</button>
                 <button id="btnImageFolder" type="button" class="btn btn-primary btn-sm invisible">
@@ -186,6 +187,7 @@
                         Copy</button>
                     <button id="btnMobileCopy2Conf" type="button" class="btn btn-primary btn-sm btn-block" onclick="CopyHTMLToClipboard2Conf()">
                         Copy2Conf</button>
+                    <button type="button" class="btn btn-secondary btn-sm btn-block" onclick="showConfSettings()">&#9881; Conf Settings</button>
                     <button id="btnMobileCopyPath" type="button" class="btn btn-secondary btn-sm btn-block" onclick="CopyFilePath()">
                         Copy Md Path</button>
                     <button id="btnMobileImageFolder" type="button" class="btn btn-primary btn-sm btn-block invisible">
@@ -204,6 +206,44 @@
 
         <!-- Toast notification container -->
         <div class="toast-container" id="toastContainer"></div>
+
+        <!-- Confluence Settings Dialog -->
+        <div id="confSettingsOverlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.55);z-index:9999;overflow-y:auto;">
+            <div style="background:#fff;margin:80px auto;padding:24px;width:440px;max-width:92%;border-radius:8px;box-shadow:0 4px 24px rgba(0,0,0,0.3);">
+                <h5 style="margin-bottom:8px;">&#9881; Confluence Settings</h5>
+                <p style="font-size:0.82em;color:#666;margin-bottom:14px;">
+                    Images are uploaded as Confluence page attachments permanently via PowerShell.<br>
+                    <strong>One-time setup:</strong> run <code>powershell/register-conf-upload-protocol.reg</code> first.<br>
+                    Get an API token at <strong>id.atlassian.com → Security → API tokens</strong>.
+                </p>
+                <div style="margin-bottom:8px;">
+                    <label style="font-size:0.83em;font-weight:600;display:block;">Base URL</label>
+                    <input id="confBaseUrl" type="text" class="form-control form-control-sm" placeholder="https://yourcompany.atlassian.net">
+                </div>
+                <div style="margin-bottom:8px;">
+                    <label style="font-size:0.83em;font-weight:600;display:block;">Email</label>
+                    <input id="confEmail" type="email" class="form-control form-control-sm" placeholder="you@company.com">
+                </div>
+                <div style="margin-bottom:8px;">
+                    <label style="font-size:0.83em;font-weight:600;display:block;">API Token</label>
+                    <input id="confApiToken" type="password" class="form-control form-control-sm" placeholder="Atlassian API token">
+                </div>
+                <div style="margin-bottom:8px;">
+                    <label style="font-size:0.83em;font-weight:600;display:block;">Page ID <span style="color:#999;font-weight:normal;">(from URL: /pages/<strong>3746627623</strong>/...)</span></label>
+                    <input id="confPageId" type="text" class="form-control form-control-sm" placeholder="e.g. 3746627623">
+                </div>
+                <div style="margin-bottom:14px;">
+                    <label style="display:flex;align-items:center;gap:6px;font-size:0.83em;cursor:pointer;">
+                        <input id="confUploadImages" type="checkbox" checked style="margin:0;">
+                        Upload images as Confluence attachments (uncheck to skip upload)
+                    </label>
+                </div>
+                <div style="display:flex;gap:8px;justify-content:flex-end;">
+                    <button onclick="document.getElementById('confSettingsOverlay').style.display='none'" class="btn btn-secondary btn-sm">Cancel</button>
+                    <button onclick="saveConfSettingsAndCopy()" class="btn btn-primary btn-sm">Save &amp; Copy</button>
+                </div>
+            </div>
+        </div>
 
         <!-- Floating Table Navigation -->
         <div class="table-nav-container" id="tableNavContainer">
@@ -241,7 +281,7 @@
         };
 
         // Toast notification function
-        function showToast(message, type = 'success') {
+        function showToast(message, type = 'success', duration = 6000) {
             const toastContainer = document.getElementById('toastContainer');
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
@@ -254,15 +294,19 @@
                 toast.classList.add('show');
             }, 10);
 
-            // Remove toast after 6 seconds
-            setTimeout(() => {
-                toast.classList.remove('show');
+            // duration=0 means stay until manually dismissed
+            if (duration > 0) {
                 setTimeout(() => {
-                    if (toast.parentNode) {
-                        toast.parentNode.removeChild(toast);
-                    }
-                }, 300);
-            }, 6000);
+                    toast.classList.remove('show');
+                    setTimeout(() => {
+                        if (toast.parentNode) {
+                            toast.parentNode.removeChild(toast);
+                        }
+                    }, 300);
+                }, duration);
+            }
+
+            return toast; // caller can dismiss manually if needed
         }
 
         //https://stackoverflow.com/questions/12982156/select-copy-text-using-javascript-or-jquery
@@ -280,118 +324,202 @@
             showToast('HTML content copied to clipboard!');
         }
 
-        function CopyHTMLToClipboard2Conf() {
+        // --- Confluence Settings helpers ---
+
+        function getConfSettings() {
             try {
-                var container = document.getElementById('mdcontainer');
-                if (!container) {
-                    showToast('Container not found', 'error');
+                var s = localStorage.getItem('conf-settings');
+                return s ? JSON.parse(s) : null;
+            } catch(e) { return null; }
+        }
+
+        function showConfSettings() {
+            var s = getConfSettings() || {};
+            document.getElementById('confBaseUrl').value  = s.baseUrl  || '';
+            document.getElementById('confEmail').value    = s.email    || '';
+            document.getElementById('confApiToken').value = s.apiToken || '';
+            document.getElementById('confPageId').value   = s.pageId   || '';
+            document.getElementById('confUploadImages').checked = s.uploadImages !== false;
+            document.getElementById('confSettingsOverlay').style.display = 'block';
+        }
+
+        function saveConfSettingsAndCopy() {
+            var settings = {
+                baseUrl:      (document.getElementById('confBaseUrl').value  || '').trim().replace(/\/$/, ''),
+                email:        (document.getElementById('confEmail').value    || '').trim(),
+                apiToken:     (document.getElementById('confApiToken').value || '').trim(),
+                pageId:       (document.getElementById('confPageId').value   || '').trim(),
+                uploadImages: document.getElementById('confUploadImages').checked
+            };
+            localStorage.setItem('conf-settings', JSON.stringify(settings));
+            document.getElementById('confSettingsOverlay').style.display = 'none';
+            CopyHTMLToClipboard2Conf();
+        }
+
+        // --- Content clone + cleanup (shared logic) ---
+
+        function buildConf2Clone() {
+            var zeroMdClone = document.querySelector('zero-md-clone');
+            var contentRoot = zeroMdClone
+                ? (zeroMdClone.querySelector('div.all') || zeroMdClone)
+                : document.getElementById('mdcontainer');
+            if (!contentRoot) return null;
+
+            // Snapshot absolute img.src from live DOM before cloning.
+            // innerHTML serializes raw src attributes (may be relative), but
+            // img.src property on live elements is always the resolved absolute URL.
+            var liveImgs = Array.from(contentRoot.querySelectorAll('img'));
+            var absSrcs  = liveImgs.map(function(img) { return img.src; });
+
+            var clone = contentRoot.cloneNode(true);
+
+            // Apply absolute srcs to cloned imgs so the PS regex can match them all
+            var cloneImgs = Array.from(clone.querySelectorAll('img'));
+            for (var i = 0; i < cloneImgs.length && i < absSrcs.length; i++) {
+                if (absSrcs[i]) cloneImgs[i].setAttribute('src', absSrcs[i]);
+            }
+
+            // Remove content from "Do not copy from here" heading onwards (case-insensitive)
+            var stopMarkerTexts = ['Do not copy from here', 'Do not copy from here ---'];
+            var foundStopHeading = null;
+            var allHeadings = clone.querySelectorAll('h1, h2, h3');
+            for (var i = 0; i < allHeadings.length; i++) {
+                var heading = allHeadings[i];
+                var headingTextLower = (heading.textContent || '').trim().toLowerCase();
+                for (var j = 0; j < stopMarkerTexts.length; j++) {
+                    if (headingTextLower.includes(stopMarkerTexts[j].toLowerCase())) {
+                        foundStopHeading = heading; break;
+                    }
+                }
+                if (foundStopHeading) break;
+            }
+            if (foundStopHeading) {
+                var h1Wrapper = foundStopHeading.closest('.h1-wrapper');
+                var removeFrom = h1Wrapper || foundStopHeading;
+                var parent = removeFrom.parentNode;
+                if (parent) {
+                    var siblings = Array.from(parent.children);
+                    var idx = siblings.indexOf(removeFrom);
+                    for (var k = siblings.length - 1; k >= idx; k--) parent.removeChild(siblings[k]);
+                }
+            }
+
+            // .md links: remove entire containing <li> or <p> line
+            // .mp4 links: replace link with plain text only (keep the line)
+            clone.querySelectorAll('a[href]').forEach(function(link) {
+                var href = (link.getAttribute('href') || '').toLowerCase();
+                if (/\.md(\?|#|&|$)/.test(href)) {
+                    var container = link.closest('li, p');
+                    if (container && container.parentNode) {
+                        container.parentNode.removeChild(container);
+                    } else if (link.parentNode) {
+                        link.parentNode.replaceChild(document.createTextNode(link.textContent || ''), link);
+                    }
+                } else if (/\.mp4(\?|#|&|$)/.test(href)) {
+                    link.parentNode && link.parentNode.replaceChild(
+                        document.createTextNode(link.textContent || ''), link);
+                }
+            });
+
+            // Replace images with empty <p>; unwrap any <a> image-link wrapper first
+            clone.querySelectorAll('img').forEach(function(img) {
+                var parent = img.parentNode;
+                if (parent && parent.nodeName === 'A' && parent.parentNode) {
+                    parent.parentNode.replaceChild(img, parent); // lift img out of <a>
+                    parent = img.parentNode;
+                }
+                var ph = document.createElement('p');
+                if (parent) parent.replaceChild(ph, img);
+            });
+
+            return clone;
+        }
+
+        function copyCloneToClipboard(clone) {
+            var tempDiv = document.createElement('div');
+            tempDiv.style.cssText = 'position:fixed;left:-9999px;';
+            tempDiv.innerHTML = clone.innerHTML;
+            document.body.appendChild(tempDiv);
+            var sel = window.getSelection();
+            var range = document.createRange();
+            range.selectNodeContents(tempDiv);
+            sel.removeAllRanges();
+            sel.addRange(range);
+            document.execCommand('copy');
+            document.execCommand('UnSelect', true);
+            document.body.removeChild(tempDiv);
+        }
+
+        // --- Main Copy2Conf function ---
+
+        async function CopyHTMLToClipboard2Conf() {
+            try {
+                var clone = buildConf2Clone();
+                if (!clone) { showToast('Container not found', 'error'); return; }
+
+                var settings = getConfSettings();
+
+                // Upload images to Confluence via PowerShell relay (bypasses CORS)
+                if (settings && settings.uploadImages && settings.baseUrl && settings.email && settings.apiToken && settings.pageId) {
+                    var images = Array.from(clone.querySelectorAll('img'));
+                    var localImgs = images.filter(function(img) {
+                        var src = img.src || '';
+                        return src.includes('127.0.0.1') || src.includes('localhost');
+                    });
+
+                    if (localImgs.length > 0) {
+                        // Write JSON packet to clipboard, then trigger PowerShell via confupload: protocol.
+                        // PowerShell downloads images (no CORS restriction), uploads to Confluence,
+                        // and puts the final HTML back in clipboard. A dialog appears when done.
+                        var packet = JSON.stringify({ settings: settings, html: clone.innerHTML });
+                        try {
+                            await navigator.clipboard.writeText(packet);
+                        } catch(e) {
+                            // Fallback for older browsers
+                            var ta = document.createElement('textarea');
+                            ta.value = packet;
+                            ta.style.cssText = 'position:fixed;left:-9999px;';
+                            document.body.appendChild(ta);
+                            ta.select();
+                            document.execCommand('copy');
+                            document.body.removeChild(ta);
+                        }
+                        window.location.href = 'confupload:run';
+                        var _uploadTotal = localImgs.length;
+                        var _progToast = showToast('Uploading 0/' + _uploadTotal + ' image(s)…', 'info', 0);
+                        // Poll progress file written by PowerShell
+                        var _mdDir = window.location.href.split('?')[0].replace(/[^/]*$/, '');
+                        var _statusUrl = _mdDir + 'tmp/copy2conf-status.json';
+                        var _pollId = setInterval(function() {
+                            fetch(_statusUrl + '?t=' + Date.now())
+                                .then(function(r) { return r.ok ? r.json() : null; })
+                                .then(function(s) {
+                                    if (!s) return;
+                                    _progToast.textContent = 'Uploading ' + s.done + '/' + s.total + ' image(s)…';
+                                    if (s.complete) {
+                                        clearInterval(_pollId);
+                                        setTimeout(function() {
+                                            _progToast.classList.remove('show');
+                                            setTimeout(function() {
+                                                if (_progToast.parentNode) _progToast.parentNode.removeChild(_progToast);
+                                            }, 300);
+                                        }, 800);
+                                    }
+                                })
+                                .catch(function() { /* PS not started yet */ });
+                        }, 1500);
+                        return;
+                    }
+                } else if (!settings || !settings.baseUrl) {
+                    // No settings yet — prompt user to configure
+                    showConfSettings();
                     return;
                 }
 
-                // Clone the container to avoid modifying the original
-                var clone = container.cloneNode(true);
-                
-                // Find and remove content from "Do not copy from here" onwards
-                // Look for h1, h2, or h3 elements containing the stop marker text
-                var stopMarkerTexts = [
-                    'Do not copy from here',
-                    'Do not copy from here ---'
-                ];
-                
-                var foundStopHeading = null;
-                
-                // Find the heading element that contains the stop marker
-                var allHeadings = clone.querySelectorAll('h1, h2, h3');
-                for (var i = 0; i < allHeadings.length; i++) {
-                    var heading = allHeadings[i];
-                    var headingText = (heading.textContent || heading.innerText || '').trim();
-                    
-                    // Check if this heading contains any of the stop marker texts
-                    for (var j = 0; j < stopMarkerTexts.length; j++) {
-                        if (headingText.includes(stopMarkerTexts[j])) {
-                            foundStopHeading = heading;
-                            break;
-                        }
-                    }
-                    if (foundStopHeading) break;
-                }
-                
-                // If we found the stop heading, remove it and everything after it
-                if (foundStopHeading) {
-                    // Find the parent h1-wrapper div (content is wrapped in div.h1-wrapper)
-                    var h1Wrapper = foundStopHeading.closest('.h1-wrapper');
-                    
-                    if (h1Wrapper) {
-                        // Find the parent container of the h1-wrapper
-                        var parent = h1Wrapper.parentNode;
-                        
-                        if (parent) {
-                            // Get all h1-wrapper siblings
-                            var siblings = Array.from(parent.children);
-                            var wrapperIndex = siblings.indexOf(h1Wrapper);
-                            
-                            // Remove this h1-wrapper and all following h1-wrapper siblings
-                            for (var k = siblings.length - 1; k >= wrapperIndex; k--) {
-                                parent.removeChild(siblings[k]);
-                            }
-                        } else {
-                            // If no parent, remove the wrapper itself
-                            h1Wrapper.parentNode.removeChild(h1Wrapper);
-                        }
-                    } else {
-                        // Fallback: if no h1-wrapper found, try to remove from heading's parent
-                        var parent = foundStopHeading.parentNode;
-                        if (parent) {
-                            var siblings = Array.from(parent.children);
-                            var headingIndex = siblings.indexOf(foundStopHeading);
-                            
-                            // Remove the heading and all following siblings
-                            for (var k = siblings.length - 1; k >= headingIndex; k--) {
-                                parent.removeChild(siblings[k]);
-                            }
-                        }
-                    }
-                }
-                
-                // Remove links to md files containing 'mermaid' or 'cursor'
-                var links = clone.querySelectorAll('a[href]');
-                links.forEach(function(link) {
-                    var href = link.getAttribute('href') || '';
-                    var hrefLower = href.toLowerCase();
-                    
-                    // Check if href contains 'mermaid' or 'cursor' and points to an md file
-                    if ((hrefLower.includes('mermaid') || hrefLower.includes('cursor')) && 
-                        (hrefLower.includes('.md') || hrefLower.includes('mermaid') || hrefLower.includes('cursor'))) {
-                        // Replace link with just its text content
-                        var textNode = document.createTextNode(link.textContent || link.innerText);
-                        if (link.parentNode) {
-                            link.parentNode.replaceChild(textNode, link);
-                        }
-                    }
-                });
-                
-                // Create a temporary div to hold the filtered content
-                var tempDiv = document.createElement('div');
-                tempDiv.style.position = 'fixed';
-                tempDiv.style.left = '-9999px';
-                tempDiv.innerHTML = clone.innerHTML;
-                document.body.appendChild(tempDiv);
-                
-                // Select and copy
-                var selection = window.getSelection();
-                var range = document.createRange();
-                range.selectNodeContents(tempDiv);
-                selection.removeAllRanges();
-                selection.addRange(range);
-                
-                // Copy to clipboard
-                document.execCommand('copy');
-                document.execCommand("UnSelect", true);
-                
-                // Clean up
-                document.body.removeChild(tempDiv);
-                
-                showToast('Content copied to clipboard (excluding mermaid/cursor links and stop section)!');
+                // Fallback: copy with localhost URLs (settings exist but upload disabled or no local images)
+                copyCloneToClipboard(clone);
+                var imgCount = clone.querySelectorAll('img').length;
+                showToast('Copied! (' + imgCount + ' image' + (imgCount !== 1 ? 's' : '') + ' included)');
             } catch (error) {
                 console.error('Copy error:', error);
                 showToast('Error copying content', 'error');
@@ -812,7 +940,10 @@
                 document.title = app.src.toLowerCase().replace('../', '').replace('./', '').replace('_loadingdocuments/', '');
 
 
-                console.log('isRootPage:', isRootPage, ',app.src:', app.src);
+                // Search is only active on index pages (work_index.md, bauSensei.md)
+                var isSearchPage = isRootPage || app.src.toLowerCase().includes('bausensei.md');
+
+                console.log('isRootPage:', isRootPage, ',isSearchPage:', isSearchPage, ',app.src:', app.src);
 
                 // Without this line, clone was not working.
                 await app.render({
@@ -889,8 +1020,10 @@
                 //-----------------------------
                 // Event Handler
                 //-----------------------------  
-                // On keyup, search!
-                inputSearch.addEventListener("keyup", searchText);
+                // On keyup, search! Only active on search-enabled pages (work_index.md, bauSensei.md)
+                inputSearch.addEventListener("keyup", function() {
+                    if (isSearchPage) searchText();
+                });
                 btnHome.addEventListener("click", goHome);
                 btnReset.addEventListener("click", resetText);
                 btnWrapIt.addEventListener("click", toggleWrap);
@@ -1062,12 +1195,13 @@
 
                 }
 
-                // Retrieve search text on page load
-                // This part should be positioned here at the last. Otherwise, folding/unfolding will show override search result.
-                inputSearch.value = localStorage.getItem(_searchText);
-                if (isRootPage) {
-                    // Apply filter only in root page.
+                // Retrieve search text on page load — only for search-enabled pages (work_index.md, bauSensei.md)
+                // Other pages get a cleared search box so they don't inadvertently trigger filtering.
+                if (isSearchPage) {
+                    inputSearch.value = localStorage.getItem(_searchText);
                     searchText();
+                } else {
+                    inputSearch.value = '';
                 }
 
                 // Handle anchor navigation after page is fully loaded
@@ -1137,12 +1271,7 @@
                     document.addEventListener("click", function (e) {
                         const target = e.target.closest(".btn-image-folder"); // Or any other selector.
                         if (target) {
-                            // Do something with `target`.
-                            copyImageFolderPathToClipboard(target);
-                            $(target).after('<span class="copied"> Copied</span>');
-                            setTimeout(function () {
-                                $('.copied').remove();
-                            }, 1000);
+                            openImageInExplorer(target);
                         }
                     });
 
@@ -1155,6 +1284,19 @@
                  * via the custom "openexplorer:" protocol (register-explorer-protocol.reg).
                  * Keywords (case-insensitive): "source folder", "source", "local folder", "folder"
                  */
+                function normalizeGoPath(p) {
+                    // Strip surrounding backticks (e.g. `/c/Users/foo` -> /c/Users/foo)
+                    p = p.replace(/^`+|`+$/g, '').trim();
+                    // Convert Unix-style git-bash paths: /c/Users/foo -> C:\Users\foo
+                    var unixMatch = p.match(/^\/([a-zA-Z])(\/.*)?$/);
+                    if (unixMatch) {
+                        var drive = unixMatch[1].toUpperCase();
+                        var rest = unixMatch[2] ? unixMatch[2].replace(/\//g, '\\') : '';
+                        p = drive + ':' + rest;
+                    }
+                    return p;
+                }
+
                 function addSourceFolderGoButton() {
                     var folderKeywords = ['source folder', 'source', 'local folder', 'folder', 'local'];
 
@@ -1170,7 +1312,7 @@
                             var $cells = $(this).find('td');
                             var label = $cells.first().text().trim().toLowerCase();
                             if (folderKeywords.some(function(kw) { return label.includes(kw); })) {
-                                var path = $cells.eq(1).text().trim();
+                                var path = normalizeGoPath($cells.eq(1).text().trim());
                                 if (path) {
                                     var $btn = $('<button class="btn btn-info btn-sm">Go</button>');
                                     $btn.on('click', (function(p) {
@@ -1874,17 +2016,16 @@
                     alert('Copied');
                 }
 
-                function copyImageFolderPathToClipboard(btnClicked) {
+                function openImageInExplorer(btnClicked) {
                     var folder = 'C:\\Works\\';
                     var imgLast = $(btnClicked).closest('p').find('img:last');
-                    var imgPath = imgLast.attr('src').replace('http://', '').replace('https://', '');
+                    var imgPath = (imgLast[0] ? imgLast[0].src : imgLast.attr('src')).replace('http://', '').replace('https://', '');
                     var words = imgPath.split('/');
-                    words.shift();
-                    words.pop();
+                    words.shift(); // remove hostname:port
 
-                    var resFolderPath = folder + words.toString().replaceAll(',', '\\').replaceAll('.\\', '').replaceAll('%20', ' ');
-                    console.log('resFolderPath', resFolderPath);
-                    navigator.clipboard.writeText(resFolderPath);
+                    var resFilePath = folder + words.join('\\').replaceAll('.\\', '').replaceAll('%20', ' ');
+                    console.log('openImageInExplorer resFilePath', resFilePath);
+                    window.location.href = 'openexplorer:' + resFilePath;
                 }
 
                 function insertAfter(referenceNode, newNode) {
