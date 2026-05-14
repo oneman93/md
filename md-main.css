@@ -22,6 +22,12 @@
     padding: 0.25rem 0.5rem;
 }
 
+.top-menu-wrapper input[readonly] {
+    background-color: #e9ecef;
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+
 h2 {
     color: darkgray;
 }
@@ -42,6 +48,11 @@ p {
 
 h1 {
     font-size: 2rem;
+}
+
+/* Auto-generated doc title (filename) — color only, no other overrides */
+.doc-title-heading {
+    color: #28a745;
 }
 h1.font-size-normal {
     font-size: 1rem !important;

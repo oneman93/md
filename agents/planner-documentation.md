@@ -1,6 +1,3 @@
-# TODO
-
-* Do not delete # TODO section automatically. I will move them to # DONE section when done.
 
 # DONE
 

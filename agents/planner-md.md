@@ -248,10 +248,6 @@ https://home.atlassian.com/o/38fbec1d-48cd-4024-91f7-7ab0e7bd4766/?utm_source=id
   * [](./imgs/errors/wait1min2.png)
 * Now I got [](./imgs/errors/grm-error.png)
 
-# TODO
-
-* Do not delete # TODO section automatically. I will move them to # DONE section when done.
-
 
 # Mermaid
 
@@ -261,3 +257,64 @@ https://home.atlassian.com/o/38fbec1d-48cd-4024-91f7-7ab0e7bd4766/?utm_source=id
 	* view code will show mermaid syntax
 	* copy code will copy mermaid syntax
 	* png will save current diagram into png and download
+* See [](./imgs/errors/mermaid-not-working.png)
+* Mermaid syntax and diagram are not created dynamically from the <pre> text.
+* See [](./imgs/errors/open-new-tab.png)
+* Diagram dialog is too small. Instead of dialog, open a new tab. If necessary, create a temporary markdown file.
+* See [](./imgs/errors/png-button-not-working.png)
+* png button not working
+
+# Git push
+
+* Git push is not working fix please.
+
+
+# Misc
+
+* See [](./imgs/errors/i-didnt-type.png)
+* It shows my email in search text box. I don't know where it comes from.
+* It still show. When local storage is empty, show empty string.
+* Can you not allow email in this search box? User will never enter email to search text here.
+* See [](./imgs/errors/this-happens.png)
+* After page refresh, sometimes this happens.
+* I think it may happen because of `btnConfigSettings` button: [](./imgs/errors/i-think-it.png)
+* See [](./imgs/img-err-menu/h2-not-show.png)
+* What makes the first few lines not showing on localhost website? 
+* See [](./imgs/img-err-menu/meta-data.png)
+* It still shows on top with small fonts. It seems `## q1` is treated as meta data.
+
+
+
+# Show H1 Only
+* When this button clicked, show little dropdown next to the button having checkbox items:
+  * H1
+  * H2
+  * H3
+* When each item ticked, render the markdown file to show matching items.
+* For example, if `H1, H2` selected, show all `<h1>` and `<h2>` items only in markdown.
+* See [](./imgs/img-err-menu/each-h2.png)
+  * Each <h2> and <h3> should have expand/collapse button, preferably, with smaller icons than <h1>
+  * <h1> Collapse button does not work
+  * `Show H1 Only` has the last item, `Show All` button, when clicked, it will show the page without any filtering.
+* See [](./imgs/img-err-menu/expand-h2-notworking.png)
+  * <h2> expand not working
+  * Please update icons with better css - icon is not intuitive.
+  * Mininum js logs if needed debugging.
+* See screenshots below. Expand not working in <h1> and <h2>
+  * [](./imgs/img-err-menu/q1-expand-not.png)
+  * [](./imgs/img-err-menu/q1-expand-not2.png)
+* Fix [](./imgs/img-err-menu/h2-not-working.png)
+* If `h1, h2, h3` has children text to show by expanding, do not show `expand` icon. In [](./imgs/img-err-menu/nothing-to-expand.png), the first <h1> should not show expand button.
+
+# Search box
+
+* See [](./imgs/errors/page-load-after.png)
+* Search box text box is not editable right after page load. It seems being locked for a while. If it is locked, show text box css as disabled.
+* Find the root issue why the textbox was locked.
+
+# TODO
+
+* See [](./imgs/img-ui/title-green.png)
+* Instead of making title xxx.md into <h1>, make it bootstrap dark green color like comments/information.
+* Do not convert the title xxx.md into <h1>. Just change color.
+* Do not convert the title xxx.md into small size. No cess except color. Color should be brighter green as in [](./imgs/img-ui/color.png)

@@ -127,7 +127,7 @@
     <body>
         <div class="top-menu-wrapper d-flex justify-content-between">
             <DIV id="divLeft" class="top-menu-left">
-                <input id="inputSearch" type="text" placeholder="type to search..." />
+                <input id="inputSearch" type="text" placeholder="type to search..." autocomplete="nope" />
                 <button id="btnReset" type="button" class="btn btn-primary btn-sm">Reset</button>
                 <button id="btnHome" type="button" class="btn btn-danger btn-sm">
                     <span style="font-size: 1em;color:white;"><i class="fa-solid fa-house"></i></span>
@@ -163,7 +163,16 @@
                     <span style=" font-size: 1em;color:white;"><i class="fa-solid fa-folder"></i></span>
                     Copy</button>
                 <button id="btnPDF" type="button" class="btn btn-dark btn-sm">PDF</button>
-                <button id="btnH1Only" type="button" class="btn btn-primary btn-sm">Show H1 Only</button>
+                <div id="h1FilterGroup" style="position:relative;display:inline-block;">
+                    <button id="btnH1Only" type="button" class="btn btn-primary btn-sm">Show H1 Only ▾</button>
+                    <div id="h1FilterDropdown" style="display:none;position:absolute;right:0;top:100%;z-index:2000;background:#fff;border:1px solid #ccc;border-radius:4px;padding:8px 12px;min-width:100px;box-shadow:0 2px 8px rgba(0,0,0,.2);">
+                        <label style="display:block;margin:0;cursor:pointer;"><input type="checkbox" id="chkFilterH1" value="h1"> H1</label>
+                        <label style="display:block;margin:4px 0 0;cursor:pointer;"><input type="checkbox" id="chkFilterH2" value="h2"> H2</label>
+                        <label style="display:block;margin:4px 0 0;cursor:pointer;"><input type="checkbox" id="chkFilterH3" value="h3"> H3</label>
+                        <hr style="margin:6px 0;">
+                        <button id="btnShowAll" style="width:100%;font-size:0.85em;padding:2px 6px;cursor:pointer;border:1px solid #aaa;border-radius:3px;background:#f8f8f8;">Show All</button>
+                    </div>
+                </div>
             </DIV>
             
             <!-- Mobile menu overlay (hidden by default) -->
@@ -200,7 +209,7 @@
 
         </div>
 
-        <div id="mdcontainer" style="width:70%; margin:0 auto; margin-top: 50px;">
+        <div id="mdcontainer" style="width:70%; margin:0 auto;">
             <!-- shadow dom will be cloned here -->
         </div>
 
@@ -218,19 +227,19 @@
                 </p>
                 <div style="margin-bottom:8px;">
                     <label style="font-size:0.83em;font-weight:600;display:block;">Base URL</label>
-                    <input id="confBaseUrl" type="text" class="form-control form-control-sm" placeholder="https://yourcompany.atlassian.net">
+                    <input id="confBaseUrl" type="text" class="form-control form-control-sm" placeholder="https://yourcompany.atlassian.net" autocomplete="nope">
                 </div>
                 <div style="margin-bottom:8px;">
                     <label style="font-size:0.83em;font-weight:600;display:block;">Email</label>
-                    <input id="confEmail" type="email" class="form-control form-control-sm" placeholder="you@company.com">
+                    <input id="confEmail" type="text" class="form-control form-control-sm" placeholder="you@company.com" autocomplete="nope">
                 </div>
                 <div style="margin-bottom:8px;">
                     <label style="font-size:0.83em;font-weight:600;display:block;">API Token</label>
-                    <input id="confApiToken" type="password" class="form-control form-control-sm" placeholder="Atlassian API token">
+                    <input id="confApiToken" type="password" class="form-control form-control-sm" placeholder="Atlassian API token" autocomplete="new-password">
                 </div>
                 <div style="margin-bottom:8px;">
                     <label style="font-size:0.83em;font-weight:600;display:block;">Page ID <span style="color:#999;font-weight:normal;">(from URL: /pages/<strong>3746627623</strong>/...)</span></label>
-                    <input id="confPageId" type="text" class="form-control form-control-sm" placeholder="e.g. 3746627623">
+                    <input id="confPageId" type="text" class="form-control form-control-sm" placeholder="e.g. 3746627623" autocomplete="nope">
                 </div>
                 <div style="margin-bottom:14px;">
                     <label style="display:flex;align-items:center;gap:6px;font-size:0.83em;cursor:pointer;">
@@ -783,8 +792,17 @@
                 });
         }
 
+        function adjustTopMargin() {
+            var h = document.querySelector('.top-menu-wrapper').offsetHeight;
+            document.getElementById('mdcontainer').style.marginTop = h + 'px';
+        }
+        window.addEventListener('resize', adjustTopMargin);
+
         window.onload = function () {
 
+            adjustTopMargin();
+
+            var _h1FilterKey = 'md-heading-filter';
 
             // Load version on page load
             loadVersion();
@@ -1028,7 +1046,39 @@
                 btnReset.addEventListener("click", resetText);
                 btnWrapIt.addEventListener("click", toggleWrap);
                 btnPDF.addEventListener("click", convert2PDF);
-                btnH1Only.addEventListener("click", toggleH1Only);
+                btnH1Only.addEventListener("click", function(e) {
+                    e.stopPropagation();
+                    var dd = document.getElementById('h1FilterDropdown');
+                    dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
+                });
+                document.addEventListener('click', function(e) {
+                    var group = document.getElementById('h1FilterGroup');
+                    if (group && !group.contains(e.target)) {
+                        document.getElementById('h1FilterDropdown').style.display = 'none';
+                    }
+                });
+                ['chkFilterH1', 'chkFilterH2', 'chkFilterH3'].forEach(function(id) {
+                    var cb = document.getElementById(id);
+                    if (cb) cb.addEventListener('change', function() {
+                        var levels = [];
+                        ['chkFilterH1', 'chkFilterH2', 'chkFilterH3'].forEach(function(cid) {
+                            var c = document.getElementById(cid);
+                            if (c && c.checked) levels.push(c.value);
+                        });
+                        if (levels.length === 0) {
+                            localStorage.removeItem(_h1FilterKey);
+                            location.reload();
+                        } else {
+                            localStorage.setItem(_h1FilterKey, levels.join(','));
+                            applyHeadingFilter(levels);
+                        }
+                    });
+                });
+                var btnShowAll = document.getElementById('btnShowAll');
+                if (btnShowAll) btnShowAll.addEventListener('click', function() {
+                    localStorage.removeItem(_h1FilterKey);
+                    location.reload();
+                });
                 btnExit.addEventListener("click", function() {
                     // Redirect to root URL
                     window.location.href = window.location.protocol + '//' + window.location.host + '/';
@@ -1135,10 +1185,15 @@
                 setTimeout(function () { addCopyCodeButtons(); }, 150);
                 setTimeout(function () { addBannerCredentialCopyButtons(app); }, 300);
 
-                // Restore Show H1 Only state across page refreshes
-                if (localStorage.getItem('md-h1-only-state') === '1') {
-                    btnH1Only.innerHTML = 'Show ALL';
-                    showH1Only();
+                // Restore heading filter state across page refreshes
+                var _savedFilter = localStorage.getItem(_h1FilterKey);
+                if (_savedFilter) {
+                    var _savedLevels = _savedFilter.split(',').filter(Boolean);
+                    _savedLevels.forEach(function(level) {
+                        var cb = document.getElementById('chkFilter' + level.toUpperCase());
+                        if (cb) cb.checked = true;
+                    });
+                    applyHeadingFilter(_savedLevels);
                 }
 
                 // Skip focus on mobile devices to avoid keyboard blocking the screen
@@ -1150,10 +1205,6 @@
                     return hasTouch && isSmallScreen;
                 }
                 
-                if (!isMobileDevice()) {
-                    inputSearch.focus();
-                }
-
                 // Create table navigation buttons
                 createTableNavigation();
 
@@ -1197,12 +1248,33 @@
 
                 // Retrieve search text on page load — only for search-enabled pages (work_index.md, bauSensei.md)
                 // Other pages get a cleared search box so they don't inadvertently trigger filtering.
+                // Email addresses are never valid search values — strip them if autofill/localStorage stored one.
+                function isEmailValue(v) { return /\S+@\S+\.\S+/.test(v || ''); }
+
+                // Block Chrome autofill: readonly prevents autofill; removed on first focus so user can type.
+                // focus() is called AFTER setting readonly + listener so the focus event fires and immediately removes readonly.
+                inputSearch.setAttribute('readonly', '');
+                inputSearch.addEventListener('focus', function() { this.removeAttribute('readonly'); }, { once: true });
+                if (!isMobileDevice()) {
+                    inputSearch.focus();
+                }
+
                 if (isSearchPage) {
-                    inputSearch.value = localStorage.getItem(_searchText);
+                    var storedSearch = localStorage.getItem(_searchText) || '';
+                    if (isEmailValue(storedSearch)) {
+                        localStorage.removeItem(_searchText);
+                        storedSearch = '';
+                    }
+                    inputSearch.value = storedSearch;
                     searchText();
                 } else {
                     inputSearch.value = '';
                 }
+
+                // Belt-and-suspenders: clear any email that slipped through autofill
+                inputSearch.addEventListener('input', function() {
+                    if (isEmailValue(this.value)) this.value = '';
+                });
 
                 // Handle anchor navigation after page is fully loaded
                 // Wait a bit for all content to render, then scroll to anchor
@@ -1362,6 +1434,22 @@
                         btnContainer.className = 'copy-code-btns';
                         if (h1OnlyActive) btnContainer.style.display = 'none';
                         btnContainer.appendChild(btn);
+
+                        // Add "Create Mermaid" button if nearest H1 contains "flow" or "diagram"
+                        var h1Wrapper = pre.closest('.h1-wrapper');
+                        var h1El = h1Wrapper ? h1Wrapper.querySelector('h1') : null;
+                        var h1Text = h1El ? h1El.textContent.toLowerCase() : '';
+                        if (/flow|diagram/.test(h1Text)) {
+                            var mermaidBtn = document.createElement('button');
+                            mermaidBtn.type = 'button';
+                            mermaidBtn.className = 'btn btn-sm btn-outline-info create-mermaid-btn';
+                            mermaidBtn.textContent = 'Create Mermaid';
+                            (function(code) {
+                                mermaidBtn.addEventListener('click', function() { showMermaidPopup(code); });
+                            })(codeText);
+                            btnContainer.appendChild(mermaidBtn);
+                        }
+
                         wrapper.appendChild(btnContainer);
                     });
                 }
@@ -1383,10 +1471,11 @@
                     function looksLikeMetadata(text) {
                         if (!text || text.trim().length === 0) return false;
                         var trimmed = text.trim();
-                        var hasColon = trimmed.includes(':');
-                        var isShort = trimmed.length < 150; // Metadata is typically short
-                        var hasMetadataKeywords = /^(documentLevel|title|author|date|tags|category|description):/i.test(trimmed);
-                        return hasColon && (isShort || hasMetadataKeywords);
+                        // Explicit metadata keywords always qualify
+                        var hasMetadataKeywords = /^(documentLevel|title|author|date|tags|category|description)\s*:/i.test(trimmed);
+                        // Strict key: key must start with a letter and contain only letters/hyphens/underscores (no digits, so Q1/Q2 won't match)
+                        var isStrictKeyValue = /^[a-zA-Z][a-zA-Z_-]+\s*:/.test(trimmed);
+                        return hasMetadataKeywords || isStrictKeyValue;
                     }
                     
                     // Track HR elements that need to be removed (between metadata elements)
@@ -1599,7 +1688,7 @@
                                 });
                                 remainingContent = tempContentDiv.innerHTML;
                             }
-                            h1Wrapper.innerHTML = '<h1>' + firstLine + '</h1>' + (remainingContent ? remainingContent : '');
+                            h1Wrapper.innerHTML = '<p class="doc-title-heading">' + firstLine + '</p>' + (remainingContent ? remainingContent : '');
                         } else {
                             h1Wrapper.innerHTML = '<h1>Outline</h1>' + noTagElems;
                         }
@@ -1693,8 +1782,8 @@
                     var input, filter, ul, tags, a, i, txtValue, elem;
                     filter = inputSearch.value.toUpperCase();
 
-                    // Save search text (otherwise, chrome refreshes it.)
-                    localStorage.setItem(_searchText, filter);
+                    // Save search text (otherwise, chrome refreshes it.) — never save email values.
+                    if (!isEmailValue(filter)) localStorage.setItem(_searchText, filter);
 
                     // 13/1/25 i don't like it anymore because it nullifies loading css etc >> commented
                     //applyHighlightCss();
@@ -1910,82 +1999,99 @@
                     ctrl.find('.highlight').replaceWith(spanRawText);
                 }
 
-                // Copied from searchText()
-                function showH1Only() {
-
-                    var input, filter, ul, tags, a, i, txtValue, elem;
-                    tags = mdClone.querySelectorAll("h1");
-
-                    // All other tags will be hidden unless filter is reset to "". 24/10/24, img added.
-                    var otherTags = mdClone.querySelectorAll("table,pre,h2,h3,li,img,p,hr,blockquote,ul,ol,.copy-code-btns");
-                    $(otherTags).hide();
-
-                    console.log('tags length: ', tags.length);
-                    for (i = 0; i < tags.length; i++) {
-                        elem = tags[i];
-                        var elemTagName = elem.tagName;
-                        txtValue = elem.textContent || elem.innerText;
-
-                        var div = $(elem).closest('.h1-wrapper');
-
-                        // elem is matching with search criteria
-                        $(elem).slideDown();
-                        if (elemTagName != "H1") {
-                            // h2, li matching
-                            var h1 = div.find('h1');
-                            if (!h1.is(':visible')) {
-                                h1.show();
-                            }
+                function _addSubExpandBtn(heading) {
+                    // H2 stops at h1/h2 only (includes h3 sub-content); H3 stops at h1/h2/h3
+                    var stopSelector = heading.tagName === 'H2' ? 'h1,h2' : 'h1,h2,h3';
+                    // Don't add button if there's nothing to expand
+                    if ($(heading).nextUntil(stopSelector).length === 0) return;
+                    var btn = document.createElement('button');
+                    btn.dataset.expanded = 'false';
+                    btn.className = 'btn-sub-expand';
+                    btn.style.cssText = 'padding:1px 6px;margin-left:8px;cursor:pointer;border:none;border-radius:3px;background:transparent;vertical-align:middle;color:#888;font-size:0.85em;';
+                    btn.innerHTML = '<i class="fa-solid fa-chevron-right"></i>';
+                    btn.title = 'Expand section';
+                    btn.addEventListener('click', function() {
+                        var isExpanded = this.dataset.expanded === 'true';
+                        var $siblings = $(heading).nextUntil(stopSelector);
+                        console.log('[expand]', heading.tagName, heading.textContent.substring(0, 30), '| expanded:', isExpanded, '| siblings:', $siblings.length);
+                        if (isExpanded) {
+                            $siblings.hide();
+                            $siblings.find('*').hide();
+                        } else {
+                            $siblings.show();
+                            $siblings.find('h3,p,li,table,pre,img,blockquote,hr,ul,ol').show();
                         }
+                        this.dataset.expanded = isExpanded ? 'false' : 'true';
+                        this.innerHTML = isExpanded ? '<i class="fa-solid fa-chevron-right"></i>' : '<i class="fa-solid fa-chevron-down"></i>';
+                        this.title = isExpanded ? 'Expand section' : 'Collapse section';
+                    });
+                    heading.appendChild(btn);
+                }
 
-                        // Show button
-                        var btnExpand = div.find('.btn-ex-collapse');
+                function applyHeadingFilter(levels) {
+                    // Remove any previously injected buttons and re-add fresh
+                    $(mdClone.querySelectorAll('.btn-ex-collapse, .btn-sub-expand')).remove();
 
-                        //------------------
-                        // btnExpand
-                        //------------------
-                        if (btnExpand.length <= 0) {
-                            // if button does not exist, create one.
-                            let btn = document.createElement('button');
+                    // Hide all headings and content, then show selected heading levels
+                    var allContent = mdClone.querySelectorAll("table,pre,h1,h2,h3,li,img,p,hr,blockquote,ul,ol,.copy-code-btns");
+                    $(allContent).hide();
+
+                    levels.forEach(function(level) {
+                        $(mdClone.querySelectorAll(level)).show();
+                    });
+
+                    // H1 Expand/Collapse buttons
+                    if (levels.indexOf('h1') !== -1) {
+                        $(mdClone.querySelectorAll('h1')).each(function() {
+                            var wrapper = $(this).closest('.h1-wrapper');
+                            // Don't add button if there's no meaningful content to expand
+                            var hasContent = wrapper.children().not('h1').filter(function() {
+                                return $(this).text().trim().length > 0 || $(this).find('table,img,pre').length > 0;
+                            }).length > 0;
+                            if (!hasContent) return;
+                            var btn = document.createElement('button');
                             btn.innerHTML = "Expand";
-                            btn.classList.add("btn", "btn-sm", "btn-expand", "btn-success", "btn-ex-collapse");  // green expand button
+                            btn.classList.add("btn", "btn-sm", "btn-expand", "btn-success", "btn-ex-collapse");
                             btn.addEventListener("click", function () {
-
                                 var isExpand = this.innerHTML == 'Expand';
-                                console.log('isExpand', isExpand);
-                                console.log('yo, li');
-                                // find more than one level
-                                // https://stackoverflow.com/questions/7648761/how-to-select-all-children-in-any-level-from-a-parent-in-jquery
-
-                                // Have to define again here.
-                                var div = $(this).closest('.h1-wrapper');
-                                var children = div.find('*');
-                                console.log('children', children.length);
-
-                                //https://stackoverflow.com/questions/13550079/how-to-find-nth-element-when-a-click-is-activated
-                                var divs = $('.h1-wrapper');
-                                var divIndex = divs.index(div);
-
+                                var w = $(this).closest('.h1-wrapper');
+                                console.log('[H1 expand]', isExpand ? 'expanding' : 'collapsing', w.find('h1').first().text().substring(0, 30));
                                 if (isExpand) {
-                                    // Expand button clicked
-                                    children.slideDown();
-                                    btn.innerHTML = 'Collapse';
-                                    btn.classList.remove('btn-success');
-                                    btn.classList.add('btn-danger');
-
+                                    // Show all content under this H1 wrapper
+                                    w.children().show();
+                                    w.find('*').show();
+                                    this.innerHTML = 'Collapse';
+                                    this.classList.remove('btn-success');
+                                    this.classList.add('btn-danger');
                                 } else {
-                                    // Collapse button clicked
-                                    searchText();
-                                    btn.innerHTML = 'Expand';
-                                    btn.classList.add('btn-success');
-                                    btn.classList.remove('btn-danger');
+                                    // Collapse: hide all direct children except h1
+                                    w.children().not('h1').hide();
+                                    this.innerHTML = 'Expand';
+                                    this.classList.remove('btn-danger');
+                                    this.classList.add('btn-success');
                                 }
                             });
-                            div.find('h1').append(btn);
-                        }
-
-
+                            $(this).append(btn);
+                        });
                     }
+
+                    // H2 small Expand/Collapse buttons
+                    if (levels.indexOf('h2') !== -1) {
+                        $(mdClone.querySelectorAll('h2')).each(function() {
+                            _addSubExpandBtn(this);
+                        });
+                    }
+
+                    // H3 small Expand/Collapse buttons
+                    if (levels.indexOf('h3') !== -1) {
+                        $(mdClone.querySelectorAll('h3')).each(function() {
+                            _addSubExpandBtn(this);
+                        });
+                    }
+                }
+
+                function showH1Only() {
+                    applyHeadingFilter(['h1']);
                 }
 
 
@@ -2043,15 +2149,17 @@
                     }
                 }
 
-                var _h1OnlyKey = 'md-h1-only-state';
-
+                // toggleH1Only used by mobile button: toggles H1-only filter on/off
                 function toggleH1Only() {
-                    if (btnH1Only.getHTML() == "Show H1 Only") {
-                        btnH1Only.innerHTML = 'Show ALL';
-                        localStorage.setItem(_h1OnlyKey, '1');
-                        showH1Only();
+                    var saved = localStorage.getItem(_h1FilterKey);
+                    if (!saved) {
+                        localStorage.setItem(_h1FilterKey, 'h1');
+                        var cb = document.getElementById('chkFilterH1');
+                        if (cb) cb.checked = true;
+                        applyHeadingFilter(['h1']);
+                        if (btnMobileH1Only) btnMobileH1Only.innerHTML = 'Show ALL';
                     } else {
-                        localStorage.removeItem(_h1OnlyKey);
+                        localStorage.removeItem(_h1FilterKey);
                         location.reload();
                     }
                 }
@@ -2782,6 +2890,152 @@
                             }
                         });
                     });
+                }
+
+                function convertToMermaid(rawText) {
+                    var trimmed = rawText.trim();
+                    // Already mermaid syntax?
+                    if (/^(flowchart|graph|sequenceDiagram|classDiagram|stateDiagram|erDiagram|gantt|pie)\b/i.test(trimmed)) {
+                        return trimmed;
+                    }
+                    // Convert pseudo-flow text (lines with -> arrows) to mermaid flowchart
+                    var lines = trimmed.split('\n');
+                    var mermaidLines = ['flowchart TD'];
+                    var nodeMap = {};
+                    var nodeCount = 0;
+                    var edges = [];
+                    var prevTopId = null;
+
+                    function sanitize(text) {
+                        return text.substring(0, 50).replace(/"/g, "'").replace(/[<>{}]/g, '');
+                    }
+                    function getNode(label) {
+                        var key = label.trim();
+                        if (!key) return null;
+                        if (!nodeMap[key]) {
+                            nodeCount++;
+                            nodeMap[key] = 'n' + nodeCount;
+                            mermaidLines.push('    ' + nodeMap[key] + '["' + sanitize(key) + '"]');
+                        }
+                        return nodeMap[key];
+                    }
+
+                    lines.forEach(function(line) {
+                        var trimLine = line.trim();
+                        if (!trimLine) return;
+                        // Skip deeply indented detail lines (SQL, etc.)
+                        if (/^\s{4,}/.test(line) && !trimLine.startsWith('->')) return;
+
+                        if (trimLine.startsWith('->')) {
+                            var targetLabel = trimLine.replace(/^->\s*/, '').trim();
+                            var targetId = getNode(targetLabel);
+                            if (prevTopId && targetId && prevTopId !== targetId) {
+                                edges.push('    ' + prevTopId + ' --> ' + targetId);
+                            }
+                        } else {
+                            var nodeId = getNode(trimLine);
+                            if (prevTopId && nodeId && prevTopId !== nodeId) {
+                                edges.push('    ' + prevTopId + ' --> ' + nodeId);
+                            }
+                            prevTopId = nodeId;
+                        }
+                    });
+
+                    return mermaidLines.concat(edges).join('\n');
+                }
+
+                function showMermaidPopup(rawCode) {
+                    var mermaidCode = convertToMermaid(rawCode);
+
+                    function escHtml(s) {
+                        return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+                    }
+                    function escJs(s) {
+                        return s.replace(/\\/g,'\\\\').replace(/`/g,'\\`').replace(/\$/g,'\\$');
+                    }
+
+                    var html = '<!DOCTYPE html><html><head><title>Mermaid Diagram</title>' +
+                        '<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"><\/script>' +
+                        '<style>' +
+                        'body{font-family:sans-serif;padding:24px;margin:0;}' +
+                        'h2{margin-top:0;font-size:1.4rem;}' +
+                        '.btn-bar{display:flex;gap:8px;margin-bottom:16px;}' +
+                        'button{padding:5px 14px;cursor:pointer;border-radius:4px;border:1px solid #ccc;background:#fff;font-size:13px;}' +
+                        'button:hover{background:#f0f0f0;}' +
+                        '.btn-success{background:#28a745;color:#fff;border-color:#28a745;}' +
+                        '.btn-success:hover{background:#218838;}' +
+                        '#diagram{overflow:auto;}' +
+                        '#diagram svg{max-width:100%;height:auto;}' +
+                        '#codeBlock{display:none;background:#f8f8f8;padding:14px;border-radius:4px;white-space:pre-wrap;font-size:13px;border:1px solid #ddd;overflow:auto;}' +
+                        '<\/style><\/head><body>' +
+                        '<h2>Mermaid Diagram<\/h2>' +
+                        '<div class="btn-bar">' +
+                        '<button id="viewCodeBtn" onclick="toggleCode()">view code<\/button>' +
+                        '<button id="copyCodeBtn" onclick="copyCode()">copy code<\/button>' +
+                        '<button id="pngBtn" class="btn-success" onclick="downloadPng()">png<\/button>' +
+                        '<\/div>' +
+                        '<div id="diagram"><div class="mermaid">' + escHtml(mermaidCode) + '<\/div><\/div>' +
+                        '<pre id="codeBlock">' + escHtml(mermaidCode) + '<\/pre>' +
+                        '<script>' +
+                        'var mermaidCode=`' + escJs(mermaidCode) + '`;' +
+                        'mermaid.initialize({startOnLoad:true,theme:"default"});' +
+                        'var showing="diagram";' +
+                        'function toggleCode(){' +
+                        '  if(showing==="diagram"){' +
+                        '    document.getElementById("diagram").style.display="none";' +
+                        '    document.getElementById("codeBlock").style.display="block";' +
+                        '    document.getElementById("viewCodeBtn").textContent="view diagram";' +
+                        '    document.getElementById("pngBtn").style.display="none";' +
+                        '    showing="code";' +
+                        '  } else {' +
+                        '    document.getElementById("diagram").style.display="";' +
+                        '    document.getElementById("codeBlock").style.display="none";' +
+                        '    document.getElementById("viewCodeBtn").textContent="view code";' +
+                        '    document.getElementById("pngBtn").style.display="";' +
+                        '    showing="diagram";' +
+                        '  }' +
+                        '}' +
+                        'function copyCode(){' +
+                        '  navigator.clipboard.writeText(mermaidCode).then(function(){' +
+                        '    var btn=document.getElementById("copyCodeBtn");' +
+                        '    btn.textContent="copied!";' +
+                        '    setTimeout(function(){btn.textContent="copy code";},2000);' +
+                        '  });' +
+                        '}' +
+                        'function downloadPng(){' +
+                        '  var svg=document.querySelector("#diagram svg");' +
+                        '  if(!svg){alert("No diagram to download");return;}' +
+                        '  var svgClone=svg.cloneNode(true);' +
+                        '  var rect=svg.getBoundingClientRect();' +
+                        '  var w=rect.width||800, h=rect.height||600;' +
+                        '  svgClone.setAttribute("width",w);svgClone.setAttribute("height",h);' +
+                        '  var svgData=new XMLSerializer().serializeToString(svgClone);' +
+                        '  var svgUrl="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(svgData);' +
+                        '  var scale=2;' +
+                        '  var canvas=document.createElement("canvas");' +
+                        '  canvas.width=w*scale;' +
+                        '  canvas.height=h*scale;' +
+                        '  var ctx=canvas.getContext("2d");' +
+                        '  var img=new Image();' +
+                        '  img.onload=function(){' +
+                        '    ctx.fillStyle="#fff";ctx.fillRect(0,0,canvas.width,canvas.height);' +
+                        '    ctx.scale(scale,scale);ctx.drawImage(img,0,0);' +
+                        '    canvas.toBlob(function(blob){' +
+                        '      var a=document.createElement("a");' +
+                        '      a.href=URL.createObjectURL(blob);' +
+                        '      a.download="mermaid-diagram.png";' +
+                        '      a.click();' +
+                        '    },"image/png");' +
+                        '  };' +
+                        '  img.src=svgUrl;' +
+                        '}' +
+                        '<\/script><\/body><\/html>';
+
+                    var newTab = window.open('', '_blank');
+                    if (newTab) {
+                        newTab.document.write(html);
+                        newTab.document.close();
+                    }
                 }
 
                 function fnIsRootPage() {

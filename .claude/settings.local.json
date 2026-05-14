@@ -1,7 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "Bash(reg query:*)"
+      "Bash(reg query:*)",
+      "Bash(git push:*)",
+      "Bash(git filter-branch:*)",
+      "Bash(git stash:*)"
     ]
   }
 }
