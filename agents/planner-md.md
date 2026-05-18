@@ -312,9 +312,40 @@ https://home.atlassian.com/o/38fbec1d-48cd-4024-91f7-7ab0e7bd4766/?utm_source=id
 * Search box text box is not editable right after page load. It seems being locked for a while. If it is locked, show text box css as disabled.
 * Find the root issue why the textbox was locked.
 
-# TODO
+# DONE - The first line title
 
 * See [](./imgs/img-ui/title-green.png)
 * Instead of making title xxx.md into <h1>, make it bootstrap dark green color like comments/information.
 * Do not convert the title xxx.md into <h1>. Just change color.
 * Do not convert the title xxx.md into small size. No cess except color. Color should be brighter green as in [](./imgs/img-ui/color.png)
+
+
+* See [](./imgs/img-ui/two-li.png) and
+* [](./imgs/img-ui/two-li-2.png)
+* The first two lines should be both in `<ul>` as each `<li>` item.
+
+* See [](./imgs/img-ui/two-li-3.png)
+* For this markdown file, title still shows as <h1>.
+  * Note that changes in [](#done---the-first-line-title) is **for all markdown files** that are rendered by md.htm.
+
+# Copy password 
+
+* See [](./imgs/errors/copy-password-disappeared.png)
+* Copy password button does not show any more.
+* Also see [](./imgs/errors/blur-notworking.png)
+* In some markdown file, blur css for password not working. why?
+* See [](./imgs/errors/not-blurred.png).
+* It is not css-blurred yet. Note that `xp9cv` only shows in the screenshot and the rest is covered by whitespace for security issue.
+
+* see [](./imgs/img-ui/copy-password.png)
+* Copy password button still not showing
+
+# Expand button
+
+* See [](./imgs/img-ui/expand-convert.png)
+* I like `>` expand button. Replace green `Expand` button into `>`.
+* Also `copy code` button appears after page load when `H1,H2` selected although it was not `<pre>` area. Fix it.
+
+# TODO
+
+* rename [](../local-version-history.md) into `version-history.md` and update code if required.

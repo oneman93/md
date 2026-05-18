@@ -21,7 +21,7 @@ function addBannerCredentialCopyButtons(app) {
     console.log('[BannerCopy] Container found, children:', container.children.length, container.innerHTML.substring(0, 200) + '...');
 
     /**
-     * Extract the first real password from pre text. Ignores lines starting with '--Password:'.
+     * Extract the first real password from pre text for copying. Ignores lines starting with '--Password:'.
      * Returns the value after the first 'Password:' (no leading '--').
      */
     function extractPasswordFromPre(text) {
@@ -40,6 +40,22 @@ function addBannerCredentialCopyButtons(app) {
             }
         }
         return '';
+    }
+
+    /**
+     * Extract ALL password values to blur (including --Password: lines).
+     */
+    function extractAllPasswordValuesToBlur(text) {
+        var values = [];
+        var lines = (text || '').split(/\r?\n/);
+        for (var j = 0; j < lines.length; j++) {
+            var line = lines[j].trim();
+            var match = line.match(/^(?:--\s*)?Password:\s*(.+)/i);
+            if (match && match[1].trim().length > 0) {
+                values.push(match[1].trim());
+            }
+        }
+        return values;
     }
 
     function showCopiedForTwoSec(btn, originalLabel) {
@@ -70,32 +86,30 @@ function addBannerCredentialCopyButtons(app) {
         return btn;
     }
 
-    function blurPasswordInPre(preEl, password) {
-        if (!password || !preEl) return;
-        // Walk all text nodes inside the pre and wrap the password value in a blur span
-        var walker = document.createTreeWalker(preEl, NodeFilter.SHOW_TEXT, null, false);
-        var textNodes = [];
-        var node;
-        while ((node = walker.nextNode())) {
-            if (node.textContent.indexOf(password) >= 0) {
-                textNodes.push(node);
-            }
+    /**
+     * Blur all given password values inside a <pre> element.
+     * Uses textContent + innerHTML rebuild to handle PrismJS-split text nodes.
+     */
+    function blurAllPasswordsInPre(preEl, passwords) {
+        if (!passwords || passwords.length === 0 || !preEl) return;
+        var codeEl = preEl.querySelector('code') || preEl;
+        var plainText = codeEl.textContent;
+
+        var hasMatch = passwords.some(function(p) { return plainText.indexOf(p) >= 0; });
+        if (!hasMatch) return;
+
+        function escHtml(s) {
+            return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
         }
-        textNodes.forEach(function(textNode) {
-            var text = textNode.textContent;
-            var idx = text.indexOf(password);
-            if (idx < 0) return;
-            var before = text.substring(0, idx);
-            var after = text.substring(idx + password.length);
-            var span = document.createElement('span');
-            span.className = 'password-blur';
-            span.textContent = password;
-            var parent = textNode.parentNode;
-            if (before) parent.insertBefore(document.createTextNode(before), textNode);
-            parent.insertBefore(span, textNode);
-            if (after) parent.insertBefore(document.createTextNode(after), textNode);
-            parent.removeChild(textNode);
+
+        // Rebuild from plain text (strips PrismJS highlighting, acceptable for credential blocks)
+        var result = escHtml(plainText);
+        passwords.forEach(function(password) {
+            var escapedPwd = escHtml(password);
+            var re = new RegExp(escapedPwd.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
+            result = result.replace(re, '<span class="password-blur">' + escapedPwd + '</span>');
         });
+        codeEl.innerHTML = result;
     }
 
     function fallbackCopy(text, btn, originalLabel) {
@@ -142,7 +156,8 @@ function addBannerCredentialCopyButtons(app) {
                     insertButtonAfter(pre, btn);
                     console.log('[BannerCopy] Fallback: Added Copy Password after pre[' + i + ']');
                 }
-                blurPasswordInPre(pre, password);
+                // Blur ALL password values (including --Password: lines) in one pass
+                blurAllPasswordsInPre(pre, extractAllPasswordValuesToBlur(text));
             }
         }
     }

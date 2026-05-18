@@ -745,14 +745,14 @@
         //     e.preventDefault();
         // }, false);
 
-        // Function to load and display version from local-version-history.md
+        // Function to load and display version from version-history.md
         function loadVersion() {
             var versionDisplay = document.getElementById('versionDisplay');
             if (!versionDisplay) return;
 
-            // Try to fetch local-version-history.md with cache-busting parameter
+            // Try to fetch version-history.md with cache-busting parameter
             var cacheBuster = '?t=' + new Date().getTime();
-            fetch('local-version-history.md' + cacheBuster)
+            fetch('version-history.md' + cacheBuster)
                 .then(function(response) {
                     if (!response.ok) {
                         throw new Error('Version file not found');
@@ -801,6 +801,9 @@
         window.onload = function () {
 
             adjustTopMargin();
+
+            // Remove legacy key that no longer controls anything (could cause copy-code buttons to be hidden)
+            localStorage.removeItem('md-h1-only-state');
 
             var _h1FilterKey = 'md-heading-filter';
 
@@ -1182,8 +1185,11 @@
                 addImageFolderButton();
                 addSourceFolderGoButton();
                 // Run after a short delay so pre elements are in the DOM
-                setTimeout(function () { addCopyCodeButtons(); }, 150);
-                setTimeout(function () { addBannerCredentialCopyButtons(app); }, 300);
+                // addBannerCredentialCopyButtons must run after addCopyCodeButtons so .copy-code-btns exists
+                setTimeout(function () {
+                    addCopyCodeButtons();
+                    addBannerCredentialCopyButtons(app);
+                }, 150);
 
                 // Restore heading filter state across page refreshes
                 var _savedFilter = localStorage.getItem(_h1FilterKey);
@@ -1408,7 +1414,6 @@
                 }
 
                 function addCopyCodeButtons() {
-                    var h1OnlyActive = localStorage.getItem('md-h1-only-state') === '1';
                     mdClone.querySelectorAll('pre').forEach(function(pre) {
                         if (pre.closest('.mermaid-wrapper') || pre.closest('.copy-code-wrapper')) return;
 
@@ -1432,7 +1437,6 @@
                         });
                         var btnContainer = document.createElement('div');
                         btnContainer.className = 'copy-code-btns';
-                        if (h1OnlyActive) btnContainer.style.display = 'none';
                         btnContainer.appendChild(btn);
 
                         // Add "Create Mermaid" button if nearest H1 contains "flow" or "diagram"
@@ -1452,6 +1456,11 @@
 
                         wrapper.appendChild(btnContainer);
                     });
+                    // If heading filter is active, hide copy-code-wrapper (applyHeadingFilter ran before this)
+                    var _activeFilter = localStorage.getItem('md-heading-filter');
+                    if (_activeFilter && _activeFilter !== 'all') {
+                        mdClone.querySelectorAll('.copy-code-wrapper').forEach(function(w) { w.style.display = 'none'; });
+                    }
                 }
 
                 // Change mdBody structure nested from plain
@@ -1674,21 +1683,24 @@
                         h1Wrapper.className = 'h1-wrapper';
 
                         if (firstLine && firstLine.length > 0) {
-                            // Create title h1 from first line and remove it from the content
-                            var remainingContent = noTagElems.replace(firstLine, '').trim();
+                            // Keep full HTML structure; apply doc-title-heading to first <li> (or first element)
+                            var tempContentDiv = document.createElement('div');
+                            tempContentDiv.innerHTML = noTagElems;
                             // Remove empty <li> elements
-                            if (remainingContent) {
-                                var tempContentDiv = document.createElement('div');
-                                tempContentDiv.innerHTML = remainingContent;
-                                var lis = tempContentDiv.querySelectorAll('li');
-                                lis.forEach(function (li) {
-                                    if (!li.textContent.trim()) {
-                                        li.remove();
-                                    }
-                                });
-                                remainingContent = tempContentDiv.innerHTML;
+                            tempContentDiv.querySelectorAll('li').forEach(function (li) {
+                                if (!li.textContent.trim()) {
+                                    li.remove();
+                                }
+                            });
+                            // Apply green title color to first <li>, falling back to first element
+                            var firstLi = tempContentDiv.querySelector('li');
+                            if (firstLi) {
+                                firstLi.classList.add('doc-title-heading');
+                            } else {
+                                var firstElem = tempContentDiv.firstElementChild;
+                                if (firstElem) firstElem.classList.add('doc-title-heading');
                             }
-                            h1Wrapper.innerHTML = '<p class="doc-title-heading">' + firstLine + '</p>' + (remainingContent ? remainingContent : '');
+                            h1Wrapper.innerHTML = tempContentDiv.innerHTML;
                         } else {
                             h1Wrapper.innerHTML = '<h1>Outline</h1>' + noTagElems;
                         }
@@ -1705,11 +1717,20 @@
                     }
 
                     // The entire document will be restructured by <h1> tag.
+                    var _srcFilename = app.src ? app.src.split('/').pop().split('?')[0].toLowerCase() : '';
+                    var _h1Index = 0;
                     $(mdBody).find('h1').each(function () {
                         var h1Wrapper = document.createElement("div");
                         h1Wrapper.className = 'h1-wrapper';
 
                         var clone = this.cloneNode(true);       //add current h1 into div.h1-wrapper
+
+                        // If the first <h1> text matches the src filename, treat it as doc title (green color)
+                        if (_h1Index === 0 && _srcFilename && clone.textContent.trim().toLowerCase() === _srcFilename) {
+                            clone.classList.add('doc-title-heading');
+                        }
+                        _h1Index++;
+
                         h1Wrapper.append(clone);
 
                         // add all the following elems until next h1 into div.h1-wrapper
@@ -1852,13 +1873,15 @@
                                     // if button does not exist, create one.
                                     console.log('Creating Expand button for h1-wrapper', div);
                                     let btn = document.createElement('button');
-                                    btn.innerHTML = "Expand";
-                                    btn.classList.add("btn", "btn-sm", "btn-expand", "btn-success", "btn-ex-collapse");  // green expand button
+                                    btn.innerHTML = '<i class="fa-solid fa-chevron-right"></i>';
+                                    btn.title = 'Expand section';
+                                    btn.dataset.expanded = 'false';
+                                    btn.classList.add("btn", "btn-sm", "btn-expand", "btn-ex-collapse");
+                                    btn.style.cssText = 'margin-left:6px; padding:2px 6px;';
                                     btn.addEventListener("click", function () {
 
-                                        var isExpand = this.innerHTML == 'Expand';
-                                        console.log('isExpand', isExpand);
-                                        console.log('yo, li');
+                                        var isExpanded = this.dataset.expanded === 'true';
+                                        console.log('isExpanded', isExpanded);
                                         // find more than one level
                                         // https://stackoverflow.com/questions/7648761/how-to-select-all-children-in-any-level-from-a-parent-in-jquery
 
@@ -1871,14 +1894,14 @@
                                         var divs = $('.h1-wrapper');
                                         var divIndex = divs.index(div);
 
-                                        if (isExpand) {
+                                        if (!isExpanded) {
                                             // Expand button clicked - show all content including tables
                                             children.slideDown();
                                             // Explicitly show tables when expanding
-                                            div.find('table,pre').show();
-                                            btn.innerHTML = 'Collapse';
-                                            btn.classList.remove('btn-success');
-                                            btn.classList.add('btn-danger');
+                                            div.find('table,pre,.copy-code-wrapper').show();
+                                            btn.innerHTML = '<i class="fa-solid fa-chevron-down"></i>';
+                                            btn.title = 'Collapse section';
+                                            btn.dataset.expanded = 'true';
 
                                             var strArray = localStorage.getItem(_expandedNth);
                                             var array = [];
@@ -1899,9 +1922,9 @@
                                         } else {
                                             // Collapse button clicked
                                             searchText();
-                                            btn.innerHTML = 'Expand';
-                                            btn.classList.add('btn-success');
-                                            btn.classList.remove('btn-danger');
+                                            btn.innerHTML = '<i class="fa-solid fa-chevron-right"></i>';
+                                            btn.title = 'Expand section';
+                                            btn.dataset.expanded = 'false';
 
                                             localStorage.removeItem(_expandedNth);
                                         }
@@ -2033,7 +2056,7 @@
                     $(mdClone.querySelectorAll('.btn-ex-collapse, .btn-sub-expand')).remove();
 
                     // Hide all headings and content, then show selected heading levels
-                    var allContent = mdClone.querySelectorAll("table,pre,h1,h2,h3,li,img,p,hr,blockquote,ul,ol,.copy-code-btns");
+                    var allContent = mdClone.querySelectorAll("table,pre,h1,h2,h3,li,img,p,hr,blockquote,ul,ol,.copy-code-btns,.copy-code-wrapper");
                     $(allContent).hide();
 
                     levels.forEach(function(level) {
@@ -2050,25 +2073,28 @@
                             }).length > 0;
                             if (!hasContent) return;
                             var btn = document.createElement('button');
-                            btn.innerHTML = "Expand";
-                            btn.classList.add("btn", "btn-sm", "btn-expand", "btn-success", "btn-ex-collapse");
+                            btn.innerHTML = '<i class="fa-solid fa-chevron-right"></i>';
+                            btn.title = 'Expand section';
+                            btn.dataset.expanded = 'false';
+                            btn.classList.add("btn", "btn-sm", "btn-expand", "btn-ex-collapse");
+                            btn.style.cssText = 'margin-left:6px; padding:2px 6px;';
                             btn.addEventListener("click", function () {
-                                var isExpand = this.innerHTML == 'Expand';
+                                var isExpanded = this.dataset.expanded === 'true';
                                 var w = $(this).closest('.h1-wrapper');
-                                console.log('[H1 expand]', isExpand ? 'expanding' : 'collapsing', w.find('h1').first().text().substring(0, 30));
-                                if (isExpand) {
+                                console.log('[H1 expand]', !isExpanded ? 'expanding' : 'collapsing', w.find('h1').first().text().substring(0, 30));
+                                if (!isExpanded) {
                                     // Show all content under this H1 wrapper
                                     w.children().show();
                                     w.find('*').show();
-                                    this.innerHTML = 'Collapse';
-                                    this.classList.remove('btn-success');
-                                    this.classList.add('btn-danger');
+                                    this.innerHTML = '<i class="fa-solid fa-chevron-down"></i>';
+                                    this.title = 'Collapse section';
+                                    this.dataset.expanded = 'true';
                                 } else {
                                     // Collapse: hide all direct children except h1
                                     w.children().not('h1').hide();
-                                    this.innerHTML = 'Expand';
-                                    this.classList.remove('btn-danger');
-                                    this.classList.add('btn-success');
+                                    this.innerHTML = '<i class="fa-solid fa-chevron-right"></i>';
+                                    this.title = 'Expand section';
+                                    this.dataset.expanded = 'false';
                                 }
                             });
                             $(this).append(btn);

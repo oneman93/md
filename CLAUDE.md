@@ -83,3 +83,10 @@ The `code` button (opens file in VS Code) works in Edge but requires a one-time 
 # Rule
 
 * Do not delete # TODO section text automatically. I will move them to # DONE section when done.
+
+# File structure
+
+* Remember that there are two html tags under `div.mdcontainer`:
+  * `zero-md`
+  * `zero-md-clone`
+* Most (all) of html tags changes are happening in `zero-md-clone` with jquery.
