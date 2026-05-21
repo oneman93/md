@@ -1,3 +1,7 @@
+# v4.0.4
+21/5/26
+open vscode button
+
 # v4.0.3
 21/5/26
 scroll position remembered on refresh

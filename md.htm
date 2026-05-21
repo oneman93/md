@@ -1420,7 +1420,12 @@
                                     $btn.on('click', (function(p) {
                                         return function () { window.location.href = 'openexplorer:' + p; };
                                     })(path));
-                                    var $td = $('<td style="width:1%; white-space:nowrap; padding:4px;"></td>').append($btn);
+                                    var vscodePath = path.replace(/\\/g, '/');
+                                    var $vscodeBtn = $('<button class="btn btn-secondary btn-sm ml-1">VSCode</button>');
+                                    $vscodeBtn.on('click', (function(p) {
+                                        return function () { window.location.href = 'vscode://file/' + p; };
+                                    })(vscodePath));
+                                    var $td = $('<td style="width:1%; white-space:nowrap; padding:4px;"></td>').append($btn).append($vscodeBtn);
                                     $(this).append($td);
                                     rowsWithButton.push(this);
                                     return;

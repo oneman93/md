@@ -33,6 +33,10 @@
 * Table css seems breaking [](./imgs/errors/table-breaking.png)
 * Table css still breaking [](./imgs/errors/table-breaking2.png) -> number of <td> should be all the same inside <table>
 
+# TODO - GO button
+
+* Whenever `GO` button shows, add `Open in vscode` button, that will open the file or folder in Visual Studio Code.
+
 # Table sidebar
 
 * See [](./imgs/table-sidebar.png)
@@ -354,7 +358,7 @@ Button clicked
 * See [](./imgs/img-ui/table-sidebar.png)
 * Let this table sidebar expand/closure state be remembered by localstorage.
 
-# TODO - Mermaid
+# Mermaid
 
 * When you see <pre> section, add `Create Mermaid` button on top right corner, if the nearest <h1>/<h2>/<h3>/<h4> title contains text eg, `flow` or `diagram`.
 
