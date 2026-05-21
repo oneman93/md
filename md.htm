@@ -625,10 +625,16 @@
                     buttonsContainer.appendChild(button);
                 });
 
-                // Tables found — show toggle button (collapsed by default)
+                // Tables found — restore saved state (default: collapsed)
                 const toggle = document.getElementById('tableNavToggle');
-                if (toggle) toggle.style.display = 'block';
-                container.classList.remove('show');
+                const savedState = localStorage.getItem('md-table-nav-state');
+                if (savedState === 'expanded') {
+                    container.classList.add('show');
+                    if (toggle) toggle.style.display = 'none';
+                } else {
+                    container.classList.remove('show');
+                    if (toggle) toggle.style.display = 'block';
+                }
             } else {
                 // Hide the container if no tables found
                 container.classList.remove('show');
@@ -640,11 +646,13 @@
         function tableNavCollapse() {
             document.getElementById('tableNavContainer').classList.remove('show');
             document.getElementById('tableNavToggle').style.display = 'block';
+            localStorage.setItem('md-table-nav-state', 'collapsed');
         }
 
         function tableNavExpand() {
             document.getElementById('tableNavContainer').classList.add('show');
             document.getElementById('tableNavToggle').style.display = 'none';
+            localStorage.setItem('md-table-nav-state', 'expanded');
         }
 
         function hasTableAfterHeading(heading) {

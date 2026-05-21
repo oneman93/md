@@ -346,6 +346,24 @@ https://home.atlassian.com/o/38fbec1d-48cd-4024-91f7-7ab0e7bd4766/?utm_source=id
 * I like `>` expand button. Replace green `Expand` button into `>`.
 * Also `copy code` button appears after page load when `H1,H2` selected although it was not `<pre>` area. Fix it.
 
-# TODO
+# Done
 
 * rename [](../local-version-history.md) into `version-history.md` and update code if required.
+
+# 'Push2Conf' 
+
+* Parked as I don't know where is the full list of projects. And `Copy2Conf` may be good enough.
+
+* I like to create a new button `Push2Conf` next to `Copy2Conf`.
+* `Copy2Conf` copies all text to clipboard for user to paste content to Confluence.
+* `Push2Conf` is an aumated version of `Push2Conf`.
+* The flow will be:
+```
+Button clicked 
+-> Popup shows with list of Confluence Projects (where will be the root folder?)
+```
+
+# TODO
+
+* See [](./imgs/img-ui/table-sidebar.png)
+* Let this table sidebar expand/closure state be remembered by localstorage.

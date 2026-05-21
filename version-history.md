@@ -1,3 +1,7 @@
+# v4.0.2
+21/5/26
+table sidebar remembered with localstorage
+
 # v4.0.1
 local-version-history.md renamed back to version-history.md
 claude used.
