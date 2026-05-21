@@ -249,20 +249,6 @@ https://home.atlassian.com/o/38fbec1d-48cd-4024-91f7-7ab0e7bd4766/?utm_source=id
 * Now I got [](./imgs/errors/grm-error.png)
 
 
-# Mermaid
-
-* When you see <pre> section, add `Create Mermaid` button on top right corner, if the nearest <h1> title contains text eg, `flow` or `diagram`.
-* When button clicked, the text inside <pre> will be converted mermaid text and shows mermaid diagram on popup.
-* Popup dialog will have mermaid image on load. The popup will have 3 buttons - view code, copy code, png.
-	* view code will show mermaid syntax
-	* copy code will copy mermaid syntax
-	* png will save current diagram into png and download
-* See [](./imgs/errors/mermaid-not-working.png)
-* Mermaid syntax and diagram are not created dynamically from the <pre> text.
-* See [](./imgs/errors/open-new-tab.png)
-* Diagram dialog is too small. Instead of dialog, open a new tab. If necessary, create a temporary markdown file.
-* See [](./imgs/errors/png-button-not-working.png)
-* png button not working
 
 # Git push
 
@@ -363,7 +349,24 @@ Button clicked
 -> Popup shows with list of Confluence Projects (where will be the root folder?)
 ```
 
-# TODO
+# Table sidebar - localStorage
 
 * See [](./imgs/img-ui/table-sidebar.png)
 * Let this table sidebar expand/closure state be remembered by localstorage.
+
+# TODO - Mermaid
+
+* When you see <pre> section, add `Create Mermaid` button on top right corner, if the nearest <h1>/<h2>/<h3>/<h4> title contains text eg, `flow` or `diagram`.
+
+* When button clicked, the text inside <pre> will be converted mermaid text and shows mermaid diagram on popup.
+* Popup dialog will have mermaid image on load. The popup will have 3 buttons - view code, copy code, png.
+	* view code will show mermaid syntax
+	* copy code will copy mermaid syntax
+	* png will save current diagram into png and download
+* See [](./imgs/errors/mermaid-not-working.png)
+* Mermaid syntax and diagram are not created dynamically from the <pre> text.
+* See [](./imgs/errors/open-new-tab.png)
+* Diagram dialog is too small. Instead of dialog, open a new tab. If necessary, create a temporary markdown file.
+* See [](./imgs/errors/png-button-not-working.png)
+* png button not working
+* When refreshing page, make the current section location be remembered and scroll down to it.

@@ -1290,6 +1290,16 @@
                     if (isEmailValue(this.value)) this.value = '';
                 });
 
+                // Save scroll position to localStorage on scroll (debounced, per src)
+                var _scrollSaveKey = 'md-scroll-pos:' + app.src;
+                var _scrollSaveTimer = null;
+                window.addEventListener('scroll', function() {
+                    clearTimeout(_scrollSaveTimer);
+                    _scrollSaveTimer = setTimeout(function() {
+                        localStorage.setItem(_scrollSaveKey, window.scrollY);
+                    }, 200);
+                });
+
                 // Handle anchor navigation after page is fully loaded
                 // Wait a bit for all content to render, then scroll to anchor
                 setTimeout(function() {
@@ -1335,6 +1345,12 @@
                             setTimeout(function() {
                                 targetElement.style.backgroundColor = '';
                             }, 2000);
+                        }
+                    } else {
+                        // No hash anchor — restore saved scroll position
+                        var _savedScroll = localStorage.getItem(_scrollSaveKey);
+                        if (_savedScroll) {
+                            window.scrollTo({ top: parseInt(_savedScroll, 10), behavior: 'instant' });
                         }
                     }
                 }, 500); // Wait 500ms for content to render
@@ -1447,11 +1463,19 @@
                         btnContainer.className = 'copy-code-btns';
                         btnContainer.appendChild(btn);
 
-                        // Add "Create Mermaid" button if nearest H1 contains "flow" or "diagram"
-                        var h1Wrapper = pre.closest('.h1-wrapper');
-                        var h1El = h1Wrapper ? h1Wrapper.querySelector('h1') : null;
-                        var h1Text = h1El ? h1El.textContent.toLowerCase() : '';
-                        if (/flow|diagram/.test(h1Text)) {
+                        // Add "Create Mermaid" button if nearest H1/H2/H3/H4 contains "flow" or "diagram"
+                        var _hWrapper = pre.closest('.h1-wrapper');
+                        var _nearestHText = '';
+                        if (_hWrapper) {
+                            var _allH = Array.from(_hWrapper.querySelectorAll('h1, h2, h3, h4'));
+                            for (var _hi = _allH.length - 1; _hi >= 0; _hi--) {
+                                if (_allH[_hi].compareDocumentPosition(pre) & Node.DOCUMENT_POSITION_FOLLOWING) {
+                                    _nearestHText = _allH[_hi].textContent.toLowerCase();
+                                    break;
+                                }
+                            }
+                        }
+                        if (/flow|diagram/.test(_nearestHText)) {
                             var mermaidBtn = document.createElement('button');
                             mermaidBtn.type = 'button';
                             mermaidBtn.className = 'btn btn-sm btn-outline-info create-mermaid-btn';
@@ -3038,17 +3062,18 @@
                         '}' +
                         'function downloadPng(){' +
                         '  var svg=document.querySelector("#diagram svg");' +
-                        '  if(!svg){alert("No diagram to download");return;}' +
+                        '  if(!svg){alert("Diagram not yet rendered. Please wait a moment and try again.");return;}' +
                         '  var svgClone=svg.cloneNode(true);' +
                         '  var rect=svg.getBoundingClientRect();' +
-                        '  var w=rect.width||800, h=rect.height||600;' +
+                        '  var w=Math.max(rect.width||0,100)||800, h=Math.max(rect.height||0,100)||600;' +
                         '  svgClone.setAttribute("width",w);svgClone.setAttribute("height",h);' +
+                        '  svgClone.setAttribute("xmlns","http://www.w3.org/2000/svg");' +
                         '  var svgData=new XMLSerializer().serializeToString(svgClone);' +
-                        '  var svgUrl="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(svgData);' +
+                        '  var svgBlob=new Blob([svgData],{type:"image/svg+xml;charset=utf-8"});' +
+                        '  var svgUrl=URL.createObjectURL(svgBlob);' +
                         '  var scale=2;' +
                         '  var canvas=document.createElement("canvas");' +
-                        '  canvas.width=w*scale;' +
-                        '  canvas.height=h*scale;' +
+                        '  canvas.width=w*scale;canvas.height=h*scale;' +
                         '  var ctx=canvas.getContext("2d");' +
                         '  var img=new Image();' +
                         '  img.onload=function(){' +
@@ -3058,9 +3083,11 @@
                         '      var a=document.createElement("a");' +
                         '      a.href=URL.createObjectURL(blob);' +
                         '      a.download="mermaid-diagram.png";' +
-                        '      a.click();' +
+                        '      document.body.appendChild(a);a.click();document.body.removeChild(a);' +
+                        '      URL.revokeObjectURL(svgUrl);' +
                         '    },"image/png");' +
                         '  };' +
+                        '  img.onerror=function(){alert("Failed to export PNG. Try right-clicking the diagram and saving as image.");URL.revokeObjectURL(svgUrl);};' +
                         '  img.src=svgUrl;' +
                         '}' +
                         '<\/script><\/body><\/html>';

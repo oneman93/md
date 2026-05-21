@@ -1,3 +1,7 @@
+# v4.0.3
+21/5/26
+scroll position remembered on refresh
+
 # v4.0.2
 21/5/26
 table sidebar remembered with localstorage
