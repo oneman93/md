@@ -1423,7 +1423,7 @@
                                     var vscodePath = path.replace(/\\/g, '/');
                                     var $vscodeBtn = $('<button class="btn btn-secondary btn-sm ml-1">VSCode</button>');
                                     $vscodeBtn.on('click', (function(p) {
-                                        return function () { window.location.href = 'vscode://file/' + p; };
+                                        return function () { window.location.href = 'vscode://file/' + p + '?windowId=_new'; };
                                     })(vscodePath));
                                     var $td = $('<td style="width:1%; white-space:nowrap; padding:4px;"></td>').append($btn).append($vscodeBtn);
                                     $(this).append($td);

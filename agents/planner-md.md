@@ -33,10 +33,6 @@
 * Table css seems breaking [](./imgs/errors/table-breaking.png)
 * Table css still breaking [](./imgs/errors/table-breaking2.png) -> number of <td> should be all the same inside <table>
 
-# TODO - GO button
-
-* Whenever `GO` button shows, add `Open in vscode` button, that will open the file or folder in Visual Studio Code.
-
 # Table sidebar
 
 * See [](./imgs/table-sidebar.png)
@@ -374,3 +370,14 @@ Button clicked
 * See [](./imgs/errors/png-button-not-working.png)
 * png button not working
 * When refreshing page, make the current section location be remembered and scroll down to it.
+
+
+# GO button + VSCode button
+
+* Whenever `GO` button shows, add `Open in vscode` button, that will open the file or folder in Visual Studio Code.
+
+# TODO - VSCode button
+
+* See [](./imgs/errors/vscode-kill.png)
+* Clicking vscode button to open a folder kills currently opened vscode for C:\Works, and replaces the vscode with the new folder. This is not intended. You shouldn't kill another vscode if it has different project path.
+
