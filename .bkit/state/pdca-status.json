@@ -1,6 +1,6 @@
 {
   "version": "2.0",
-  "lastUpdated": "2026-05-15T01:11:22.958Z",
+  "lastUpdated": "2026-05-25T02:29:42.255Z",
   "activeFeatures": [
     "md",
     "js",
@@ -30,7 +30,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-05-05T01:16:23.439Z",
-        "lastUpdated": "2026-05-15T01:11:22.958Z"
+        "lastUpdated": "2026-05-25T02:18:05.599Z"
       },
       "lastFile": "C:/Works/md/js/copy-clipboard-button.js"
     },
@@ -43,9 +43,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-05-07T05:51:54.325Z",
-        "lastUpdated": "2026-05-12T05:32:55.983Z"
+        "lastUpdated": "2026-05-25T02:29:42.255Z"
       },
-      "lastFile": "C:/Works/md/powershell/upload-to-conf.ps1"
+      "lastFile": "C:\\Works\\md\\powershell\\open-claude.ps1"
     }
   },
   "pipeline": {
@@ -56,7 +56,7 @@
   "session": {
     "startedAt": "2026-03-20T00:09:52.220Z",
     "onboardingCompleted": false,
-    "lastActivity": "2026-05-15T01:11:22.958Z"
+    "lastActivity": "2026-05-25T02:29:42.255Z"
   },
   "history": [
     {
@@ -278,6 +278,18 @@
     {
       "timestamp": "2026-05-15T01:11:22.958Z",
       "feature": "js",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-05-25T02:18:05.599Z",
+      "feature": "js",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-05-25T02:29:42.255Z",
+      "feature": "powershell",
       "phase": "do",
       "action": "updated"
     }

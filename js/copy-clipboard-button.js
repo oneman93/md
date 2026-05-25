@@ -149,7 +149,6 @@ function addBannerCredentialCopyButtons(app) {
                 var wrapper = pre.closest('.copy-code-wrapper');
                 var btnContainer = wrapper ? wrapper.querySelector('.copy-code-btns') : null;
                 if (btnContainer) {
-                    btn.style.cssText = 'opacity: 0.6;';
                     btnContainer.appendChild(btn);
                     console.log('[BannerCopy] Added Copy Password into .copy-code-btns for pre[' + i + ']');
                 } else {

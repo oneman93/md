@@ -9,24 +9,49 @@ This is `md.htm` — a single-file HTML markdown viewer used as a personal docum
 ## File Structure
 
 ```
-md.htm              — Main application (HTML + inline JS, ~1000+ lines)
-md-main.css         — Main stylesheet
-github.css          — GitHub markdown theme override
-moh93-custom.css    — Production-only CSS (loaded conditionally for moh93 project)
+md.htm                      — Main application (HTML + inline JS, ~2600+ lines)
+md-main.css                 — Main stylesheet
+github.css                  — GitHub markdown theme override
+moh93-custom.css            — Production-only CSS (loaded conditionally for moh93 project)
+version-history.md          — Version changelog (displayed in toolbar)
+sample.md                   — Sample markdown for testing
+md-20251231.htm             — Archived snapshot from 2025-12-31
+
 js/
-  copy-clipboard-button.js  — "Copy Password" button logic for <pre> blocks
+  copy-clipboard-button.js  — "Copy Password" button + blur logic for <pre> blocks
   moh93-custom.js           — Production-specific custom functions
   md-main.js                — Legacy stub (not actively used)
+
 dist/
-  photoswipe*.js/.css       — PhotoSwipe image lightbox (local copy)
+  photoswipe.esm.js         — PhotoSwipe image lightbox (local copy)
+  photoswipe-lightbox.esm.js
+  photoswipe.css
+  umd/                      — UMD builds of PhotoSwipe
   jspdf/jspdf-251.js        — jsPDF for PDF export
   jspdf/html2canvas.js      — html2canvas for PDF export
-zero-md-main/       — Local copy of the zero-md web component source (upstream project, not modified)
+
+images/                     — Favicon and icon assets
+
+powershell/
+  upload-to-conf.ps1        — Upload images to Confluence as attachments
+  open-explorer.ps1         — Open Windows Explorer via openexplorer: protocol
+  register-conf-upload-protocol.reg  — Register confupload: protocol
+  register-explorer-protocol.reg     — Register openexplorer: protocol
+  launch-upload.vbs         — VBS launcher for PowerShell upload
+
+tmp/
+  copy2conf-debug.log       — Debug log written by PowerShell upload
+  copy2conf-status.json     — Progress status for Copy2Conf upload polling
+
+zero-md-main/               — Local copy of zero-md source (upstream, do NOT modify)
+
 agents/
-  planning-agent.md         — Feature backlog / TODO tracker
+  planner-md.md             — Feature backlog / TODO tracker (NEVER delete #TODO text)
   analyer.md                — Go button keyword spec
   planner-documentation.md  — Architecture/feature documentation
   docs/                     — Detailed feature docs and how-tos
+  imgs/                     — Screenshots for bug reports and feature specs
+  credentials/              — Confluence credentials (gitignored)
 ```
 
 ## Architecture

@@ -209,6 +209,9 @@
 
         </div>
 
+        <!-- Sticky title bar: shown when scrolled past the doc title -->
+        <div id="stickyTitle" style="display:none;"></div>
+
         <div id="mdcontainer" style="width:70%; margin:0 auto;">
             <!-- shadow dom will be cloned here -->
         </div>
@@ -222,7 +225,7 @@
                 <h5 style="margin-bottom:8px;">&#9881; Confluence Settings</h5>
                 <p style="font-size:0.82em;color:#666;margin-bottom:14px;">
                     Images are uploaded as Confluence page attachments permanently via PowerShell.<br>
-                    <strong>One-time setup:</strong> run <code>powershell/register-conf-upload-protocol.reg</code> first.<br>
+                    <strong>One-time setup:</strong> run <code>agents/powershell/register-conf-upload-protocol.reg</code> first.<br>
                     Get an API token at <strong>id.atlassian.com → Security → API tokens</strong>.
                 </p>
                 <div style="margin-bottom:8px;">
@@ -803,8 +806,132 @@
         function adjustTopMargin() {
             var h = document.querySelector('.top-menu-wrapper').offsetHeight;
             document.getElementById('mdcontainer').style.marginTop = h + 'px';
+            var stickyTitle = document.getElementById('stickyTitle');
+            if (stickyTitle) stickyTitle.style.top = h + 'px';
         }
         window.addEventListener('resize', adjustTopMargin);
+
+        function initStickyTitle() {
+            var stickyTitle = document.getElementById('stickyTitle');
+            if (!stickyTitle) return;
+
+            var titleElem = document.querySelector('.doc-title-heading');
+            var menuH = document.querySelector('.top-menu-wrapper').offsetHeight;
+            stickyTitle.style.top = menuH + 'px';
+
+            var titleText = '';
+            if (titleElem) {
+                titleText = titleElem.textContent.trim();
+            } else {
+                // Fallback: use filename from URL src param
+                var srcParam = getQueryParam('src');
+                if (srcParam) {
+                    titleText = srcParam.split('/').pop().split('?')[0];
+                }
+            }
+
+            if (!titleText) {
+                stickyTitle.style.display = 'none';
+                return;
+            }
+
+            // Build structured sticky title with optional parent breadcrumb refs
+            var _currentSrc = getQueryParam('src') || '';
+            var _parentRefsKey = 'md-parent-refs:' + _currentSrc;
+
+            function buildStickyContent() {
+                stickyTitle.innerHTML = '';
+                var nameSpan = document.createElement('span');
+                nameSpan.className = 'sticky-title-name';
+                nameSpan.textContent = titleText;
+                stickyTitle.appendChild(nameSpan);
+
+                var parentRefs = [];
+                try { parentRefs = JSON.parse(localStorage.getItem(_parentRefsKey) || '[]'); } catch(e) {}
+                if (parentRefs.length > 0) {
+                    var sep = document.createElement('span');
+                    sep.className = 'sticky-title-sep';
+                    sep.innerHTML = ' &larr; ';
+                    stickyTitle.appendChild(sep);
+
+                    parentRefs.forEach(function(parentSrc, idx) {
+                        var parentName = parentSrc.split('/').pop().replace(/\.md$/i, '');
+                        var a = document.createElement('a');
+                        a.href = '?src=' + encodeURIComponent(parentSrc);
+                        a.textContent = parentName;
+                        a.className = 'sticky-title-parent';
+                        stickyTitle.appendChild(a);
+                        if (idx < parentRefs.length - 1) {
+                            var comma = document.createElement('span');
+                            comma.className = 'sticky-title-sep';
+                            comma.textContent = ', ';
+                            stickyTitle.appendChild(comma);
+                        }
+                    });
+
+                    var xBtn = document.createElement('button');
+                    xBtn.className = 'sticky-title-close';
+                    xBtn.innerHTML = '&times;';
+                    xBtn.title = 'Clear parent references';
+                    xBtn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        localStorage.removeItem(_parentRefsKey);
+                        buildStickyContent();
+                    });
+                    stickyTitle.appendChild(xBtn);
+                }
+            }
+            buildStickyContent();
+
+            // Track clicks on links that navigate to other .md files, recording this file as their parent
+            if (!window._mdLinkTrackingActive) {
+                window._mdLinkTrackingActive = true;
+                document.addEventListener('click', function(e) {
+                    var link = e.target.closest('a[href]');
+                    if (!link) return;
+                    var srcNow = getQueryParam('src');
+                    if (!srcNow) return;
+                    var href = link.getAttribute('href') || '';
+                    var destSrc = '';
+                    if (href.indexOf('?src=') >= 0) {
+                        destSrc = decodeURIComponent(href.replace(/.*[?&]src=([^&]*).*/, '$1'));
+                    }
+                    if (destSrc && destSrc !== srcNow && /\.md/i.test(destSrc)) {
+                        var key = 'md-parent-refs:' + destSrc;
+                        var existing = [];
+                        try { existing = JSON.parse(localStorage.getItem(key) || '[]'); } catch(e) {}
+                        if (!existing.includes(srcNow)) {
+                            existing.push(srcNow);
+                            localStorage.setItem(key, JSON.stringify(existing));
+                        }
+                    }
+                }, true);
+            }
+
+            function onScroll() {
+                if (titleElem) {
+                    var rect = titleElem.getBoundingClientRect();
+                    // Show sticky title when original title scrolls above the toolbar
+                    if (rect.bottom < menuH) {
+                        stickyTitle.style.display = 'flex';
+                    } else {
+                        stickyTitle.style.display = 'none';
+                    }
+                } else {
+                    // No doc-title-heading: show sticky after scrolling past toolbar height
+                    if (window.scrollY > menuH) {
+                        stickyTitle.style.display = 'flex';
+                    } else {
+                        stickyTitle.style.display = 'none';
+                    }
+                }
+            }
+
+            window.removeEventListener('scroll', window._stickyTitleScroll);
+            window._stickyTitleScroll = onScroll;
+            window.addEventListener('scroll', onScroll);
+            onScroll();
+        }
 
         window.onload = function () {
 
@@ -1082,9 +1209,27 @@
                         } else {
                             localStorage.setItem(_h1FilterKey, levels.join(','));
                             applyHeadingFilter(levels);
+                            updateH1BtnState();
                         }
                     });
                 });
+                function updateH1BtnState() {
+                    var anyChecked = ['chkFilterH1', 'chkFilterH2', 'chkFilterH3'].some(function(id) {
+                        var c = document.getElementById(id);
+                        return c && c.checked;
+                    });
+                    var btn = document.getElementById('btnH1Only');
+                    if (!btn) return;
+                    if (anyChecked) {
+                        btn.textContent = 'Filtered ▾';
+                        btn.classList.remove('btn-primary');
+                        btn.classList.add('btn-warning');
+                    } else {
+                        btn.textContent = 'Show H1 Only ▾';
+                        btn.classList.remove('btn-warning');
+                        btn.classList.add('btn-primary');
+                    }
+                }
                 var btnShowAll = document.getElementById('btnShowAll');
                 if (btnShowAll) btnShowAll.addEventListener('click', function() {
                     localStorage.removeItem(_h1FilterKey);
@@ -1192,6 +1337,7 @@
 
                 addImageFolderButton();
                 addSourceFolderGoButton();
+                initStickyTitle();
                 // Run after a short delay so pre elements are in the DOM
                 // addBannerCredentialCopyButtons must run after addCopyCodeButtons so .copy-code-btns exists
                 setTimeout(function () {
@@ -1208,6 +1354,7 @@
                         if (cb) cb.checked = true;
                     });
                     applyHeadingFilter(_savedLevels);
+                    updateH1BtnState();
                 }
 
                 // Skip focus on mobile devices to avoid keyboard blocking the screen
@@ -1421,11 +1568,17 @@
                                         return function () { window.location.href = 'openexplorer:' + p; };
                                     })(path));
                                     var vscodePath = path.replace(/\\/g, '/');
-                                    var $vscodeBtn = $('<button class="btn btn-secondary btn-sm ml-1">VSCode</button>');
+                                    // Ensure trailing slash so VSCode treats as folder, not file
+                                    if (!vscodePath.endsWith('/')) vscodePath += '/';
+                                    var $vscodeBtn = $('<button class="btn btn-secondary btn-sm ml-1" title="Open in new VSCode window">VSCode</button>');
                                     $vscodeBtn.on('click', (function(p) {
-                                        return function () { window.location.href = 'vscode://file/' + p + '?windowId=_new'; };
+                                        return function () { window.location.href = 'vscode://file///' + p + '?windowId=_new'; };
                                     })(vscodePath));
-                                    var $td = $('<td style="width:1%; white-space:nowrap; padding:4px;"></td>').append($btn).append($vscodeBtn);
+                                    var $claudeBtn = $('<button class="btn btn-dark btn-sm ml-1" title="Open in VSCode + start Claude CLI (requires openclaude: protocol — run register-claude-protocol.reg first)">Claude</button>');
+                                    $claudeBtn.on('click', (function(p) {
+                                        return function () { window.location.href = 'openclaude:///' + encodeURIComponent(p); };
+                                    })(vscodePath));
+                                    var $td = $('<td style="width:1%; white-space:nowrap; padding:4px;"></td>').append($btn).append($vscodeBtn).append($claudeBtn);
                                     $(this).append($td);
                                     rowsWithButton.push(this);
                                     return;
@@ -1517,11 +1670,9 @@
                     function looksLikeMetadata(text) {
                         if (!text || text.trim().length === 0) return false;
                         var trimmed = text.trim();
-                        // Explicit metadata keywords always qualify
-                        var hasMetadataKeywords = /^(documentLevel|title|author|date|tags|category|description)\s*:/i.test(trimmed);
-                        // Strict key: key must start with a letter and contain only letters/hyphens/underscores (no digits, so Q1/Q2 won't match)
-                        var isStrictKeyValue = /^[a-zA-Z][a-zA-Z_-]+\s*:/.test(trimmed);
-                        return hasMetadataKeywords || isStrictKeyValue;
+                        // Only match known metadata keywords to avoid false positives on headings like "Q&A:", "q1:", etc.
+                        var hasMetadataKeywords = /^(documentLevel|title|author|date|tags|category|description|keywords|status|version)\s*:/i.test(trimmed);
+                        return hasMetadataKeywords;
                     }
                     
                     // Track HR elements that need to be removed (between metadata elements)
@@ -1729,13 +1880,11 @@
                                     li.remove();
                                 }
                             });
-                            // Apply green title color to first <li>, falling back to first element
+                            // Apply doc-title-heading only if text ends with .md (i.e., the element IS the filename)
                             var firstLi = tempContentDiv.querySelector('li');
-                            if (firstLi) {
-                                firstLi.classList.add('doc-title-heading');
-                            } else {
-                                var firstElem = tempContentDiv.firstElementChild;
-                                if (firstElem) firstElem.classList.add('doc-title-heading');
+                            var _titleCandidate = firstLi || tempContentDiv.firstElementChild;
+                            if (_titleCandidate && /\.md$/i.test(_titleCandidate.textContent.trim())) {
+                                _titleCandidate.classList.add('doc-title-heading');
                             }
                             h1Wrapper.innerHTML = tempContentDiv.innerHTML;
                         } else {
@@ -1779,6 +1928,21 @@
                     });
 
                     console.log('all', divAll);
+                    // If no element was marked as doc-title-heading, create one from the URL filename
+                    if (!divAll.querySelector('.doc-title-heading')) {
+                        var _srcFileName = app.src ? decodeURIComponent(app.src.split('/').pop().split('?')[0]) : '';
+                        if (_srcFileName && /\.md$/i.test(_srcFileName)) {
+                            var _titleEl = document.createElement('p');
+                            _titleEl.className = 'doc-title-heading';
+                            _titleEl.textContent = _srcFileName;
+                            var _firstWrapper = divAll.querySelector('.h1-wrapper');
+                            if (_firstWrapper) {
+                                _firstWrapper.insertBefore(_titleEl, _firstWrapper.firstChild);
+                            } else {
+                                divAll.insertBefore(_titleEl, divAll.firstChild);
+                            }
+                        }
+                    }
                     return divAll;
                 }
 
@@ -2120,9 +2284,9 @@
                                 var w = $(this).closest('.h1-wrapper');
                                 console.log('[H1 expand]', !isExpanded ? 'expanding' : 'collapsing', w.find('h1').first().text().substring(0, 30));
                                 if (!isExpanded) {
-                                    // Show all content under this H1 wrapper
-                                    w.children().show();
-                                    w.find('*').show();
+                                    // Show all content under this H1 wrapper (but not copy-code-wrappers — those stay hidden in filter mode)
+                                    w.children().not('.copy-code-wrapper').show();
+                                    w.find('*').not('.copy-code-wrapper, .copy-code-btns').show();
                                     this.innerHTML = '<i class="fa-solid fa-chevron-down"></i>';
                                     this.title = 'Collapse section';
                                     this.dataset.expanded = 'true';

@@ -54,6 +54,67 @@ h1 {
 .doc-title-heading {
     color: #28a745;
 }
+
+/* Sticky title bar shown when scrolled past the doc title */
+#stickyTitle {
+    position: fixed;
+    width: 100%;
+    left: 0;
+    z-index: 999;
+    background: #212529;
+    color: #28a745;
+    font-size: 0.9rem;
+    padding: 4px 16px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.sticky-title-name {
+    color: #28a745;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-shrink: 1;
+    min-width: 0;
+}
+
+.sticky-title-sep {
+    color: #6c757d;
+    flex-shrink: 0;
+}
+
+.sticky-title-parent {
+    color: #fd7e14;
+    text-decoration: underline;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.sticky-title-parent:hover {
+    color: #ffc107;
+    text-decoration: underline;
+}
+
+.sticky-title-close {
+    background: none;
+    border: 1px solid #6c757d;
+    border-radius: 3px;
+    color: #6c757d;
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 1px 5px;
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+.sticky-title-close:hover {
+    color: #fff;
+    border-color: #fff;
+}
 h1.font-size-normal {
     font-size: 1rem !important;
 }
@@ -284,11 +345,12 @@ code {
     user-select: none;
 }
 
-.copy-code-btn {
-    opacity: 0.6;
+.copy-code-wrapper .copy-code-btns {
+    opacity: 0;
+    transition: opacity 0.15s;
 }
 
-.copy-code-btn:hover {
+.copy-code-wrapper:hover .copy-code-btns {
     opacity: 1;
 }
 

@@ -376,8 +376,44 @@ Button clicked
 
 * Whenever `GO` button shows, add `Open in vscode` button, that will open the file or folder in Visual Studio Code.
 
-# TODO - VSCode button
+# VSCode button
 
 * See [](./imgs/errors/vscode-kill.png)
 * Clicking vscode button to open a folder kills currently opened vscode for C:\Works, and replaces the vscode with the new folder. This is not intended. You shouldn't kill another vscode if it has different project path.
+* This is happening again
+* C:\Works code should never be killed.
+
+```                                                 
+  Note: If VSCode still replaces the current window after this fix, it's a VSCode setting issue — set                    
+  "window.openFoldersInNewWindow": "on" in VSCode settings (Ctrl+, → search "openFoldersInNewWindow"). The ?windowId=_new
+  parameter requires VSCode 1.64+ to be honored.
+```
+
+
+# DONE
+
+* When `Show H1 Only` button has any checkbox ticked, show button title as `Filtered` and change button color to orange (warning).
+
+# DONE
+
+* See [](./imgs/img-ui/title-on-top.png)
+* Can you make title stay on top while scrolling windows down/up?
+* If first line is not the markdown file then show file name from url as the title.
+
+
+# DONE
+
+# Open project init settings
+
+* Once a project is opened in vscode by `VSCode` button, can you run claude cli on split window as well?
+
+# stickyTitle bar
+
+* See [](./imgs/img-ui/stickyTitle.png)
+* When current file name is shown in stickyTitle bar, show also who references this markdown file. Preferabbly this breadcrumb path can be remembered when markdown clicked on browser. Otherwise, you can refer to _work_index.md. These list of parent markdown filename should be hyperlinked. Also, add `x` button at the right side, so that user can delete this parent list.
+
+# TODO
+
+* See [](./imgs/img-ui/doc-title-heading.png)
+* `doc-title-heading` should be markdown file name. If it does not end with `.md`, it is not a doc title. If first line does not end with `.md`, set `doc-title-heading` from url.
 

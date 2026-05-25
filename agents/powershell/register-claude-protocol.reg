@@ -1,0 +1,22 @@
+Windows Registry Editor Version 5.00
+
+; Registers the "openclaude:" custom URL protocol so that
+; clicking the "Claude" button in md.htm opens VS Code in a new window
+; AND starts the Claude CLI in a terminal at the project folder.
+;
+; HOW TO USE:
+;   1. Double-click this .reg file and confirm the UAC prompt.
+;   2. Done — the "Claude" button next to each "Go" row will work.
+;
+; NOTE: Update the path below if you move open-claude.ps1.
+
+[HKEY_CLASSES_ROOT\openclaude]
+@="URL:Open Claude Protocol"
+"URL Protocol"=""
+
+[HKEY_CLASSES_ROOT\openclaude\shell]
+
+[HKEY_CLASSES_ROOT\openclaude\shell\open]
+
+[HKEY_CLASSES_ROOT\openclaude\shell\open\command]
+@="powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -File \"C:\\Works\\md\\powershell\\open-claude.ps1\" \"%1\""
