@@ -1,3 +1,7 @@
+# v4.0.6
+26/5/26
+claude button, good job
+
 # v4.0.5
 26/5/26
 wip

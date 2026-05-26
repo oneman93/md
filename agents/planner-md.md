@@ -412,8 +412,43 @@ Button clicked
 * See [](./imgs/img-ui/stickyTitle.png)
 * When current file name is shown in stickyTitle bar, show also who references this markdown file. Preferabbly this breadcrumb path can be remembered when markdown clicked on browser. Otherwise, you can refer to _work_index.md. These list of parent markdown filename should be hyperlinked. Also, add `x` button at the right side, so that user can delete this parent list.
 
-# TODO
+# done
 
 * See [](./imgs/img-ui/doc-title-heading.png)
 * `doc-title-heading` should be markdown file name. If it does not end with `.md`, it is not a doc title. If first line does not end with `.md`, set `doc-title-heading` from url.
 
+# `Claude` button
+
+* sEE [](./imgs/errors/claude-button-does.png)
+* Claude button does nothing. It opens cmd and does nothing.
+* See [](./imgs/errors/claude-separate.png)
+* I wanted open claude code in terminal like this [](./imgs/errors/claude-like-this.png) not in separate windows.
+
+* See [](./imgs/errors/no-claude.png)
+* It opens vs code but no claude code terminal on the right side.
+
+* Still same, it caused vscode to come front, but not claude terminal.
+* See [](./imgs/errors/claude-bottom.png)
+* Claude opened but in bottom panel. Is there any way you can click claude icon on top - `Claude code: Open in terminal`? That icon opened claude in right side terminal.
+
+* See [](./imgs/errors/see-what-you-did.png)
+* It opened claude at bottom then opened another vs code.
+* See [](./imgs/errors/unnecessary-middle.png)
+* Good, can you close the unnecessary middle empty panel?
+* Still same, it wasn't welcome screen. It was an empty screen with vscode logo background.
+
+* See [](./imgs/errors/terminal-on-bottom.png)
+* After running `Claude` button, new terminal pops on the right side, which I don't like. I want new terminals on bottom as it was before.
+* Still same, the terminals open in right panel.
+
+# TODO 
+* See [](./imgs/errors/command.png)
+* I think line 31-52 in [](./powershell/open-claude.ps1) is unnecessary.
+
+
+* You can just run `Claude code: Open in terminal` from the beginning and it will open claude on right terminal. Then you don't need to change vs code setting again.
+* See [](./imgs/errors/old-behaviour.png) and [](./imgs/errors/old-behaviour2.png)
+* Unnecessary extra panel on the right side -> need to remove
+* New terminals created on the right side -> need to be bottom.
+* Is this because of *.reg or vscode setting you changed already?
+* New terminal still opens in the **RIGHT** side.

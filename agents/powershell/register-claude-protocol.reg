@@ -19,4 +19,4 @@ Windows Registry Editor Version 5.00
 [HKEY_CLASSES_ROOT\openclaude\shell\open]
 
 [HKEY_CLASSES_ROOT\openclaude\shell\open\command]
-@="powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -File \"C:\\Works\\md\\powershell\\open-claude.ps1\" \"%1\""
+@="powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -File \"C:\\Works\\md\\agents\\powershell\\open-claude.ps1\" \"%1\""

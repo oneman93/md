@@ -20,10 +20,15 @@ if (-not $folderPath) { exit }
 # Open VS Code in a new window (does not kill existing windows)
 Start-Process "code" "--new-window `"$folderPath`""
 
-# Open Claude CLI in Windows Terminal if available, otherwise fall back to cmd
-$wtExe = Get-Command "wt.exe" -ErrorAction SilentlyContinue
-if ($wtExe) {
-    Start-Process "wt.exe" "-d `"$folderPath`" cmd /k claude"
-} else {
-    Start-Process "cmd.exe" "/k cd /d `"$folderPath`" && claude"
-}
+# Wait for VS Code to load
+Start-Sleep -Seconds 4
+$wshShell = New-Object -ComObject WScript.Shell
+$wshShell.AppActivate("Visual Studio Code")
+Start-Sleep -Milliseconds 800
+
+# Open Claude in the right side terminal
+$wshShell.SendKeys("^+p")
+Start-Sleep -Milliseconds 800
+$wshShell.SendKeys("Claude Code: Open in Terminal")
+Start-Sleep -Milliseconds 500
+$wshShell.SendKeys("{ENTER}")

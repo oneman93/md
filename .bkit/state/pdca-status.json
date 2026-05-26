@@ -1,6 +1,6 @@
 {
   "version": "2.0",
-  "lastUpdated": "2026-05-25T02:29:42.255Z",
+  "lastUpdated": "2026-05-26T01:01:57.837Z",
   "activeFeatures": [
     "md",
     "js",
@@ -43,9 +43,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-05-07T05:51:54.325Z",
-        "lastUpdated": "2026-05-25T02:29:42.255Z"
+        "lastUpdated": "2026-05-26T01:01:57.837Z"
       },
-      "lastFile": "C:\\Works\\md\\powershell\\open-claude.ps1"
+      "lastFile": "C:/Works/md/agents/powershell/open-claude.ps1"
     }
   },
   "pipeline": {
@@ -56,7 +56,7 @@
   "session": {
     "startedAt": "2026-03-20T00:09:52.220Z",
     "onboardingCompleted": false,
-    "lastActivity": "2026-05-25T02:29:42.255Z"
+    "lastActivity": "2026-05-26T01:01:57.837Z"
   },
   "history": [
     {
@@ -289,6 +289,90 @@
     },
     {
       "timestamp": "2026-05-25T02:29:42.255Z",
+      "feature": "powershell",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-05-26T00:02:31.544Z",
+      "feature": "powershell",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-05-26T00:06:45.744Z",
+      "feature": "powershell",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-05-26T00:09:27.918Z",
+      "feature": "powershell",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-05-26T00:13:24.808Z",
+      "feature": "powershell",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-05-26T00:15:31.665Z",
+      "feature": "powershell",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-05-26T00:16:49.080Z",
+      "feature": "powershell",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-05-26T00:19:25.612Z",
+      "feature": "powershell",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-05-26T00:21:26.101Z",
+      "feature": "powershell",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-05-26T00:32:04.112Z",
+      "feature": "powershell",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-05-26T00:38:19.873Z",
+      "feature": "powershell",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-05-26T00:43:49.285Z",
+      "feature": "powershell",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-05-26T00:52:28.989Z",
+      "feature": "powershell",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-05-26T00:56:08.150Z",
+      "feature": "powershell",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-05-26T01:01:57.837Z",
       "feature": "powershell",
       "phase": "do",
       "action": "updated"

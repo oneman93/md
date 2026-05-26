@@ -18,4 +18,4 @@ Windows Registry Editor Version 5.00
 [HKEY_CLASSES_ROOT\confupload\shell\open]
 
 [HKEY_CLASSES_ROOT\confupload\shell\open\command]
-@="wscript.exe //B \"C:\\Works\\md\\powershell\\launch-upload.vbs\" \"%1\""
+@="wscript.exe //B \"C:\\Works\\md\\agents\\powershell\\launch-upload.vbs\" \"%1\""
