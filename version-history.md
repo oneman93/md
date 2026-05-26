@@ -1,3 +1,7 @@
+# v4.0.8
+27/5/26
+fix backslash dropped in Windows paths by markdown escaping
+
 # v4.0.7
 27/5/26
 fix breadcrumb path url double-encoding

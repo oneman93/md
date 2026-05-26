@@ -1344,7 +1344,11 @@
                 applyCustomCss();
 
                 addImageFolderButton();
-                addSourceFolderGoButton();
+                // Fix Windows paths where markdown stripped backslashes before special chars (e.g. \_),
+                // then add Go buttons so they read the corrected path text.
+                fixWindowsPathsFromSource(function() {
+                    addSourceFolderGoButton();
+                });
                 initStickyTitle();
                 // Run after a short delay so pre elements are in the DOM
                 // addBannerCredentialCopyButtons must run after addCopyCodeButtons so .copy-code-btns exists
@@ -1541,6 +1545,60 @@
                  * via the custom "openexplorer:" protocol (register-explorer-protocol.reg).
                  * Keywords (case-insensitive): "source folder", "source", "local folder", "folder"
                  */
+                /**
+                 * Fetches the raw markdown source and restores backslashes that the
+                 * markdown parser drops before special chars (e.g. `\_` → `_`).
+                 * Fixes text nodes in zero-md-clone, then calls callback.
+                 */
+                function fixWindowsPathsFromSource(callback) {
+                    var srcUrl = app && app.src;
+                    if (!srcUrl) { if (callback) callback(); return; }
+                    fetch(srcUrl)
+                        .then(function(r) { return r.text(); })
+                        .then(function(markdown) {
+                            // Find Windows paths in raw markdown (e.g. C:\Works\... )
+                            var rawPaths = [];
+                            var pathPattern = /[A-Z]:\\[\w\-. \\]+/gi;
+                            var m;
+                            while ((m = pathPattern.exec(markdown)) !== null) {
+                                rawPaths.push(m[0]);
+                            }
+                            if (rawPaths.length > 0) {
+                                // Simulate markdown backslash-escape stripping
+                                // Markdown spec: \<special> → <special> for: \ ` * _ { } [ ] ( ) # + - . !
+                                var mdEscapeRe = /\\([\\`*_{}\[\]()#+\-.!])/g;
+                                var escapeMap = {};
+                                rawPaths.forEach(function(rawPath) {
+                                    var rendered = rawPath.replace(mdEscapeRe, '$1');
+                                    if (rendered !== rawPath) {
+                                        escapeMap[rendered] = rawPath;
+                                    }
+                                });
+                                var keys = Object.keys(escapeMap);
+                                if (keys.length > 0) {
+                                    var clone = document.querySelector('zero-md-clone');
+                                    if (clone) {
+                                        var walker = document.createTreeWalker(clone, NodeFilter.SHOW_TEXT, null, false);
+                                        var node;
+                                        while ((node = walker.nextNode())) {
+                                            var text = node.textContent;
+                                            var changed = false;
+                                            keys.forEach(function(rendered) {
+                                                if (text.includes(rendered)) {
+                                                    text = text.split(rendered).join(escapeMap[rendered]);
+                                                    changed = true;
+                                                }
+                                            });
+                                            if (changed) node.textContent = text;
+                                        }
+                                    }
+                                }
+                            }
+                            if (callback) callback();
+                        })
+                        .catch(function() { if (callback) callback(); });
+                }
+
                 function normalizeGoPath(p) {
                     // Strip surrounding backticks (e.g. `/c/Users/foo` -> /c/Users/foo)
                     p = p.replace(/^`+|`+$/g, '').trim();
