@@ -855,6 +855,10 @@
                     stickyTitle.appendChild(sep);
 
                     parentRefs.forEach(function(parentSrc, idx) {
+                        // Sanitize stale values that may have been stored with ?src= prefix
+                        if (/^[?&]src=/i.test(parentSrc)) {
+                            parentSrc = decodeURIComponent(parentSrc.replace(/^[?&]src=/, ''));
+                        }
                         var parentName = parentSrc.split('/').pop().replace(/\.md$/i, '');
                         var a = document.createElement('a');
                         a.href = '?src=' + encodeURIComponent(parentSrc);
@@ -891,6 +895,10 @@
                     if (!link) return;
                     var srcNow = getQueryParam('src');
                     if (!srcNow) return;
+                    // Sanitize: strip ?src= prefix if URL was double-wrapped
+                    if (/^[?&]src=/i.test(srcNow)) {
+                        srcNow = decodeURIComponent(srcNow.replace(/^[?&]src=/, ''));
+                    }
                     var href = link.getAttribute('href') || '';
                     var destSrc = '';
                     if (href.indexOf('?src=') >= 0) {
@@ -2510,6 +2518,8 @@
                         if (oldUrl != undefined) {
                             // Skip vscode:// and other non-http protocols
                             if (oldUrl.startsWith('vscode://')) return;
+                            // Skip already-wrapped links to prevent double-wrapping
+                            if (oldUrl.indexOf('?src=') >= 0 || oldUrl.indexOf('md.htm') >= 0) return;
                             // Check if URL contains .md (not just ends with it, to handle anchors like .md#anchor)
                             if (oldUrl.includes(".md")) {
                                 // Extract anchor if present (e.g., #supplementary)

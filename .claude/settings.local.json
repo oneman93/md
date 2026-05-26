@@ -8,7 +8,8 @@
       "Bash(git reset:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Read(//c/Works/.vscode//**)"
+      "Read(//c/Works/.vscode//**)",
+      "Skill(git-push)"
     ]
   }
 }

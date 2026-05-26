@@ -441,7 +441,7 @@ Button clicked
 * After running `Claude` button, new terminal pops on the right side, which I don't like. I want new terminals on bottom as it was before.
 * Still same, the terminals open in right panel.
 
-# TODO 
+## done - powershell fix
 * See [](./imgs/errors/command.png)
 * I think line 31-52 in [](./powershell/open-claude.ps1) is unnecessary.
 
@@ -452,3 +452,10 @@ Button clicked
 * New terminals created on the right side -> need to be bottom.
 * Is this because of *.reg or vscode setting you changed already?
 * New terminal still opens in the **RIGHT** side.
+
+# TODO - Breadcrumb path
+
+* See [](./imgs/errors/breadcrumb-path.png)
+* Breadcrum parent item path is incorrect in url format.
+* See [](./imgs/errors/backslash-incorrect.png)
+* The last backslahs in the path does not show in code preview and html page, resulting in breaking the full path.

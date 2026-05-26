@@ -1,3 +1,7 @@
+# v4.0.7
+27/5/26
+fix breadcrumb path url double-encoding
+
 # v4.0.6
 26/5/26
 claude button, good job
