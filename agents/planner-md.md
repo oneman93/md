@@ -458,6 +458,11 @@ Button clicked
 * See [](./imgs/errors/breadcrumb-path.png)
 * Breadcrum parent item path is incorrect in url format.
 
-# todo
+# done
 * See [](./imgs/errors/backslash-incorrect.png)
 * The last backslahs in the path does not show in code preview and html page, resulting in breaking the full path.
+
+# todo - camel case
+
+* See [](./imgs/img-ui/camelcase.png)
+* Can you keep the hyperlink as original camel case instead of making all lower case?

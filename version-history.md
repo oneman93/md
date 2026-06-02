@@ -1,3 +1,7 @@
+# v4.0.9
+2/6/26
+fix hyperlink camelCase lost when bold/highlight CSS applied
+
 # v4.0.8
 27/5/26
 fix backslash dropped in Windows paths by markdown escaping

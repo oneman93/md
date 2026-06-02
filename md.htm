@@ -2014,26 +2014,26 @@
 
                 function applyCustomCss() {
                     $('a').each(function () {
-                        var txtOrg = $(this).text().toLowerCase();
+                        var txtOrg = $(this).text();
+                        var txtLower = txtOrg.toLowerCase();
                         var boldWords = ["loading", "summary", "itwiki", "release"];
                         var orangeWords = ["bau"];
 
-                        // console.log('searchWord:', searchWord);
-                        // console.log('txtOrg:', txtOrg);
-
                         // Note that below style will be overwritten by the last if.
                         boldWords.forEach((elem) => {
-                            if (txtOrg.indexOf(elem) >= 0) {
-                                // add green css
-                                var txtReplaced = txtOrg.replace(elem, `<span class="green">${elem}</span>`);
+                            if (txtLower.indexOf(elem) >= 0) {
+                                // add green css, preserve original case
+                                var re = new RegExp(elem, 'gi');
+                                var txtReplaced = txtOrg.replace(re, function(m) { return `<span class="green">${m}</span>`; });
                                 $(this).html(txtReplaced);
                             }
                         });
 
                         orangeWords.forEach((elem) => {
-                            if (txtOrg.indexOf(elem) >= 0) {
-                                // add green css
-                                var txtReplaced = txtOrg.replace(elem, `<span class="orange">${elem}</span>`);
+                            if (txtLower.indexOf(elem) >= 0) {
+                                // add orange css, preserve original case
+                                var re = new RegExp(elem, 'gi');
+                                var txtReplaced = txtOrg.replace(re, function(m) { return `<span class="orange">${m}</span>`; });
                                 $(this).html(txtReplaced);
                             }
                         });
@@ -2266,12 +2266,14 @@
                     }
                     else {
                         $('a').each(function () {
-                            var txtOrg = $(this).text().toLowerCase();
+                            var txtOrg = $(this).text();
+                            var txtLower = txtOrg.toLowerCase();
                             var ctrl = $(this);
 
-                            if (txtOrg.indexOf(searchWord) >= 0) {
-                                // console.log('txtOrg:', txtOrg);
-                                var txtReplaced = txtOrg.replace(searchWord, `<span class="highlight">${searchWord}</span>`);
+                            if (txtLower.indexOf(searchWord) >= 0) {
+                                // preserve original case, highlight matched portion
+                                var re = new RegExp(searchWord.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+                                var txtReplaced = txtOrg.replace(re, function(m) { return `<span class="highlight">${m}</span>`; });
                                 ctrl.html(txtReplaced);
                             } else {
                                 removeHighlightCss(ctrl);
