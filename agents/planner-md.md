@@ -462,7 +462,14 @@ Button clicked
 * See [](./imgs/errors/backslash-incorrect.png)
 * The last backslahs in the path does not show in code preview and html page, resulting in breaking the full path.
 
-# todo - camel case
+# camel case
 
 * See [](./imgs/img-ui/camelcase.png)
 * Can you keep the hyperlink as original camel case instead of making all lower case?
+
+
+# todo - code button
+
+* See [](./imgs/img-ui/code-button.png)
+* Show `</>Code` button on top for `_work_index.md` as well.
+

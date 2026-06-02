@@ -1,3 +1,7 @@
+# v4.0.10
+2/6/26
+show code button for _work_index.md
+
 # v4.0.9
 2/6/26
 fix hyperlink camelCase lost when bold/highlight CSS applied

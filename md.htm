@@ -1159,8 +1159,8 @@
                     btnMobileExit.style.display = 'block';
                 }
 
-                // Show code button when viewing a specific file (non-root page)
-                if (!isRootPage && srcValue) {
+                // Show code button for any page with a src file (including root/index pages like _work-index.md)
+                if (srcValue) {
                     if (btnCode) btnCode.style.display = 'inline-block';
                     if (btnMobileCode) btnMobileCode.style.display = 'block';
                 }
