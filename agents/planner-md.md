@@ -468,8 +468,12 @@ Button clicked
 * Can you keep the hyperlink as original camel case instead of making all lower case?
 
 
-# todo - code button
+# DONE - code button
 
 * See [](./imgs/img-ui/code-button.png)
 * Show `</>Code` button on top for `_work_index.md` as well.
 
+# todo 
+
+* Go button used to open the matching program for file, eg, opening ms sql server studio for `.../test.sql`, but it does not do it any more, goes to windows file explorer. Fix please.
+* When table side bar is hidden, if hovered on `Show Tables` icon, show the table. When unhovered, hide the table again.

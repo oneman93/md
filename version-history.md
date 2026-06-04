@@ -1,3 +1,7 @@
+# v4.0.11
+4/6/26
+Go button opens default app for files; table sidebar hover-to-show
+
 # v4.0.10
 2/6/26
 show code button for _work_index.md

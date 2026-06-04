@@ -240,7 +240,8 @@ code {
     display: none;
 }
 
-.table-nav-container.show {
+.table-nav-container.show,
+.table-nav-container.hover-show {
     display: block;
 }
 

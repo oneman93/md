@@ -658,6 +658,28 @@
             localStorage.setItem('md-table-nav-state', 'expanded');
         }
 
+        // Hover-to-show: when toggle is visible (collapsed), hovering it temporarily shows the panel
+        (function() {
+            var _hoverTimer = null;
+            var toggle = document.getElementById('tableNavToggle');
+            var container = document.getElementById('tableNavContainer');
+
+            function hoverShow() {
+                clearTimeout(_hoverTimer);
+                container.classList.add('hover-show');
+            }
+            function hoverHide() {
+                _hoverTimer = setTimeout(function() {
+                    container.classList.remove('hover-show');
+                }, 200);
+            }
+
+            toggle.addEventListener('mouseenter', hoverShow);
+            toggle.addEventListener('mouseleave', hoverHide);
+            container.addEventListener('mouseenter', hoverShow);
+            container.addEventListener('mouseleave', hoverHide);
+        })();
+
         function hasTableAfterHeading(heading) {
             let nextElement = heading.nextElementSibling;
 

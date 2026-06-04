@@ -1,6 +1,6 @@
 {
   "version": "2.0",
-  "lastUpdated": "2026-05-26T01:01:57.837Z",
+  "lastUpdated": "2026-06-04T00:16:18.964Z",
   "activeFeatures": [
     "md",
     "js",
@@ -43,9 +43,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-05-07T05:51:54.325Z",
-        "lastUpdated": "2026-05-26T01:01:57.837Z"
+        "lastUpdated": "2026-06-04T00:16:18.964Z"
       },
-      "lastFile": "C:/Works/md/agents/powershell/open-claude.ps1"
+      "lastFile": "C:/Works/md/agents/powershell/open-explorer.ps1"
     }
   },
   "pipeline": {
@@ -56,7 +56,7 @@
   "session": {
     "startedAt": "2026-03-20T00:09:52.220Z",
     "onboardingCompleted": false,
-    "lastActivity": "2026-05-26T01:01:57.837Z"
+    "lastActivity": "2026-06-04T00:16:18.964Z"
   },
   "history": [
     {
@@ -373,6 +373,12 @@
     },
     {
       "timestamp": "2026-05-26T01:01:57.837Z",
+      "feature": "powershell",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-06-04T00:16:18.964Z",
       "feature": "powershell",
       "phase": "do",
       "action": "updated"
