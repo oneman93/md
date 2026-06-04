@@ -473,7 +473,11 @@ Button clicked
 * See [](./imgs/img-ui/code-button.png)
 * Show `</>Code` button on top for `_work_index.md` as well.
 
-# todo 
+# Bugfix 
 
 * Go button used to open the matching program for file, eg, opening ms sql server studio for `.../test.sql`, but it does not do it any more, goes to windows file explorer. Fix please.
 * When table side bar is hidden, if hovered on `Show Tables` icon, show the table. When unhovered, hide the table again.
+
+# TODO 
+
+* See [plusminus.png](./imgs/img-mermaid/plusminus.png). Can you create +/- button that enlarges/reduces the mermaid diagram?

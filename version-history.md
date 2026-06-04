@@ -1,3 +1,7 @@
+# v4.0.12
+4/6/26
+Add +/- zoom buttons for mermaid diagrams
+
 # v4.0.11
 4/6/26
 Go button opens default app for files; table sidebar hover-to-show

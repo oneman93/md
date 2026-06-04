@@ -2955,6 +2955,22 @@
                         pngBtn.textContent = 'png';
                         pngBtn.style.display = ''; // Show initially since preview is shown
 
+                        // Create zoom buttons
+                        var _zoomScale = 1.0;
+                        var zoomInBtn = document.createElement('button');
+                        zoomInBtn.type = 'button';
+                        zoomInBtn.className = 'btn btn-outline-secondary btn-sm mermaid-zoom-btn';
+                        zoomInBtn.textContent = '+';
+                        zoomInBtn.title = 'Zoom in';
+
+                        var zoomOutBtn = document.createElement('button');
+                        zoomOutBtn.type = 'button';
+                        zoomOutBtn.className = 'btn btn-outline-secondary btn-sm mermaid-zoom-btn';
+                        zoomOutBtn.textContent = '−';
+                        zoomOutBtn.title = 'Zoom out';
+
+                        buttonsContainer.appendChild(zoomInBtn);
+                        buttonsContainer.appendChild(zoomOutBtn);
                         buttonsContainer.appendChild(toggleBtn);
                         buttonsContainer.appendChild(pngBtn);
                         buttonsContainer.appendChild(minimizeBtn);
@@ -3068,6 +3084,8 @@
                                 this.textContent = 'preview';
                                 this.dataset.showing = 'code';
                                 pngBtn.style.display = 'none'; // Hide PNG button when showing code
+                                zoomInBtn.style.display = 'none';
+                                zoomOutBtn.style.display = 'none';
                             } else {
                                 // Switch to preview view
                                 codeContainer.style.display = 'none';
@@ -3075,6 +3093,8 @@
                                 this.textContent = 'code';
                                 this.dataset.showing = 'preview';
                                 pngBtn.style.display = ''; // Show PNG button when showing preview
+                                zoomInBtn.style.display = '';
+                                zoomOutBtn.style.display = '';
                             }
                         });
 
@@ -3101,6 +3121,26 @@
                                 previewContainer.style.display = 'none';
                                 codeContainer.style.display = 'none';
                                 this.textContent = 'show';
+                            }
+                        });
+
+                        // Zoom in button click handler
+                        zoomInBtn.addEventListener('click', function() {
+                            _zoomScale = Math.min(3.0, parseFloat((_zoomScale + 0.2).toFixed(1)));
+                            var svg = previewContainer.querySelector('svg');
+                            if (svg) {
+                                svg.style.transform = 'scale(' + _zoomScale + ')';
+                                svg.style.transformOrigin = 'top center';
+                            }
+                        });
+
+                        // Zoom out button click handler
+                        zoomOutBtn.addEventListener('click', function() {
+                            _zoomScale = Math.max(0.2, parseFloat((_zoomScale - 0.2).toFixed(1)));
+                            var svg = previewContainer.querySelector('svg');
+                            if (svg) {
+                                svg.style.transform = 'scale(' + _zoomScale + ')';
+                                svg.style.transformOrigin = 'top center';
                             }
                         });
 
