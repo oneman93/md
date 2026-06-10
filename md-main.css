@@ -318,6 +318,16 @@ code {
     margin-bottom: 0;
 }
 
+.table-nav-button-mermaid {
+    border-color: #17a2b8;
+    color: #17a2b8;
+}
+
+.table-nav-button-mermaid:hover {
+    background: #17a2b8;
+    color: white;
+}
+
 /* Copy code button for pre blocks */
 .copy-code-wrapper {
     position: relative;
@@ -367,14 +377,21 @@ code {
     right: 0;
     z-index: 10;
     display: flex;
-    gap: 5px;
+    gap: 6px;
     padding: 5px;
+    align-items: center;
 }
 
 .mermaid-buttons .btn {
     font-size: 12px;
-    padding: 4px 8px;
+    padding: 3px 8px;
     line-height: 1.2;
+}
+
+.mermaid-btn-group {
+    display: inline-flex;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
 }
 
 .mermaid-code-container {

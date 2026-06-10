@@ -478,6 +478,12 @@ Button clicked
 * Go button used to open the matching program for file, eg, opening ms sql server studio for `.../test.sql`, but it does not do it any more, goes to windows file explorer. Fix please.
 * When table side bar is hidden, if hovered on `Show Tables` icon, show the table. When unhovered, hide the table again.
 
-# TODO 
+# DONE - Mermaid zoom 
 
 * See [plusminus.png](./imgs/img-mermaid/plusminus.png). Can you create +/- button that enlarges/reduces the mermaid diagram?
+* Create `zoom reset` button as well. Let buttons be grouped by category with some pretty css.
+
+# DONE - Table sidebar with Mermaid
+
+* Update current table sidebar to show all nearest h1/h2/h3 title of each mermaid flow diagrams.
+

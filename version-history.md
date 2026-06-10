@@ -1,3 +1,7 @@
+# v4.0.13
+10/6/26
+Flow diagram on sidebar
+
 # v4.0.12
 4/6/26
 Add +/- zoom buttons for mermaid diagrams

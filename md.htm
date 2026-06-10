@@ -260,7 +260,7 @@
         <!-- Floating Table Navigation -->
         <div class="table-nav-container" id="tableNavContainer">
             <div class="table-nav-title">
-                Tables
+                Tables &amp; Diagrams
                 <button class="table-nav-close" id="tableNavClose" onclick="tableNavCollapse()" title="Close">&times;</button>
             </div>
             <div id="tableNavButtons"></div>
@@ -618,12 +618,46 @@
                 }
             });
 
-            // Create buttons for each heading with tables
+            // Check for Mermaid diagrams and their nearest h1/h2/h3 headings
+            var _seenIds = new Set(headingsWithTables.map(function(h) { return h.id; }));
+            document.querySelectorAll('pre.language-mermaid').forEach(function(pre, index) {
+                var hWrapper = pre.closest('.h1-wrapper');
+                var nearestHeading = null;
+                if (hWrapper) {
+                    var allH = Array.from(hWrapper.querySelectorAll('h1, h2, h3'));
+                    for (var hi = allH.length - 1; hi >= 0; hi--) {
+                        if (allH[hi].compareDocumentPosition(pre) & Node.DOCUMENT_POSITION_FOLLOWING) {
+                            nearestHeading = allH[hi];
+                            break;
+                        }
+                    }
+                }
+                if (!nearestHeading) return;
+                if (!nearestHeading.id) {
+                    nearestHeading.id = 'mermaid-heading-' + index;
+                }
+                if (_seenIds.has(nearestHeading.id)) return;
+                _seenIds.add(nearestHeading.id);
+                headingsWithTables.push({
+                    element: nearestHeading,
+                    text: nearestHeading.textContent.trim(),
+                    id: nearestHeading.id,
+                    level: parseInt(nearestHeading.tagName.charAt(1)),
+                    type: 'mermaid'
+                });
+            });
+
+            // Sort all entries by document order
+            headingsWithTables.sort(function(a, b) {
+                return a.element.compareDocumentPosition(b.element) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1;
+            });
+
+            // Create buttons for each heading with tables or diagrams
             if (headingsWithTables.length > 0) {
                 headingsWithTables.forEach(heading => {
                     const button = document.createElement('button');
-                    button.className = 'table-nav-button';
-                    button.textContent = heading.text;
+                    button.className = 'table-nav-button' + (heading.type === 'mermaid' ? ' table-nav-button-mermaid' : '');
+                    button.textContent = (heading.type === 'mermaid' ? '\u25C7 ' : '') + heading.text;
                     button.onclick = () => scrollToElement(heading.id);
                     buttonsContainer.appendChild(button);
                 });
@@ -2969,11 +3003,31 @@
                         zoomOutBtn.textContent = '−';
                         zoomOutBtn.title = 'Zoom out';
 
-                        buttonsContainer.appendChild(zoomInBtn);
-                        buttonsContainer.appendChild(zoomOutBtn);
-                        buttonsContainer.appendChild(toggleBtn);
-                        buttonsContainer.appendChild(pngBtn);
-                        buttonsContainer.appendChild(minimizeBtn);
+                        var zoomResetBtn = document.createElement('button');
+                        zoomResetBtn.type = 'button';
+                        zoomResetBtn.className = 'btn btn-outline-secondary btn-sm mermaid-zoom-btn';
+                        zoomResetBtn.textContent = '↺';
+                        zoomResetBtn.title = 'Reset zoom';
+
+                        // Group buttons by category
+                        var zoomGroup = document.createElement('div');
+                        zoomGroup.className = 'btn-group mermaid-btn-group mermaid-zoom-group';
+                        zoomGroup.appendChild(zoomOutBtn);
+                        zoomGroup.appendChild(zoomResetBtn);
+                        zoomGroup.appendChild(zoomInBtn);
+
+                        var viewGroup = document.createElement('div');
+                        viewGroup.className = 'btn-group mermaid-btn-group mermaid-view-group';
+                        viewGroup.appendChild(toggleBtn);
+                        viewGroup.appendChild(pngBtn);
+
+                        var controlGroup = document.createElement('div');
+                        controlGroup.className = 'btn-group mermaid-btn-group mermaid-control-group';
+                        controlGroup.appendChild(minimizeBtn);
+
+                        buttonsContainer.appendChild(zoomGroup);
+                        buttonsContainer.appendChild(viewGroup);
+                        buttonsContainer.appendChild(controlGroup);
 
                         // Create code container
                         var codeContainer = document.createElement('div');
@@ -3084,8 +3138,7 @@
                                 this.textContent = 'preview';
                                 this.dataset.showing = 'code';
                                 pngBtn.style.display = 'none'; // Hide PNG button when showing code
-                                zoomInBtn.style.display = 'none';
-                                zoomOutBtn.style.display = 'none';
+                                zoomGroup.style.display = 'none';
                             } else {
                                 // Switch to preview view
                                 codeContainer.style.display = 'none';
@@ -3093,8 +3146,7 @@
                                 this.textContent = 'code';
                                 this.dataset.showing = 'preview';
                                 pngBtn.style.display = ''; // Show PNG button when showing preview
-                                zoomInBtn.style.display = '';
-                                zoomOutBtn.style.display = '';
+                                zoomGroup.style.display = '';
                             }
                         });
 
@@ -3141,6 +3193,16 @@
                             if (svg) {
                                 svg.style.transform = 'scale(' + _zoomScale + ')';
                                 svg.style.transformOrigin = 'top center';
+                            }
+                        });
+
+                        // Zoom reset button click handler
+                        zoomResetBtn.addEventListener('click', function() {
+                            _zoomScale = 1.0;
+                            var svg = previewContainer.querySelector('svg');
+                            if (svg) {
+                                svg.style.transform = '';
+                                svg.style.transformOrigin = '';
                             }
                         });
 
