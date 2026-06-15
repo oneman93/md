@@ -144,6 +144,10 @@ vscode://file///c:/works/_LoadingDocuments/synctool-release-note.md
 * Let `Go` button be `btn-info` color theme:
   * [](./imgs/go-theme.png)
 
+## done - # icon
+* Show favicon, instead of `md` text, show `#` as vector value.
+* Let `#` color be the dark blue color of [](./imgs/img2/h1-color.png)
+
 # DONE
 
 # `inputSearch` text box fire
@@ -216,7 +220,7 @@ vscode://file///c:/works/_LoadingDocuments/synctool-release-note.md
 ```
 https://home.atlassian.com/o/38fbec1d-48cd-4024-91f7-7ab0e7bd4766/?utm_source=identity&cloudId=cf0e281f-66b6-4a6f-ac30-d393342753a4
 ```
-* Do not delete # TODO section automatically. I will move them to # DONE section when done.
+* Do not delete the section automatically. I will move them to # DONE section when done.
 * I got image upload error [](./imgs/errors/image-upload-error.png)
 * I got another error [](./imgs/errors/image-upload-error2.png)
 * I got error [](./imgs/errors/powershell-error.png)
@@ -486,4 +490,11 @@ Button clicked
 # DONE - Table sidebar with Mermaid
 
 * Update current table sidebar to show all nearest h1/h2/h3 title of each mermaid flow diagrams.
+
+# Done - Top Search box
+
+* Do not trim space in this search box.
+* `CR	` supposed to give me one h1 section matching `CR (Change Request)`, but it gives whole bunch of h1 with items matching `%cr%`.
+
+* Expand section/Collapse section icon click area too small. Give some padding.
 

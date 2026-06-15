@@ -107,7 +107,82 @@ The `code` button (opens file in VS Code) works in Edge but requires a one-time 
 
 # Rule
 
-* Do not delete # TODO section text automatically. I will move them to # DONE section when done.
+## TODO section
+
+* When I ask you to do `# todo` section, do not delete or strike through #todo section text. Do not change `# todo` to `# done`. For example,
+```
+do @planner-work-index.md #todo
+```
+command should not delete or strike through text in the corresponding section, eg, `# TODO - more changes`. It will not change the section title either, eg, into `# DONE - more changes`.
+
+* Whenever doing #todo section, if found any empty references in the file of #todo, eg, [], run /md-fill-empty-reference command to fill them.
+
+* If more than 1 `#todo` section is found in the file, ask the user to confirm which one to work on before proceeding. Do not waste time doing unnecessary `#todo` sections.
+
+## QnA
+
+* When a question is asked in markdown file with `q.`, answer the question in the same file not in command line.
+
+## Code suggestion
+
+* When you give me answer with **sql query**, **bash script** etc, please give a clean code without `>` between the multiple lines.
+
+## C:\Works
+
+* C:\Works code environment should never be killed to open other projects.
+
+## SQL project
+
+* For sql tasks, do not deploy any code to sql server directly.
+* Scripts to deploy will be saved into `/agents/sql-claude` folder.
+
+## ConnectionString
+
+* Project specific sql server connection string will be given here:
+
+```
+here
+```
+
+* Default database will be given here:
+```
+here
+```
+
+## BAU documentation
+
+* Remember this section into MEMORY.md including referenced scripts.
+
+### BAU file name and location
+
+* Bau document should be created in `C:\Works\_LoadingDocuments\`
+* Bau document file name should contain `bau` and `{projectName}`. For example, if it is a `bau` document about `masterdata`, the file name should start `masterdata-bau-`.
+* Bau document should use template: `C:\Works\_LoadingDocuments\BAU\bau-template.md` and update content.
+
+### Referenced images and videos
+
+* All image in `Pictures` folder will be moved to `C:\Works\_LoadingDocuments\imgs\img-{projectName}` folder using scripts in `/c/Users/matthew.oh/scripts` - `move2containing` or `cdr` and referenced in the markdown file.
+  * [](./agents/imgs/errors/image-not-copied.png)
+  * [](./matthew.oh/scripts/move2containing)
+  * [](./matthew.oh/scripts/cdr)
+* All videos in `Pictures` folder will be moved to [OneDrive](./matthew.oh/OneDrive%20-%20Torrens%20Global%20Education/LocalVideos/) and the shared link will be referenced in the markdown file. The share people scope and level are:
+  * [](./agents/imgs/share.png)
+  * [](./agents/imgs/share-level.png)
+* Any file in `Pictures` starting with `z` should be excluded for copying and referencing.
+
+### Bau file reference
+
+* The created bau file should be referenced in [](./_work-index.md).
+* If [](./_work-index.md) has a parent loading file eg, `masterdata-bau-loading.md`, the reference should be created on the parent file.
+* Otherwise, if [](./_work-index.md) has the project section, it should make a reference on the top of the matching project, eg, `# MasterData`.
+* Otherwise, make reference on the top of [](./_work-index.md).
+
+## Coding Standards
+- Always wrap API calls in try/catch and capture errors with meaningful messages
+
+## Mermaid diagram
+
+* Always draw simple flow chart not a complicated sequence diagram unless specified.
 
 # File structure
 

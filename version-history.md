@@ -1,3 +1,7 @@
+# v4.0.14
+15/6/26
+favicon # symbol
+
 # v4.0.13
 10/6/26
 Flow diagram on sidebar
