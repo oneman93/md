@@ -330,6 +330,9 @@ https://home.atlassian.com/o/38fbec1d-48cd-4024-91f7-7ab0e7bd4766/?utm_source=id
 * see [](./imgs/img-ui/copy-password.png)
 * Copy password button still not showing
 
+## done - eye icon
+* Next to blurred passed, show Hyperlink `Show` or eye open icon. When clicked it will show plain text with `eye-closed` icon. When `eye-closed` icon is clicked, it will be blurred again.
+ 
 # Expand button
 
 * See [](./imgs/img-ui/expand-convert.png)

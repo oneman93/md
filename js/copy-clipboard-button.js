@@ -110,6 +110,28 @@ function addBannerCredentialCopyButtons(app) {
             result = result.replace(re, '<span class="password-blur">' + escapedPwd + '</span>');
         });
         codeEl.innerHTML = result;
+
+        // Add eye toggle icons next to each blurred password span
+        codeEl.querySelectorAll('.password-blur').forEach(function(span) {
+            var eye = document.createElement('span');
+            eye.className = 'password-eye-toggle';
+            eye.title = 'Show password';
+            eye.innerHTML = '<i class="fas fa-eye"></i>';
+            eye.style.cssText = 'cursor:pointer;margin-left:4px;color:#888;vertical-align:middle;';
+            eye.addEventListener('click', function() {
+                var isBlurred = span.classList.contains('password-blur');
+                if (isBlurred) {
+                    span.classList.remove('password-blur');
+                    eye.innerHTML = '<i class="fas fa-eye-slash"></i>';
+                    eye.title = 'Hide password';
+                } else {
+                    span.classList.add('password-blur');
+                    eye.innerHTML = '<i class="fas fa-eye"></i>';
+                    eye.title = 'Show password';
+                }
+            });
+            span.parentNode.insertBefore(eye, span.nextSibling);
+        });
     }
 
     function fallbackCopy(text, btn, originalLabel) {
