@@ -3593,8 +3593,8 @@
             // add to end
             array.push(tmpHref);
 
-            //Task last 5 items only
-            var newArray = array.slice(-5);
+            //Task last 10 items only
+            var newArray = array.slice(-10);
             localStorage.setItem(_clickHistory, newArray.toString());
         }
 
@@ -3622,13 +3622,13 @@
         }
 
         function getHistoryArrayHtml() {
-            var div = '<div>';
+            var ul = '<ul style="display:flex;flex-wrap:wrap;list-style:none;padding:0;margin:0;gap:6px 16px;">';
             var array = getHistoryArray();
 
-            for (var i = 0; i < array.length; i++) {
+            for (var i = array.length - 1; i >= 0; i--) {
                 var url = array[i];
                 var filename = '';
-                
+
                 // Check if URL is in md.htm?src=... format
                 if (url.includes('md.htm?src=')) {
                     // Extract the src parameter
@@ -3651,16 +3651,16 @@
                     // Remove query string and hash if present
                     filename = filename.split('?')[0].split('#')[0];
                 }
-                
+
                 // Fallback to URL if filename extraction failed
                 if (!filename || filename === '') {
                     filename = url;
                 }
-                
-                div = div + `<li><a href="${url}">${filename}</a></li>`;
+
+                ul = ul + `<li>• <a href="${url}">${filename}</a></li>`;
             }
-            div = div + '</div>';
-            return div;
+            ul = ul + '</ul>';
+            return ul;
         }
 
         /* hotkeys: Ctrl+CapsLock */
