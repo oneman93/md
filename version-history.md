@@ -1,3 +1,7 @@
+# v4.0.17
+24/6/26
+Go buttons show by path not text
+
 # v4.0.15
 18/6/26
 Password eye toggle show/hide

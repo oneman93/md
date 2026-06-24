@@ -1216,7 +1216,7 @@
                 }
 
                 // Show code button for any page with a src file (including root/index pages like _work-index.md)
-                if (srcValue) {
+                if (srcValue || app.src) {
                     if (btnCode) btnCode.style.display = 'inline-block';
                     if (btnMobileCode) btnMobileCode.style.display = 'block';
                 }
@@ -1306,7 +1306,7 @@
 
                 // Open in VS Code
                 function openInVSCode() {
-                    var srcParam = getQueryParam("src");
+                    var srcParam = getQueryParam("src") || app.src;
                     console.log('openInVSCode called, srcParam:', srcParam);
                     if (!srcParam) return;
 
@@ -1668,6 +1668,12 @@
                     return p;
                 }
 
+                function isAbsolutePath(text) {
+                    var normalized = normalizeGoPath(text.replace(/^`+|`+$/g, '').trim());
+                    // Windows absolute path: C:\ or C:/
+                    return /^[A-Za-z]:[\\\/]/.test(normalized);
+                }
+
                 function addSourceFolderGoButton() {
                     var folderKeywords = ['source folder', 'source', 'local folder', 'folder', 'local'];
 
@@ -1682,16 +1688,20 @@
                         $tdRows.each(function () {
                             var $cells = $(this).find('td');
                             var label = $cells.first().text().trim().toLowerCase();
-                            if (folderKeywords.some(function(kw) { return label.includes(kw); })) {
-                                var path = normalizeGoPath($cells.eq(1).text().trim());
+                            var valueText = $cells.eq(1).text().trim();
+                            var keywordMatch = folderKeywords.some(function(kw) { return label.includes(kw); });
+                            var pathMatch = !keywordMatch && isAbsolutePath(valueText);
+                            if (keywordMatch || pathMatch) {
+                                var path = normalizeGoPath(valueText);
                                 if (path) {
                                     var $btn = $('<button class="btn btn-info btn-sm">Go</button>');
                                     $btn.on('click', (function(p) {
                                         return function () { window.location.href = 'openexplorer:' + p; };
                                     })(path));
                                     var vscodePath = path.replace(/\\/g, '/');
-                                    // Ensure trailing slash so VSCode treats as folder, not file
-                                    if (!vscodePath.endsWith('/')) vscodePath += '/';
+                                    // Only add trailing slash for folders (no file extension after last separator)
+                                    var isFolder = !/\.[^\/\\]+$/.test(path.replace(/[\/\\]+$/, ''));
+                                    if (isFolder && !vscodePath.endsWith('/')) vscodePath += '/';
                                     var $vscodeBtn = $('<button class="btn btn-secondary btn-sm ml-1" title="Open in new VSCode window">VSCode</button>');
                                     $vscodeBtn.on('click', (function(p) {
                                         return function () { window.location.href = 'vscode://file///' + p + '?windowId=_new'; };
@@ -3657,7 +3667,7 @@
                     filename = url;
                 }
 
-                ul = ul + `<li>• <a href="${url}">${filename}</a></li>`;
+                ul = ul + `<li style="color:#888;">• <a href="${url}" style="color:#888;">${filename}</a></li>`;
             }
             ul = ul + '</ul>';
             return ul;

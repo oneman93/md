@@ -32,6 +32,12 @@
 * And the text is just `Go` instead of `Go {path}` because the previous <td> column already has the path.
 * Table css seems breaking [](./imgs/errors/table-breaking.png)
 * Table css still breaking [](./imgs/errors/table-breaking2.png) -> number of <td> should be all the same inside <table>
+## Show go buttons by path not text
+
+* See [](./imgs/img-ui/go-buttons.png). Go buttons (GO, Code, Claude) shows by `table td` text eg, `local, folder` etc. Let these button show regardless of td text. If the value is file or folder, these button should show. Current logic should stay the same:
+  * Paths wrapped by `` should still be handled
+  * File path should open file in relavant app
+  * Folder path should open folder etc.
 
 # Table sidebar
 
@@ -501,3 +507,26 @@ Button clicked
 
 * Expand section/Collapse section icon click area too small. Give some padding.
 
+# FUTURE - Push2Confluence
+
+* See [](./imgs/img-push2confluence/) folder images.
+* I want to push current page to confluence.
+* On dialog, it will list project names that the page will be deployed.
+* Because image copy to confluence is tricky (refer to xxx), we take following steps to copy image from local folder to confluence site:
+  * 1. Copy local images to OneDrive shared folder
+  * 2. Get url of the images
+  * 3. Use the image url in confluence website.
+* This way, we can avoid the image reference of 127.0.0.1.
+
+# Done - Recently viewed
+
+* Updaed `Recently Viewed` have 10 items instead of 5 items.
+* Let it show by wrapped `<li>` instead of line by line `<li>` to save ui space.
+* Show `*` (li dot) before each item.
+* Fix space issue in [](./imgs/errors/li-dot.png)
+* Show the last accessed item as first item in the li list.
+* Set item color of this section gray.
+
+# Done - </code> button
+
+* Show `</code>` button on top even in `_work-idex.md` too.
