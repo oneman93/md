@@ -1,3 +1,7 @@
+# v4.0.18
+8/7/26
+H1 sort button + Reset rename
+
 # v4.0.17
 24/6/26
 Go buttons show by path not text

@@ -170,7 +170,9 @@
                         <label style="display:block;margin:4px 0 0;cursor:pointer;"><input type="checkbox" id="chkFilterH2" value="h2"> H2</label>
                         <label style="display:block;margin:4px 0 0;cursor:pointer;"><input type="checkbox" id="chkFilterH3" value="h3"> H3</label>
                         <hr style="margin:6px 0;">
-                        <button id="btnShowAll" style="width:100%;font-size:0.85em;padding:2px 6px;cursor:pointer;border:1px solid #aaa;border-radius:3px;background:#f8f8f8;">Show All</button>
+                        <button id="btnShowAll" style="width:100%;font-size:0.85em;padding:2px 6px;cursor:pointer;border:1px solid #aaa;border-radius:3px;background:#f8f8f8;">Reset</button>
+                        <hr style="margin:6px 0;">
+                        <button id="btnH1Sort" style="width:100%;font-size:0.85em;padding:2px 6px;cursor:pointer;border:1px solid #aaa;border-radius:3px;background:#f8f8f8;">H1 Sort</button>
                     </div>
                 </div>
             </DIV>
@@ -1298,6 +1300,19 @@
                 if (btnShowAll) btnShowAll.addEventListener('click', function() {
                     localStorage.removeItem(_h1FilterKey);
                     location.reload();
+                });
+                var btnH1Sort = document.getElementById('btnH1Sort');
+                if (btnH1Sort) btnH1Sort.addEventListener('click', function() {
+                    var divAll = mdClone.querySelector('div.all');
+                    if (!divAll) return;
+                    var wrappers = Array.from(divAll.querySelectorAll(':scope > .h1-wrapper'));
+                    wrappers.sort(function(a, b) {
+                        var aText = (a.querySelector('h1') ? a.querySelector('h1').textContent : '').trim().toLowerCase();
+                        var bText = (b.querySelector('h1') ? b.querySelector('h1').textContent : '').trim().toLowerCase();
+                        return aText.localeCompare(bText);
+                    });
+                    wrappers.forEach(function(w) { divAll.appendChild(w); });
+                    document.getElementById('h1FilterDropdown').style.display = 'none';
                 });
                 btnExit.addEventListener("click", function() {
                     // Redirect to root URL

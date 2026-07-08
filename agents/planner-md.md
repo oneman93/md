@@ -1,4 +1,25 @@
-# DONE
+# TODO
+
+* See [](./imgs/img-general/h1-sort.png). Create a new button in `Show H1 Only` button's dialog, named `H1 Sort`.
+* When clicked, the h1 tags will  be sorted alphabetically, eg,
+```
+Recently viewed ...×
+Todo
+Preprod (pprd)
+Teams API
+...
+```
+
+will change to:
+```
+Preprod (pprd)
+Recently viewed ...×
+Teams API
+Todo
+...
+```
+
+* Rename `Show All` button to `Reset`
 
 # 'Go' button
 
