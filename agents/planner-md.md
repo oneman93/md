@@ -4,6 +4,17 @@
 * When clicked, that `h1` section will move to the top after `TODO` section. And the favorite icon will be filled with yellow color.
 * This is not only css change but also actual markdown file update. So you should ask confirm message eg, `Will you move to the top and save markdown file`?
 
+* q. How did you save markdown file? What function call?
+  * a. The function is `moveFavoriteSection()` in `md.htm`. It uses two approaches:
+    1. **Primary**: `window.showSaveFilePicker()` (File System Access API) — opens a browser "Save As" dialog. On confirm, it calls `fileHandle.createWritable()` → `writable.write(reordered)` → `writable.close()`.
+    2. **Fallback** (if `showSaveFilePicker` is unavailable): creates a `Blob` from the reordered markdown text, wraps it in a temporary `<a download>` link, and triggers a click to download the file.
+    * The raw markdown content is fetched first via `fetch(app.src)` to get the original file text, then `reorderMarkdownH1Section()` rearranges the H1 sections before saving.
+
+* No <h1> tag shows favorite icon button. It shows other markdown file not in `_work_index.md` file. See [](./imgs/no-fav.png)
+* See [](./imgs/python1.png): I just favorited `Python` h1 section. It worked but has a few things to fix:
+  * Python needs to be below `TODO` h1 section.
+  * Is it possible doing this without file dialog asking? [](./imgs/python2.png)
+
 # Done
 * Rename `Show H1 Only` button title to `Showing All`.
 * Rename `Filtered` button title to eg, `Filtered H1` or `Filtered H1,H2` according to the filtered items.

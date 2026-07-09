@@ -1,3 +1,19 @@
+# v4.0.24
+9/7/26
+Favorite: insert after TODO section + cache file handle to skip repeat dialog
+
+# v4.0.23
+9/7/26
+Show favorite icon on all pages including work-index
+
+# v4.0.22
+9/7/26
+Fix favorite icon not showing - move to setTimeout, use document.querySelector
+
+# v4.0.21
+9/7/26
+Answer q. how markdown file is saved in planner-md.md
+
 # v4.0.20
 9/7/26
 Favorite icon button to move H1 section to top

@@ -1417,7 +1417,6 @@
                 applyCustomCss();
 
                 addImageFolderButton();
-                addFavoriteIcons();
                 // Fix Windows paths where markdown stripped backslashes before special chars (e.g. \_),
                 // then add Go buttons so they read the corrected path text.
                 fixWindowsPathsFromSource(function() {
@@ -1429,6 +1428,7 @@
                 setTimeout(function () {
                     addCopyCodeButtons();
                     addBannerCredentialCopyButtons(app);
+                    addFavoriteIcons();
                 }, 150);
 
                 // Restore heading filter state across page refreshes
@@ -1804,8 +1804,7 @@
                 }
 
                 function addFavoriteIcons() {
-                    if (fnIsRootPage()) return;
-                    var divAll = mdClone ? mdClone.querySelector('div.all') : null;
+                    var divAll = document.querySelector('zero-md-clone div.all');
                     if (!divAll) return;
                     divAll.querySelectorAll('.h1-wrapper > h1').forEach(function(h1) {
                         var btn = document.createElement('button');
@@ -1834,17 +1833,25 @@
                 }
 
                 async function moveFavoriteSection(h1El, btn, divAll, h1Text) {
-                    // Visual: move h1-wrapper to top of divAll
+                    // Visual: move h1-wrapper to after the TODO h1-wrapper (or to first position if no TODO)
                     var wrapper = h1El.closest('.h1-wrapper');
-                    var firstWrapper = divAll.querySelector(':scope > .h1-wrapper');
-                    if (firstWrapper && firstWrapper !== wrapper) {
-                        divAll.insertBefore(wrapper, firstWrapper);
+                    var allWrappers = Array.from(divAll.querySelectorAll(':scope > .h1-wrapper'));
+                    var todoWrapper = allWrappers.find(function(w) {
+                        var wh1 = w.querySelector('h1');
+                        return wh1 && /^todo\b/i.test(wh1.textContent.trim());
+                    });
+                    var insertAfter = todoWrapper || null;
+                    var insertBefore = insertAfter ? insertAfter.nextSibling : allWrappers[0];
+                    if (insertBefore && insertBefore !== wrapper) {
+                        divAll.insertBefore(wrapper, insertBefore);
+                    } else if (!insertBefore) {
+                        divAll.appendChild(wrapper);
                     }
                     btn.innerHTML = '★';
                     btn.style.color = '#f5c518';
                     btn.setAttribute('data-fav', '1');
 
-                    // File save
+                    // File save — reuse cached handle to skip dialog on repeated saves
                     try {
                         var response = await fetch(app.src);
                         if (!response.ok) throw new Error('fetch failed');
@@ -1852,10 +1859,15 @@
                         var reordered = reorderMarkdownH1Section(text, h1Text);
                         var fileName = app.src.split('/').pop().split('?')[0] || 'file.md';
                         if (window.showSaveFilePicker) {
-                            var fileHandle = await window.showSaveFilePicker({
-                                suggestedName: fileName,
-                                types: [{ description: 'Markdown files', accept: { 'text/markdown': ['.md'] } }]
-                            });
+                            window._favFileHandles = window._favFileHandles || {};
+                            var fileHandle = window._favFileHandles[app.src];
+                            if (!fileHandle) {
+                                fileHandle = await window.showSaveFilePicker({
+                                    suggestedName: fileName,
+                                    types: [{ description: 'Markdown files', accept: { 'text/markdown': ['.md'] } }]
+                                });
+                                window._favFileHandles[app.src] = fileHandle;
+                            }
                             var writable = await fileHandle.createWritable();
                             await writable.write(reordered);
                             await writable.close();
@@ -1896,14 +1908,21 @@
                     if (cur !== null) sections.push(cur);
 
                     var targetIdx = sections.findIndex(function(s) { return s.title === targetTitle; });
-                    if (targetIdx <= 0) return text;
+                    if (targetIdx < 0) return text;
 
-                    // First real h1 index (after optional preamble with title:null)
-                    var firstH1Idx = sections[0].title === null ? 1 : 0;
-                    if (targetIdx === firstH1Idx) return text;
+                    // Find TODO section index (case-insensitive match on title starting with "todo")
+                    var todoIdx = sections.findIndex(function(s) { return s.title && /^todo\b/i.test(s.title); });
+
+                    // Insert position: after TODO section if found, else after preamble (first real h1)
+                    var insertAfterIdx = todoIdx >= 0 ? todoIdx : (sections[0].title === null ? 0 : -1);
+                    var insertIdx = insertAfterIdx + 1;  // insert after the TODO (or after preamble)
+
+                    if (targetIdx === insertIdx) return text;  // already in right place
 
                     var target = sections.splice(targetIdx, 1)[0];
-                    sections.splice(firstH1Idx, 0, target);
+                    // Adjust insertIdx if target was before it
+                    if (targetIdx < insertIdx) insertIdx--;
+                    sections.splice(insertIdx, 0, target);
                     return sections.map(function(s) { return s.lines.join('\n'); }).join('\n');
                 }
 
