@@ -8,6 +8,8 @@
 * Confirmation dialog should show as in Favorite icon button.
 * See [](./imgs/icon-not-pretty.png) Icons are not very well aligned. Fix please. Also after updating markdown file, please refresh webpage so that I can see it is updated.
 
+* I want css change from [](./imgs/before.png) to [](./imgs/after.png). Also, can you change grab icon to something like [](./imgs/grab-icon.png)?
+
 # done - Favorate icon button
 * See [](./imgs/favorate.png) and [](./imgs/favorate2.png)
 * Next to each `h1` tag, show favorite icon with empty color.

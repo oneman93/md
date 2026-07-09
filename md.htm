@@ -1810,14 +1810,14 @@
                         // Wrapper span for aligned icons (flex row, vertically centered)
                         var iconSpan = document.createElement('span');
                         iconSpan.className = 'h1-icon-group';
-                        iconSpan.style.cssText = 'display:inline-flex;align-items:center;gap:2px;margin-right:8px;vertical-align:middle;line-height:1;flex-shrink:0;';
+                        iconSpan.style.cssText = 'display:inline-flex;align-items:center;gap:2px;margin-right:4px;vertical-align:middle;line-height:1;flex-shrink:0;';
 
                         // Grab handle — drag icon
                         var grabBtn = document.createElement('button');
                         grabBtn.className = 'btn-grab-h1';
                         grabBtn.title = 'Drag to reorder';
-                        grabBtn.innerHTML = '⠿';
-                        grabBtn.style.cssText = 'background:none;border:none;cursor:grab;font-size:0.75em;color:#bbb;padding:0 2px;line-height:1;user-select:none;touch-action:none;';
+                        grabBtn.innerHTML = '<i class="fa-solid fa-hand-fist" style="font-size:0.6em;color:#bbb;"></i>';
+                        grabBtn.style.cssText = 'background:none;border:none;cursor:grab;padding:0 2px;line-height:1;user-select:none;touch-action:none;';
                         grabBtn.addEventListener('mousedown', function() {
                             h1.closest('.h1-wrapper').setAttribute('draggable', 'true');
                         });
@@ -1828,7 +1828,7 @@
                         btn.title = 'Move to top';
                         btn.setAttribute('data-fav', '0');
                         btn.innerHTML = '☆';
-                        btn.style.cssText = 'background:none;border:none;cursor:pointer;font-size:0.75em;color:#ccc;padding:0 2px;line-height:1;transition:color .15s;';
+                        btn.style.cssText = 'background:none;border:none;cursor:pointer;font-size:0.6em;color:#ccc;padding:0 2px;line-height:1;transition:color .15s;';
                         btn.addEventListener('mouseenter', function() {
                             if (this.getAttribute('data-fav') === '0') this.style.color = '#f5c518';
                         });

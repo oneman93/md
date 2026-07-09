@@ -1,3 +1,7 @@
+# v4.0.28
+9/7/26
+Grab icon: use hand-fist FA icon + reduce icon size and margin
+
 # v4.0.27
 9/7/26
 Fix icon alignment with flex wrapper + reload page after save
