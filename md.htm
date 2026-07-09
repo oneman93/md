@@ -1804,22 +1804,31 @@
                 }
 
                 function addFavoriteIcons() {
+                    // Only show on _work-index.md
+                    if (!fnIsRootPage()) return;
                     var divAll = document.querySelector('zero-md-clone div.all');
                     if (!divAll) return;
-                    divAll.querySelectorAll('.h1-wrapper > h1').forEach(function(h1) {
-                        // Wrapper span for aligned icons (flex row, vertically centered)
+                    divAll.querySelectorAll('.h1-wrapper').forEach(function(wrapper) {
+                        var h1 = wrapper.querySelector(':scope > h1');
+                        if (!h1) return;
+
+                        // Give wrapper relative positioning + left padding so h1/hr/li all align together
+                        wrapper.style.position = 'relative';
+                        wrapper.style.paddingLeft = '44px';
+
+                        // Icon group — absolutely positioned in the left padding zone
                         var iconSpan = document.createElement('span');
                         iconSpan.className = 'h1-icon-group';
-                        iconSpan.style.cssText = 'display:inline-flex;align-items:center;gap:2px;margin-right:4px;vertical-align:middle;line-height:1;flex-shrink:0;';
+                        iconSpan.style.cssText = 'position:absolute;left:4px;top:6px;display:flex;align-items:center;gap:2px;line-height:1;';
 
-                        // Grab handle — drag icon
+                        // Grab handle
                         var grabBtn = document.createElement('button');
                         grabBtn.className = 'btn-grab-h1';
                         grabBtn.title = 'Drag to reorder';
-                        grabBtn.innerHTML = '<i class="fa-solid fa-hand-fist" style="font-size:0.6em;color:#bbb;"></i>';
-                        grabBtn.style.cssText = 'background:none;border:none;cursor:grab;padding:0 2px;line-height:1;user-select:none;touch-action:none;';
+                        grabBtn.innerHTML = '<i class="fa-solid fa-hand-fist" style="font-size:0.75em;color:#bbb;"></i>';
+                        grabBtn.style.cssText = 'background:none;border:none;cursor:grab;padding:0 2px;line-height:1;user-select:none;touch-action:none;margin:0;';
                         grabBtn.addEventListener('mousedown', function() {
-                            h1.closest('.h1-wrapper').setAttribute('draggable', 'true');
+                            wrapper.setAttribute('draggable', 'true');
                         });
 
                         // Favorite icon
@@ -1828,7 +1837,7 @@
                         btn.title = 'Move to top';
                         btn.setAttribute('data-fav', '0');
                         btn.innerHTML = '☆';
-                        btn.style.cssText = 'background:none;border:none;cursor:pointer;font-size:0.6em;color:#ccc;padding:0 2px;line-height:1;transition:color .15s;';
+                        btn.style.cssText = 'background:none;border:none;cursor:pointer;font-size:0.85em;color:#ccc;padding:0 2px;line-height:1;transition:color .15s;margin:0;';
                         btn.addEventListener('mouseenter', function() {
                             if (this.getAttribute('data-fav') === '0') this.style.color = '#f5c518';
                         });
@@ -1845,7 +1854,7 @@
 
                         iconSpan.appendChild(grabBtn);
                         iconSpan.appendChild(btn);
-                        h1.insertBefore(iconSpan, h1.firstChild);
+                        wrapper.insertBefore(iconSpan, wrapper.firstChild);
                     });
 
                     setupH1DragSort(divAll);

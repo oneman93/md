@@ -1,3 +1,7 @@
+# v4.0.29
+9/7/26
+Grab icon css: absolute positioned icons left of h1, wrapper padding aligns h1/hr/li, work-index.md only
+
 # v4.0.28
 9/7/26
 Grab icon: use hand-fist FA icon + reduce icon size and margin

@@ -1,4 +1,14 @@
-# TODO - Grab icon
+# TODO - Grab icon css
+
+* I want css change to [](./imgs/after.png), which means all 3 below should be left aligned
+  * h1 text
+  * hr line
+  * first li item
+* Grab/Favorate icon should be on the left side of these 3 and margin between the 2 icons should not be too wide.
+* I thinik you can group Grab/Favorite icon and show them as position:relative to h1 title.
+* Also let Grab/Favorite icon show in `_work-index.md` file only.
+
+# Done - grab icon
 
 * Move `Favorite` icon button left to <h1> text not right.
 * See [](./imgs/grab-icon.png)
