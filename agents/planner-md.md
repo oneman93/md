@@ -6,6 +6,7 @@
 * I want when user click grab icon and moves/drops, it saves the markdown file as well.
 * The user behavior is similar to https://jqueryui.com/sortable/ where use can drag and drop to sort.
 * Confirmation dialog should show as in Favorite icon button.
+* See [](./imgs/icon-not-pretty.png) Icons are not very well aligned. Fix please. Also after updating markdown file, please refresh webpage so that I can see it is updated.
 
 # done - Favorate icon button
 * See [](./imgs/favorate.png) and [](./imgs/favorate2.png)

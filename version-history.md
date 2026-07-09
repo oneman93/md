@@ -1,3 +1,7 @@
+# v4.0.27
+9/7/26
+Fix icon alignment with flex wrapper + reload page after save
+
 # v4.0.26
 9/7/26
 Grab icon: drag-drop h1 sort + move fav/grab icons to left of h1

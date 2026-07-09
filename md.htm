@@ -1807,23 +1807,28 @@
                     var divAll = document.querySelector('zero-md-clone div.all');
                     if (!divAll) return;
                     divAll.querySelectorAll('.h1-wrapper > h1').forEach(function(h1) {
-                        // Grab handle — drag icon, leftmost
+                        // Wrapper span for aligned icons (flex row, vertically centered)
+                        var iconSpan = document.createElement('span');
+                        iconSpan.className = 'h1-icon-group';
+                        iconSpan.style.cssText = 'display:inline-flex;align-items:center;gap:2px;margin-right:8px;vertical-align:middle;line-height:1;flex-shrink:0;';
+
+                        // Grab handle — drag icon
                         var grabBtn = document.createElement('button');
                         grabBtn.className = 'btn-grab-h1';
                         grabBtn.title = 'Drag to reorder';
                         grabBtn.innerHTML = '⠿';
-                        grabBtn.style.cssText = 'background:none;border:none;cursor:grab;font-size:0.9em;color:#bbb;margin-right:4px;padding:0 3px;line-height:1;vertical-align:middle;user-select:none;touch-action:none;';
+                        grabBtn.style.cssText = 'background:none;border:none;cursor:grab;font-size:0.75em;color:#bbb;padding:0 2px;line-height:1;user-select:none;touch-action:none;';
                         grabBtn.addEventListener('mousedown', function() {
                             h1.closest('.h1-wrapper').setAttribute('draggable', 'true');
                         });
 
-                        // Favorite icon — left of h1 text
+                        // Favorite icon
                         var btn = document.createElement('button');
                         btn.className = 'btn-fav-h1';
                         btn.title = 'Move to top';
                         btn.setAttribute('data-fav', '0');
                         btn.innerHTML = '☆';
-                        btn.style.cssText = 'background:none;border:none;cursor:pointer;font-size:1em;color:#ccc;margin-right:6px;padding:0 4px;line-height:1;vertical-align:middle;transition:color .15s;';
+                        btn.style.cssText = 'background:none;border:none;cursor:pointer;font-size:0.75em;color:#ccc;padding:0 2px;line-height:1;transition:color .15s;';
                         btn.addEventListener('mouseenter', function() {
                             if (this.getAttribute('data-fav') === '0') this.style.color = '#f5c518';
                         });
@@ -1838,9 +1843,9 @@
                             }
                         });
 
-                        // Insert both buttons at the left (start) of h1
-                        h1.insertBefore(btn, h1.firstChild);
-                        h1.insertBefore(grabBtn, btn);
+                        iconSpan.appendChild(grabBtn);
+                        iconSpan.appendChild(btn);
+                        h1.insertBefore(iconSpan, h1.firstChild);
                     });
 
                     setupH1DragSort(divAll);
@@ -1849,7 +1854,11 @@
                 function getH1TextClean(h1) {
                     return Array.from(h1.childNodes)
                         .filter(function(n) {
-                            return !(n.nodeType === 1 && (n.classList.contains('btn-fav-h1') || n.classList.contains('btn-grab-h1')));
+                            return !(n.nodeType === 1 && (
+                                n.classList.contains('btn-fav-h1') ||
+                                n.classList.contains('btn-grab-h1') ||
+                                n.classList.contains('h1-icon-group')
+                            ));
                         })
                         .map(function(n) { return n.textContent; }).join('').trim();
                 }
@@ -1918,6 +1927,7 @@
                             var writable = await fileHandle.createWritable();
                             await writable.write(reordered);
                             await writable.close();
+                            window.location.reload();
                         } else {
                             var blob = new Blob([reordered], { type: 'text/plain' });
                             var a = document.createElement('a');
@@ -2007,6 +2017,7 @@
                             var writable = await fileHandle.createWritable();
                             await writable.write(reordered);
                             await writable.close();
+                            window.location.reload();
                         } else {
                             // Fallback: trigger download
                             var blob = new Blob([reordered], { type: 'text/plain' });
