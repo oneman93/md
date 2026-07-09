@@ -1,5 +1,10 @@
 # TODO
 
+* Rename `Show H1 Only` button title to `Showing All`.
+* Rename `Filtered` button title to eg, `Filtered H1` or `Filtered H1,H2` according to the filtered items.
+
+# Done - `H1 Sort` button
+
 * See [](./imgs/img-general/h1-sort.png). Create a new button in `Show H1 Only` button's dialog, named `H1 Sort`.
 * When clicked, the h1 tags will  be sorted alphabetically, eg,
 ```

@@ -1,3 +1,7 @@
+# v4.0.19
+9/7/26
+Showing All + Filtered H1,H2 button rename
+
 # v4.0.18
 8/7/26
 H1 sort button + Reset rename

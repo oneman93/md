@@ -164,7 +164,7 @@
                     Copy</button>
                 <button id="btnPDF" type="button" class="btn btn-dark btn-sm">PDF</button>
                 <div id="h1FilterGroup" style="position:relative;display:inline-block;">
-                    <button id="btnH1Only" type="button" class="btn btn-primary btn-sm">Show H1 Only ▾</button>
+                    <button id="btnH1Only" type="button" class="btn btn-primary btn-sm">Showing All ▾</button>
                     <div id="h1FilterDropdown" style="display:none;position:absolute;right:0;top:100%;z-index:2000;background:#fff;border:1px solid #ccc;border-radius:4px;padding:8px 12px;min-width:100px;box-shadow:0 2px 8px rgba(0,0,0,.2);">
                         <label style="display:block;margin:0;cursor:pointer;"><input type="checkbox" id="chkFilterH1" value="h1"> H1</label>
                         <label style="display:block;margin:4px 0 0;cursor:pointer;"><input type="checkbox" id="chkFilterH2" value="h2"> H2</label>
@@ -205,7 +205,7 @@
                         <span style=" font-size: 1em;color:white;"><i class="fa-solid fa-folder"></i></span>
                         Copy</button>
                     <button id="btnMobilePDF" type="button" class="btn btn-dark btn-sm btn-block">PDF</button>
-                    <button id="btnMobileH1Only" type="button" class="btn btn-primary btn-sm btn-block">Show H1 Only</button>
+                    <button id="btnMobileH1Only" type="button" class="btn btn-primary btn-sm btn-block">Showing All</button>
                 </div>
             </div>
 
@@ -1280,18 +1280,20 @@
                     });
                 });
                 function updateH1BtnState() {
-                    var anyChecked = ['chkFilterH1', 'chkFilterH2', 'chkFilterH3'].some(function(id) {
+                    var checkedLevels = ['chkFilterH1', 'chkFilterH2', 'chkFilterH3'].filter(function(id) {
                         var c = document.getElementById(id);
                         return c && c.checked;
+                    }).map(function(id) {
+                        return id.replace('chkFilter', '');
                     });
                     var btn = document.getElementById('btnH1Only');
                     if (!btn) return;
-                    if (anyChecked) {
-                        btn.textContent = 'Filtered ▾';
+                    if (checkedLevels.length > 0) {
+                        btn.textContent = 'Filtered ' + checkedLevels.join(',') + ' ▾';
                         btn.classList.remove('btn-primary');
                         btn.classList.add('btn-warning');
                     } else {
-                        btn.textContent = 'Show H1 Only ▾';
+                        btn.textContent = 'Showing All ▾';
                         btn.classList.remove('btn-warning');
                         btn.classList.add('btn-primary');
                     }
