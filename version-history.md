@@ -1,3 +1,7 @@
+# v4.0.30
+9/7/26
+Fix icons showing twice: guard against duplicate addFavoriteIcons calls
+
 # v4.0.29
 9/7/26
 Grab icon css: absolute positioned icons left of h1, wrapper padding aligns h1/hr/li, work-index.md only

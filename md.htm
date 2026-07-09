@@ -1811,6 +1811,7 @@
                     divAll.querySelectorAll('.h1-wrapper').forEach(function(wrapper) {
                         var h1 = wrapper.querySelector(':scope > h1');
                         if (!h1) return;
+                        if (wrapper.querySelector('.h1-icon-group')) return; // already added, skip
 
                         // Give wrapper relative positioning + left padding so h1/hr/li all align together
                         wrapper.style.position = 'relative';

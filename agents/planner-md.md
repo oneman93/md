@@ -7,6 +7,8 @@
 * Grab/Favorate icon should be on the left side of these 3 and margin between the 2 icons should not be too wide.
 * I thinik you can group Grab/Favorite icon and show them as position:relative to h1 title.
 * Also let Grab/Favorite icon show in `_work-index.md` file only.
+* Why it shows twice as in [](./imgs/why-twice.png). Fix please.
+
 
 # Done - grab icon
 
