@@ -1,3 +1,7 @@
+# v4.0.26
+9/7/26
+Grab icon: drag-drop h1 sort + move fav/grab icons to left of h1
+
 # v4.0.25
 9/7/26
 Answer q. how javascript can change local files via File System Access API

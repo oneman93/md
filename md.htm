@@ -1807,12 +1807,23 @@
                     var divAll = document.querySelector('zero-md-clone div.all');
                     if (!divAll) return;
                     divAll.querySelectorAll('.h1-wrapper > h1').forEach(function(h1) {
+                        // Grab handle — drag icon, leftmost
+                        var grabBtn = document.createElement('button');
+                        grabBtn.className = 'btn-grab-h1';
+                        grabBtn.title = 'Drag to reorder';
+                        grabBtn.innerHTML = '⠿';
+                        grabBtn.style.cssText = 'background:none;border:none;cursor:grab;font-size:0.9em;color:#bbb;margin-right:4px;padding:0 3px;line-height:1;vertical-align:middle;user-select:none;touch-action:none;';
+                        grabBtn.addEventListener('mousedown', function() {
+                            h1.closest('.h1-wrapper').setAttribute('draggable', 'true');
+                        });
+
+                        // Favorite icon — left of h1 text
                         var btn = document.createElement('button');
                         btn.className = 'btn-fav-h1';
                         btn.title = 'Move to top';
                         btn.setAttribute('data-fav', '0');
                         btn.innerHTML = '☆';
-                        btn.style.cssText = 'background:none;border:none;cursor:pointer;font-size:1em;color:#ccc;margin-left:8px;padding:0 4px;line-height:1;vertical-align:middle;transition:color .15s;';
+                        btn.style.cssText = 'background:none;border:none;cursor:pointer;font-size:1em;color:#ccc;margin-right:6px;padding:0 4px;line-height:1;vertical-align:middle;transition:color .15s;';
                         btn.addEventListener('mouseenter', function() {
                             if (this.getAttribute('data-fav') === '0') this.style.color = '#f5c518';
                         });
@@ -1821,15 +1832,140 @@
                         });
                         btn.addEventListener('click', function(e) {
                             e.stopPropagation();
-                            var h1Text = Array.from(h1.childNodes)
-                                .filter(function(n) { return !(n.nodeType === 1 && n.classList.contains('btn-fav-h1')); })
-                                .map(function(n) { return n.textContent; }).join('').trim();
+                            var h1Text = getH1TextClean(h1);
                             if (confirm('Move "' + h1Text + '" to top and save the markdown file?')) {
                                 moveFavoriteSection(h1, btn, divAll, h1Text);
                             }
                         });
-                        h1.appendChild(btn);
+
+                        // Insert both buttons at the left (start) of h1
+                        h1.insertBefore(btn, h1.firstChild);
+                        h1.insertBefore(grabBtn, btn);
                     });
+
+                    setupH1DragSort(divAll);
+                }
+
+                function getH1TextClean(h1) {
+                    return Array.from(h1.childNodes)
+                        .filter(function(n) {
+                            return !(n.nodeType === 1 && (n.classList.contains('btn-fav-h1') || n.classList.contains('btn-grab-h1')));
+                        })
+                        .map(function(n) { return n.textContent; }).join('').trim();
+                }
+
+                function setupH1DragSort(divAll) {
+                    var dragSrc = null;
+
+                    divAll.querySelectorAll('.h1-wrapper').forEach(function(wrapper) {
+                        wrapper.addEventListener('dragstart', function(e) {
+                            dragSrc = wrapper;
+                            e.dataTransfer.effectAllowed = 'move';
+                            setTimeout(function() { wrapper.style.opacity = '0.4'; }, 0);
+                        });
+
+                        wrapper.addEventListener('dragend', function() {
+                            wrapper.style.opacity = '';
+                            wrapper.removeAttribute('draggable');
+                            divAll.querySelectorAll('.h1-wrapper').forEach(function(w) {
+                                w.style.borderTop = '';
+                            });
+                            dragSrc = null;
+                        });
+
+                        wrapper.addEventListener('dragover', function(e) {
+                            e.preventDefault();
+                            if (!dragSrc || wrapper === dragSrc) return;
+                            e.dataTransfer.dropEffect = 'move';
+                            divAll.querySelectorAll('.h1-wrapper').forEach(function(w) { w.style.borderTop = ''; });
+                            wrapper.style.borderTop = '2px solid #007bff';
+                        });
+
+                        wrapper.addEventListener('dragleave', function() {
+                            wrapper.style.borderTop = '';
+                        });
+
+                        wrapper.addEventListener('drop', function(e) {
+                            e.preventDefault();
+                            wrapper.style.borderTop = '';
+                            if (!dragSrc || wrapper === dragSrc) return;
+                            var h1Text = getH1TextClean(dragSrc.querySelector('h1'));
+                            if (confirm('Move "' + h1Text + '" here and save the markdown file?')) {
+                                divAll.insertBefore(dragSrc, wrapper);
+                                saveMarkdownWithCurrentDOMOrder(divAll);
+                            }
+                        });
+                    });
+                }
+
+                async function saveMarkdownWithCurrentDOMOrder(divAll) {
+                    try {
+                        var response = await fetch(app.src);
+                        if (!response.ok) throw new Error('fetch failed');
+                        var text = await response.text();
+                        var reordered = reorderMarkdownToMatchDOM(text, divAll);
+                        var fileName = app.src.split('/').pop().split('?')[0] || 'file.md';
+                        if (window.showSaveFilePicker) {
+                            window._favFileHandles = window._favFileHandles || {};
+                            var fileHandle = window._favFileHandles[app.src];
+                            if (!fileHandle) {
+                                fileHandle = await window.showSaveFilePicker({
+                                    suggestedName: fileName,
+                                    types: [{ description: 'Markdown files', accept: { 'text/markdown': ['.md'] } }]
+                                });
+                                window._favFileHandles[app.src] = fileHandle;
+                            }
+                            var writable = await fileHandle.createWritable();
+                            await writable.write(reordered);
+                            await writable.close();
+                        } else {
+                            var blob = new Blob([reordered], { type: 'text/plain' });
+                            var a = document.createElement('a');
+                            a.href = URL.createObjectURL(blob);
+                            a.download = fileName;
+                            document.body.appendChild(a);
+                            a.click();
+                            document.body.removeChild(a);
+                        }
+                    } catch(err) {
+                        if (err && err.name !== 'AbortError') {
+                            console.error('[GrabSort] save error:', err);
+                        }
+                    }
+                }
+
+                function reorderMarkdownToMatchDOM(text, divAll) {
+                    var lines = text.split('\n');
+                    var sections = [];
+                    var cur = null;
+                    for (var i = 0; i < lines.length; i++) {
+                        var line = lines[i];
+                        if (/^# /.test(line)) {
+                            if (cur !== null) sections.push(cur);
+                            cur = { title: line.substring(2).trim(), lines: [line] };
+                        } else {
+                            if (cur === null) { cur = { title: null, lines: [line] }; }
+                            else { cur.lines.push(line); }
+                        }
+                    }
+                    if (cur !== null) sections.push(cur);
+
+                    var domOrder = Array.from(divAll.querySelectorAll(':scope > .h1-wrapper > h1')).map(function(h1) {
+                        return getH1TextClean(h1);
+                    });
+
+                    var preamble = sections.filter(function(s) { return s.title === null; });
+                    var h1Sections = sections.filter(function(s) { return s.title !== null; });
+
+                    var reordered = domOrder.map(function(title) {
+                        return h1Sections.find(function(s) { return s.title === title; });
+                    }).filter(Boolean);
+
+                    h1Sections.forEach(function(s) {
+                        if (reordered.indexOf(s) < 0) reordered.push(s);
+                    });
+
+                    return preamble.concat(reordered).map(function(s) { return s.lines.join('\n'); }).join('\n');
                 }
 
                 async function moveFavoriteSection(h1El, btn, divAll, h1Text) {

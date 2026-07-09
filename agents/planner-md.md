@@ -1,4 +1,13 @@
-# TODO - Favorate icon button
+# TODO - Grab icon
+
+* Move `Favorite` icon button left to <h1> text not right.
+* See [](./imgs/grab-icon.png)
+* Create grab icon button left to <h1> text as well.
+* I want when user click grab icon and moves/drops, it saves the markdown file as well.
+* The user behavior is similar to https://jqueryui.com/sortable/ where use can drag and drop to sort.
+* Confirmation dialog should show as in Favorite icon button.
+
+# done - Favorate icon button
 * See [](./imgs/favorate.png) and [](./imgs/favorate2.png)
 * Next to each `h1` tag, show favorite icon with empty color.
 * When clicked, that `h1` section will move to the top after `TODO` section. And the favorite icon will be filled with yellow color.
