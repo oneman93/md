@@ -15,6 +15,20 @@
   * Python needs to be below `TODO` h1 section.
   * Is it possible doing this without file dialog asking? [](./imgs/python2.png)
 
+* q. I see code as:
+```
+await writable.write(reordered);
+await writable.close();
+```
+I thought javascript cannot change local files. How is this possible?
+  * a. This is possible via the **File System Access API** — a modern browser API available in Chrome/Edge 86+. Here's how it works:
+    1. `window.showSaveFilePicker()` opens a native OS "Save As" dialog. The user explicitly selects the file — this is the key: the **user grants permission** by consciously picking the file.
+    2. The browser returns a `FileSystemFileHandle` — a secure, sandboxed reference to that file. JavaScript itself never has free access to your filesystem; it only holds this permission-gated handle.
+    3. From the handle, `fileHandle.createWritable()` opens a write stream, then `writable.write(reordered)` writes the new content, and `writable.close()` flushes and saves it.
+    4. The handle is cached in `window._favFileHandles` so the dialog only appears once per session — subsequent saves reuse the same handle without prompting again.
+    * Traditional JavaScript (e.g. in a web page) absolutely cannot write to local files. This API is different because it requires explicit user interaction (the file picker) as the security gate — the browser enforces this.
+
+
 # Done
 * Rename `Show H1 Only` button title to `Showing All`.
 * Rename `Filtered` button title to eg, `Filtered H1` or `Filtered H1,H2` according to the filtered items.
