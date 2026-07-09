@@ -1,3 +1,7 @@
+# v4.0.20
+9/7/26
+Favorite icon button to move H1 section to top
+
 # v4.0.19
 9/7/26
 Showing All + Filtered H1,H2 button rename

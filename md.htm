@@ -1417,6 +1417,7 @@
                 applyCustomCss();
 
                 addImageFolderButton();
+                addFavoriteIcons();
                 // Fix Windows paths where markdown stripped backslashes before special chars (e.g. \_),
                 // then add Go buttons so they read the corrected path text.
                 fixWindowsPathsFromSource(function() {
@@ -1800,6 +1801,110 @@
                     if (_activeFilter && _activeFilter !== 'all') {
                         mdClone.querySelectorAll('.copy-code-wrapper').forEach(function(w) { w.style.display = 'none'; });
                     }
+                }
+
+                function addFavoriteIcons() {
+                    if (fnIsRootPage()) return;
+                    var divAll = mdClone ? mdClone.querySelector('div.all') : null;
+                    if (!divAll) return;
+                    divAll.querySelectorAll('.h1-wrapper > h1').forEach(function(h1) {
+                        var btn = document.createElement('button');
+                        btn.className = 'btn-fav-h1';
+                        btn.title = 'Move to top';
+                        btn.setAttribute('data-fav', '0');
+                        btn.innerHTML = '☆';
+                        btn.style.cssText = 'background:none;border:none;cursor:pointer;font-size:1em;color:#ccc;margin-left:8px;padding:0 4px;line-height:1;vertical-align:middle;transition:color .15s;';
+                        btn.addEventListener('mouseenter', function() {
+                            if (this.getAttribute('data-fav') === '0') this.style.color = '#f5c518';
+                        });
+                        btn.addEventListener('mouseleave', function() {
+                            if (this.getAttribute('data-fav') === '0') this.style.color = '#ccc';
+                        });
+                        btn.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            var h1Text = Array.from(h1.childNodes)
+                                .filter(function(n) { return !(n.nodeType === 1 && n.classList.contains('btn-fav-h1')); })
+                                .map(function(n) { return n.textContent; }).join('').trim();
+                            if (confirm('Move "' + h1Text + '" to top and save the markdown file?')) {
+                                moveFavoriteSection(h1, btn, divAll, h1Text);
+                            }
+                        });
+                        h1.appendChild(btn);
+                    });
+                }
+
+                async function moveFavoriteSection(h1El, btn, divAll, h1Text) {
+                    // Visual: move h1-wrapper to top of divAll
+                    var wrapper = h1El.closest('.h1-wrapper');
+                    var firstWrapper = divAll.querySelector(':scope > .h1-wrapper');
+                    if (firstWrapper && firstWrapper !== wrapper) {
+                        divAll.insertBefore(wrapper, firstWrapper);
+                    }
+                    btn.innerHTML = '★';
+                    btn.style.color = '#f5c518';
+                    btn.setAttribute('data-fav', '1');
+
+                    // File save
+                    try {
+                        var response = await fetch(app.src);
+                        if (!response.ok) throw new Error('fetch failed');
+                        var text = await response.text();
+                        var reordered = reorderMarkdownH1Section(text, h1Text);
+                        var fileName = app.src.split('/').pop().split('?')[0] || 'file.md';
+                        if (window.showSaveFilePicker) {
+                            var fileHandle = await window.showSaveFilePicker({
+                                suggestedName: fileName,
+                                types: [{ description: 'Markdown files', accept: { 'text/markdown': ['.md'] } }]
+                            });
+                            var writable = await fileHandle.createWritable();
+                            await writable.write(reordered);
+                            await writable.close();
+                        } else {
+                            // Fallback: trigger download
+                            var blob = new Blob([reordered], { type: 'text/plain' });
+                            var a = document.createElement('a');
+                            a.href = URL.createObjectURL(blob);
+                            a.download = fileName;
+                            document.body.appendChild(a);
+                            a.click();
+                            document.body.removeChild(a);
+                        }
+                    } catch(err) {
+                        if (err && err.name !== 'AbortError') {
+                            console.error('[FavoriteIcon] save error:', err);
+                        }
+                    }
+                }
+
+                function reorderMarkdownH1Section(text, targetTitle) {
+                    var lines = text.split('\n');
+                    var sections = [];
+                    var cur = null;
+                    for (var i = 0; i < lines.length; i++) {
+                        var line = lines[i];
+                        if (/^# /.test(line)) {
+                            if (cur !== null) sections.push(cur);
+                            cur = { title: line.substring(2).trim(), lines: [line] };
+                        } else {
+                            if (cur === null) {
+                                cur = { title: null, lines: [line] };
+                            } else {
+                                cur.lines.push(line);
+                            }
+                        }
+                    }
+                    if (cur !== null) sections.push(cur);
+
+                    var targetIdx = sections.findIndex(function(s) { return s.title === targetTitle; });
+                    if (targetIdx <= 0) return text;
+
+                    // First real h1 index (after optional preamble with title:null)
+                    var firstH1Idx = sections[0].title === null ? 1 : 0;
+                    if (targetIdx === firstH1Idx) return text;
+
+                    var target = sections.splice(targetIdx, 1)[0];
+                    sections.splice(firstH1Idx, 0, target);
+                    return sections.map(function(s) { return s.lines.join('\n'); }).join('\n');
                 }
 
                 // Change mdBody structure nested from plain

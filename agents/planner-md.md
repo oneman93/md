@@ -1,5 +1,10 @@
-# TODO
+# TODO - Favorate icon button
+* See [](./imgs/favorate.png) and [](./imgs/favorate2.png)
+* Next to each `h1` tag, show favorite icon with empty color.
+* When clicked, that `h1` section will move to the top after `TODO` section. And the favorite icon will be filled with yellow color.
+* This is not only css change but also actual markdown file update. So you should ask confirm message eg, `Will you move to the top and save markdown file`?
 
+# Done
 * Rename `Show H1 Only` button title to `Showing All`.
 * Rename `Filtered` button title to eg, `Filtered H1` or `Filtered H1,H2` according to the filtered items.
 
