@@ -1,3 +1,7 @@
+# v4.0.31
+13/7/26
+wip
+
 # v4.0.30
 9/7/26
 Fix icons showing twice: guard against duplicate addFavoriteIcons calls

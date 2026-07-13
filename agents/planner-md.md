@@ -1,4 +1,10 @@
-# TODO - Grab icon css
+# TODO
+
+* `</>code` button on top does nothing in `http://127.0.0.1:5500/md/md.htm`. Is it because vscode is already opened? If already opened, activate it to show.
+* Still does not open vscode in all markdown files.
+* It seems because multiple vscodes are opened. Activate vscode with `c:/works` folder.
+
+# Done - Grab icon css
 
 * I want css change to [](./imgs/after.png), which means all 3 below should be left aligned
   * h1 text
@@ -20,7 +26,13 @@
 * Confirmation dialog should show as in Favorite icon button.
 * See [](./imgs/icon-not-pretty.png) Icons are not very well aligned. Fix please. Also after updating markdown file, please refresh webpage so that I can see it is updated.
 
-* I want css change from [](./imgs/before.png) to [](./imgs/after.png). Also, can you change grab icon to something like [](./imgs/grab-icon.png)?
+* I want css change from [](./imgs/before.png) to [](./imgs/after.png). 
+
+* Change grab icon from [](./imgs/grab-icon.png) back to default 6 dot icon.
+* Change grab/favorate icon 0.85 em to 1em.
+* Remove grab/favorate icon from sections: `Recently Viewed`, `TODO`.
+* See [](./imgs/align.png). Align with other h1 sections for `Recently Viewed`, `TODO` even without grab/favorite icons.
+
 
 # done - Favorate icon button
 * See [](./imgs/favorate.png) and [](./imgs/favorate2.png)
@@ -598,14 +610,17 @@ Button clicked
   * 3. Use the image url in confluence website.
 * This way, we can avoid the image reference of 127.0.0.1.
 
-# Done - Recently viewed
+# DONE - Recently viewed
 
-* Updaed `Recently Viewed` have 10 items instead of 5 items.
+* Updae `Recently Viewed` have back to 5 items.
+* Set item color of this section back to blue.
+
+## Done
+
 * Let it show by wrapped `<li>` instead of line by line `<li>` to save ui space.
 * Show `*` (li dot) before each item.
 * Fix space issue in [](./imgs/errors/li-dot.png)
 * Show the last accessed item as first item in the li list.
-* Set item color of this section gray.
 
 # Done - </code> button
 
