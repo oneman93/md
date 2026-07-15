@@ -1,3 +1,7 @@
+# v4.0.33
+15/7/26
+breadcrumb bar always visible
+
 # v4.0.32
 15/7/26
 wip

@@ -863,9 +863,10 @@
 
         function adjustTopMargin() {
             var h = document.querySelector('.top-menu-wrapper').offsetHeight;
-            document.getElementById('mdcontainer').style.marginTop = h + 'px';
             var stickyTitle = document.getElementById('stickyTitle');
             if (stickyTitle) stickyTitle.style.top = h + 'px';
+            var stickyH = (stickyTitle && stickyTitle.offsetHeight) ? stickyTitle.offsetHeight : 0;
+            document.getElementById('mdcontainer').style.marginTop = (h + stickyH) + 'px';
         }
         window.addEventListener('resize', adjustTopMargin);
 
@@ -974,29 +975,8 @@
                 }, true);
             }
 
-            function onScroll() {
-                if (titleElem) {
-                    var rect = titleElem.getBoundingClientRect();
-                    // Show sticky title when original title scrolls above the toolbar
-                    if (rect.bottom < menuH) {
-                        stickyTitle.style.display = 'flex';
-                    } else {
-                        stickyTitle.style.display = 'none';
-                    }
-                } else {
-                    // No doc-title-heading: show sticky after scrolling past toolbar height
-                    if (window.scrollY > menuH) {
-                        stickyTitle.style.display = 'flex';
-                    } else {
-                        stickyTitle.style.display = 'none';
-                    }
-                }
-            }
-
-            window.removeEventListener('scroll', window._stickyTitleScroll);
-            window._stickyTitleScroll = onScroll;
-            window.addEventListener('scroll', onScroll);
-            onScroll();
+            stickyTitle.style.display = 'flex';
+            adjustTopMargin();
         }
 
         window.onload = function () {

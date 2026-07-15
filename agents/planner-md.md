@@ -1,5 +1,6 @@
-# TODO
+# TODO - Breadcrumb bar
 
+* See [](./imgs/img-structure/breadcrumb1.png) and [](./imgs/img-structure/breadcrumb2.png). Breadcrumb bar only shows when scrolling moves. Show breadcrumb bar always.
 
 ## DONE - code button
 
