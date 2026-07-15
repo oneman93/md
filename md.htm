@@ -1323,10 +1323,12 @@
                 function openInVSCode() {
                     var srcParam = getQueryParam("src") || app.src;
                     console.log('openInVSCode called, srcParam:', srcParam);
-                    // Always activate the c:/Works workspace window first.
-                    // Using the folder URL ensures the correct VSCode instance is focused
-                    // even when multiple VSCode windows are open.
-                    var vsCodeUrl = 'vscode://file///c:/Works/';
+                    // Resolve the src path against the current page URL to get an absolute URL path.
+                    // Live Server root (http://127.0.0.1:5500/) maps to c:/Works on disk.
+                    var resolvedUrl = new URL(app.src || srcParam, window.location.href);
+                    var urlPath = resolvedUrl.pathname; // e.g. /_work-index.md or /md/somefile.md
+                    var filePath = 'c:/Works' + urlPath; // e.g. c:/Works/_work-index.md
+                    var vsCodeUrl = 'vscode://file///' + filePath;
                     console.log('Opening in VSCode:', vsCodeUrl);
                     window.location.href = vsCodeUrl;
                 }

@@ -1,8 +1,13 @@
 # TODO
 
+
+## DONE - code button
+
+* `</>code` button activates the vs code, but does not open the matching markdown file.
 * `</>code` button on top does nothing in `http://127.0.0.1:5500/md/md.htm`. Is it because vscode is already opened? If already opened, activate it to show.
 * Still does not open vscode in all markdown files.
 * It seems because multiple vscodes are opened. Activate vscode with `c:/works` folder.
+
 
 # Done - Grab icon css
 
