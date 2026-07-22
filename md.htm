@@ -2779,7 +2779,7 @@
 
                     var resFilePath = folder + words.join('\\').replaceAll('.\\', '').replaceAll('%20', ' ');
                     console.log('openImageInExplorer resFilePath', resFilePath);
-                    window.location.href = 'openexplorer:' + resFilePath;
+                    window.location.href = 'openexplorer:select:' + resFilePath;
                 }
 
                 function insertAfter(referenceNode, newNode) {

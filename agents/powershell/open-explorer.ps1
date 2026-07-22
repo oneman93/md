@@ -8,13 +8,23 @@ try {
     # Strip the protocol prefix (e.g. "openexplorer:")
     $path = $url -replace '^openexplorer:', ''
 
+    # Check for "select:" flag (reveal file in Explorer with it selected)
+    $useSelect = $false
+    if ($path -match '^select:') {
+        $useSelect = $true
+        $path = $path -replace '^select:', ''
+    }
+
     # URL-decode in case the browser encoded slashes or spaces
     $path = [System.Uri]::UnescapeDataString($path)
 
     # Normalize: replace forward slashes with backslashes
     $path = $path -replace '/', '\'
 
-    if (Test-Path $path -PathType Container) {
+    if ($useSelect -and (Test-Path $path -PathType Leaf)) {
+        # Reveal file in Explorer with it selected
+        Start-Process explorer.exe -ArgumentList "/select,`"$path`""
+    } elseif (Test-Path $path -PathType Container) {
         # It's a folder — open it directly
         Start-Process explorer.exe -ArgumentList $path
     } elseif (Test-Path $path -PathType Leaf) {

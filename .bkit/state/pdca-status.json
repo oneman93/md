@@ -1,6 +1,6 @@
 {
   "version": "2.0",
-  "lastUpdated": "2026-06-18T00:09:48.308Z",
+  "lastUpdated": "2026-07-21T00:51:20.869Z",
   "activeFeatures": [
     "md",
     "js",
@@ -43,7 +43,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-05-07T05:51:54.325Z",
-        "lastUpdated": "2026-06-04T00:16:18.964Z"
+        "lastUpdated": "2026-07-21T00:51:20.869Z"
       },
       "lastFile": "C:/Works/md/agents/powershell/open-explorer.ps1"
     }
@@ -56,7 +56,7 @@
   "session": {
     "startedAt": "2026-03-20T00:09:52.220Z",
     "onboardingCompleted": false,
-    "lastActivity": "2026-06-18T00:09:48.308Z"
+    "lastActivity": "2026-07-21T00:51:20.869Z"
   },
   "history": [
     {
@@ -386,6 +386,12 @@
     {
       "timestamp": "2026-06-18T00:09:48.308Z",
       "feature": "js",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-07-21T00:51:20.869Z",
+      "feature": "powershell",
       "phase": "do",
       "action": "updated"
     }

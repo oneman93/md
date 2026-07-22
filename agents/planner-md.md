@@ -1,4 +1,8 @@
-# TODO - Breadcrumb bar
+
+# DONE - Folder icon
+* See [](./imgs/img2/folder-icon.png). Currently folder icon opens image file itself. Make it to `reveal in folder`.
+
+# DONE - Breadcrumb bar
 
 * See [](./imgs/img-structure/breadcrumb1.png) and [](./imgs/img-structure/breadcrumb2.png). Breadcrumb bar only shows when scrolling moves. Show breadcrumb bar always.
 
