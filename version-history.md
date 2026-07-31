@@ -1,3 +1,7 @@
+# v4.0.35
+31/7/26
+function/line column hyperlinks with BASE-PATH support
+
 # v4.0.34
 22/7/26
 wip

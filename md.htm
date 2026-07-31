@@ -1138,8 +1138,8 @@
                     $('#mdcontainer').addClass('work-index');
                 }
 
-                // Set document title - will be updated later if outline content exists
-                document.title = app.src.toLowerCase().replace('../', '').replace('./', '').replace('_loadingdocuments/', '');
+                // Set document title to filename only (so multiple tabs show distinct names)
+                document.title = app.src.split('/').pop().split('\\').pop();
 
 
                 // Search is only active on index pages (work_index.md, bauSensei.md)
@@ -1397,6 +1397,7 @@
                 // then add Go buttons so they read the corrected path text.
                 fixWindowsPathsFromSource(function() {
                     addSourceFolderGoButton();
+                    addFunctionLineHyperlinks();
                 });
                 initStickyTitle();
                 // Run after a short delay so pre elements are in the DOM
@@ -1718,6 +1719,97 @@
                                 $(row).append('<td style="width:1%; white-space:nowrap; padding:4px;"></td>');
                             });
                         }
+                    });
+                }
+
+                function addFunctionLineHyperlinks() {
+                    // Find BASE-PATH value from elements preceding the given table element
+                    function getSourceCodeFolder($table) {
+                        // Walk previous siblings and parent's previous siblings upward
+                        var $el = $table;
+                        while ($el.length) {
+                            var $prev = $el.prevAll().toArray().reverse();
+                            for (var i = 0; i < $prev.length; i++) {
+                                var el = $prev[i];
+                                // Check table rows: | BASE-PATH | path |
+                                var $tds = $(el).find('td');
+                                if ($tds.length >= 2) {
+                                    var label = $tds.first().text().trim().toUpperCase();
+                                    if (label === 'BASE-PATH') {
+                                        return $tds.eq(1).text().trim();
+                                    }
+                                }
+                                // Check plain text: "BASE-PATH: path" or "BASE-PATH path"
+                                var text = $(el).text();
+                                var m = text.match(/BASE-PATH\s*[:\-]?\s*([^\n\r]+)/i);
+                                if (m) {
+                                    return m[1].trim();
+                                }
+                            }
+                            var $parent = $el.parent();
+                            if (!$parent.length || $parent[0] === document.body) break;
+                            $el = $parent;
+                        }
+                        return null;
+                    }
+
+                    $('table').each(function () {
+                        var $table = $(this);
+                        var $headers = $table.find('th');
+                        if ($headers.length === 0) return;
+
+                        var funcLineColIdx = -1;
+                        var fileColIdx = -1;
+
+                        $headers.each(function (i) {
+                            var text = $(this).text().trim().toLowerCase();
+                            if (text.indexOf('function') !== -1 || text.indexOf('line') !== -1) {
+                                funcLineColIdx = i;
+                            }
+                            if (text.indexOf('file') !== -1) {
+                                fileColIdx = i;
+                            }
+                        });
+
+                        if (funcLineColIdx === -1) return;
+
+                        var basePath = getSourceCodeFolder($table);
+                        var missingBasePath = !basePath;
+
+                        $table.find('tr').each(function () {
+                            var $cells = $(this).find('td');
+                            if ($cells.length === 0) return;
+                            if (funcLineColIdx >= $cells.length) return;
+
+                            var $funcCell = $cells.eq(funcLineColIdx);
+                            var funcText = $funcCell.text().trim();
+                            if (!funcText) return;
+
+                            var lineMatch = funcText.match(/\bline\s+(\d+)/i);
+                            if (!lineMatch) return;
+
+                            if (missingBasePath) {
+                                $funcCell.attr('title', 'Base path detection of BASE-PATH is not given.')
+                                         .css({ borderBottom: '2px dotted #dc3545', cursor: 'help' });
+                                return;
+                            }
+
+                            var lineNum = lineMatch[1];
+                            var fileName = fileColIdx >= 0 && fileColIdx < $cells.length
+                                ? $cells.eq(fileColIdx).text().trim()
+                                : '';
+                            if (!fileName) return;
+
+                            var cleanBase = basePath.replace(/\\/g, '/').replace(/\/$/, '');
+                            var cleanFile = fileName.replace(/\\/g, '/');
+                            var vsCodeUrl = 'vscode://file///' + cleanBase + '/' + cleanFile + ':' + lineNum;
+                            var $link = $('<a></a>')
+                                .attr('href', vsCodeUrl)
+                                .attr('title', 'Open ' + fileName + ' at line ' + lineNum + ' in VS Code')
+                                .css({ color: 'inherit', textDecoration: 'underline dotted', cursor: 'pointer' })
+                                .html($funcCell.html());
+                            $funcCell.empty().append($link);
+                        });
                     });
                 }
 
@@ -2364,7 +2456,7 @@
                         var txtOrg = $(this).text();
                         var txtLower = txtOrg.toLowerCase();
                         var boldWords = ["loading", "summary", "itwiki", "release"];
-                        var orangeWords = ["bau"];
+                        var orangeWords = ["bau", "refresh"];
 
                         // Note that below style will be overwritten by the last if.
                         boldWords.forEach((elem) => {

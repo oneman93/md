@@ -1,3 +1,25 @@
+# TODO - code hyperlink
+
+* See [](./imgs/img2/function-line.png). When a table has <th> text of `function` or `line`, make the td text as a hyperlink.
+* For example, table `Node Reference Table`, make each line text as a hyperlink and when clicked, go to the exact code in visual studio (preferably) or vs code.
+
+* Base path detection should not be based on `?src=` but should search text of `BASE-PATH` above the table. If this text is not give, return error message eg, `Base path detection of BASE-PATH is not given.`
+
+* See [](./imgs/img2/local-path.png). The full path may not be always immediate directly from Base path. For example, in the image, the actual correct path is `C:\Works\LocalAD-is02\Controllers\LocalADController.cs`. Can you find this correct full path dynamically or do you need sub folders on the html page to build the full path?
+  * a. JavaScript in the browser has no filesystem access and cannot recursively scan folders to find a file. Subfolders must be provided. Two supported options:
+    1. Include the relative path in the `File` column: e.g., `Controllers\LocalADController.cs` instead of just `LocalADController.cs`. The code already concatenates basePath + File value, so backslashes are normalized automatically.
+    2. Set `BASE-PATH` to the deepest applicable folder (e.g., `C:\Works\LocalAD-is02\Controllers`) when all files in the table share the same subfolder.
+
+* I've changed BASE-PATH into BASE-PATH. Update code.
+
+# DONE - tab title
+
+* See [](./imgs/img2/tab-title.png). 3 Tabs are all  different documents but shows as same time first part. Update code so that it shows markdown file name only as a tab title.
+
+# Done - orange color keyword
+
+* `bau` is currently set as orange color text to highlight.
+* Add `refresh` into the keyword array.
 
 # DONE - Folder icon
 * See [](./imgs/img2/folder-icon.png). Currently folder icon opens image file itself. Make it to `reveal in folder`.
