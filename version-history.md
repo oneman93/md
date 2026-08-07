@@ -1,3 +1,7 @@
+# v4.0.36
+7/8/26
+scroll up and down buttons
+
 # v4.0.35
 31/7/26
 function/line column hyperlinks with BASE-PATH support

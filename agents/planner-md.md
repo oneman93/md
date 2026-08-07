@@ -1,4 +1,8 @@
-# TODO - code hyperlink
+# todo - scroll up and down
+
+* See [](./imgs/img-ui/scroll-up-down.png). Create scroll up and down button on left side on the same height of table side bar button of the right side. When clicked, it will scroll page to the top and to the bottom.
+
+# done - code hyperlink
 
 * See [](./imgs/img2/function-line.png). When a table has <th> text of `function` or `line`, make the td text as a hyperlink.
 * For example, table `Node Reference Table`, make each line text as a hyperlink and when clicked, go to the exact code in visual studio (preferably) or vs code.

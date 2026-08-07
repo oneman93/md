@@ -269,6 +269,12 @@
         </div>
         <button class="table-nav-toggle" id="tableNavToggle" onclick="tableNavExpand()" title="Show Tables" style="display:none;">&#9776;</button>
 
+        <!-- Scroll Up/Down Buttons -->
+        <div class="scroll-nav-buttons" id="scrollNavButtons">
+            <button class="scroll-nav-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Scroll to top">&#9650;</button>
+            <button class="scroll-nav-btn" onclick="window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})" title="Scroll to bottom">&#9660;</button>
+        </div>
+
 
 
     </body>
