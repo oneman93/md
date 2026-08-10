@@ -321,6 +321,21 @@ code {
     background: #f0f0f0;
 }
 
+.scroll-nav-btn-back {
+    font-size: 13px;
+    padding: 6px 10px;
+    color: #0069d9;
+}
+
+.scroll-nav-btn-back:disabled {
+    color: #ccc;
+    cursor: default;
+}
+
+.scroll-nav-btn-back:disabled:hover {
+    background: rgba(255, 255, 255, 0.95);
+}
+
 .table-nav-button {
     display: block;
     width: 100%;

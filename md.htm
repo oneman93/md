@@ -272,6 +272,7 @@
         <!-- Scroll Up/Down Buttons -->
         <div class="scroll-nav-buttons" id="scrollNavButtons">
             <button class="scroll-nav-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Scroll to top">&#9650;</button>
+            <button class="scroll-nav-btn scroll-nav-btn-back" id="btnScrollBack" onclick="scrollBack()" title="Scroll to previous position" disabled>&#8592;</button>
             <button class="scroll-nav-btn" onclick="window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})" title="Scroll to bottom">&#9660;</button>
         </div>
 
@@ -749,16 +750,35 @@
             return false;
         }
 
+        // Scroll history for the back button
+        var _scrollHistory = [];
+
+        function _pushScrollHistory() {
+            _scrollHistory.push(window.scrollY);
+            var btn = document.getElementById('btnScrollBack');
+            if (btn) btn.disabled = false;
+        }
+
+        function scrollBack() {
+            if (_scrollHistory.length === 0) return;
+            var pos = _scrollHistory.pop();
+            window.scrollTo({ top: pos, behavior: 'smooth' });
+            var btn = document.getElementById('btnScrollBack');
+            if (btn) btn.disabled = (_scrollHistory.length === 0);
+        }
+
         function scrollToElement(elementId) {
             const element = document.getElementById(elementId);
             if (element) {
                 // Calculate offset for fixed header (search-wrapper)
                 const searchWrapper = document.querySelector('.search-wrapper');
                 const offset = searchWrapper ? searchWrapper.offsetHeight + 20 : 80; // Add 20px padding
-                
+
                 // Get the position of the element
                 const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
                 const offsetPosition = elementPosition - offset;
+
+                _pushScrollHistory();
 
                 // Scroll to the position with offset
                 window.scrollTo({
@@ -1504,6 +1524,14 @@
                 // Belt-and-suspenders: clear any email that slipped through autofill
                 inputSearch.addEventListener('input', function() {
                     if (isEmailValue(this.value)) this.value = '';
+                });
+
+                // Track in-page anchor clicks for the ← scroll back button
+                document.getElementById('mdcontainer').addEventListener('click', function(e) {
+                    var anchor = e.target.closest('a');
+                    if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').startsWith('#')) {
+                        _pushScrollHistory();
+                    }
                 });
 
                 // Save scroll position to localStorage on scroll (debounced, per src)

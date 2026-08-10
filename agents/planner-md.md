@@ -1,6 +1,9 @@
-# todo - scroll up and down
+# DONE - scroll up and down
 
 * See [](./imgs/img-ui/scroll-up-down.png). Create scroll up and down button on left side on the same height of table side bar button of the right side. When clicked, it will scroll page to the top and to the bottom.
+# TODO
+
+* See [](./imgs/img-ui/scroll-up-down2.png). In between up and down button, put `<-` button that, when clicked, scrolls to the previous posisiton.
 
 # done - code hyperlink
 
