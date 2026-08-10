@@ -4,6 +4,8 @@
 # TODO
 
 * See [](./imgs/img-ui/scroll-up-down2.png). In between up and down button, put `<-` button that, when clicked, scrolls to the previous posisiton.
+* When up and down button is clicked, save current position.
+
 
 # done - code hyperlink
 

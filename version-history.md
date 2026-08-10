@@ -1,3 +1,7 @@
+# v4.0.38
+10/8/26
+save position on scroll up/down click
+
 # v4.0.37
 10/8/26
 scroll back button
