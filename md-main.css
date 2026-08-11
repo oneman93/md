@@ -607,3 +607,15 @@ div.mermaid {
     margin-bottom: 0.1rem !important;
 }
 
+/* Compact table — applied dynamically by JS when table content overflows */
+.markdown-body table.table-compact {
+    font-size: 0.82em;
+    width: 100% !important;
+}
+
+.markdown-body table.table-compact td,
+.markdown-body table.table-compact th {
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+

@@ -1432,6 +1432,13 @@
                     addCopyCodeButtons();
                     addBannerCredentialCopyButtons(app);
                     addFavoriteIcons();
+                    compactOverflowingTables();
+                    // Re-check on window resize (debounced)
+                    var _compactResizeTimer;
+                    window.addEventListener('resize', function() {
+                        clearTimeout(_compactResizeTimer);
+                        _compactResizeTimer = setTimeout(compactOverflowingTables, 200);
+                    });
                 }, 150);
 
                 // Restore heading filter state across page refreshes
@@ -1844,6 +1851,16 @@
                                 .html($funcCell.html());
                             $funcCell.empty().append($link);
                         });
+                    });
+                }
+
+                function compactOverflowingTables() {
+                    mdClone.querySelectorAll('table').forEach(function(table) {
+                        table.classList.remove('table-compact');
+                        var parent = table.parentElement;
+                        if (table.scrollWidth > (parent ? parent.clientWidth : table.clientWidth)) {
+                            table.classList.add('table-compact');
+                        }
                     });
                 }
 

@@ -1,7 +1,11 @@
+# todo - table overflow
+
+* See [](./imgs/img-ui/table-overflow.png). I don't want table overflows in css. Make font sight smaller or table size smaller so that I can avoid table scroll bars.
+* Can you apply this smaller font size dynamically only when table content is huge and overflowing?
+
 # DONE - scroll up and down
 
 * See [](./imgs/img-ui/scroll-up-down.png). Create scroll up and down button on left side on the same height of table side bar button of the right side. When clicked, it will scroll page to the top and to the bottom.
-# TODO
 
 * See [](./imgs/img-ui/scroll-up-down2.png). In between up and down button, put `<-` button that, when clicked, scrolls to the previous posisiton.
 * When up and down button is clicked, save current position.
