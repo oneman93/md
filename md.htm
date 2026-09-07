@@ -1424,6 +1424,7 @@
                 fixWindowsPathsFromSource(function() {
                     addSourceFolderGoButton();
                     addFunctionLineHyperlinks();
+                    addXlsxIcons();
                 });
                 initStickyTitle();
                 // Run after a short delay so pre elements are in the DOM
@@ -1850,6 +1851,23 @@
                                 .css({ color: 'inherit', textDecoration: 'underline dotted', cursor: 'pointer' })
                                 .html($funcCell.html());
                             $funcCell.empty().append($link);
+                        });
+                    });
+                }
+
+                function addXlsxIcons() {
+                    $('td').each(function () {
+                        $(this).find('a').each(function () {
+                            var href = $(this).attr('href') || '';
+                            var text = $(this).text().trim();
+                            var isXlsx = /\.xlsx?(\?.*)?$/i.test(href) || /\.xlsx?$/i.test(text);
+                            if (isXlsx) {
+                                var $icon = $('<img>')
+                                    .attr('src', 'agents/imgs/img-ui/excel-icon2.png')
+                                    .attr('alt', 'xlsx')
+                                    .css({ width: '16px', height: '16px', marginRight: '4px', verticalAlign: 'middle' });
+                                $(this).before($icon);
+                            }
                         });
                     });
                 }

@@ -1,3 +1,7 @@
+# v4.0.40
+7/9/26
+xlsx icon on table td hyperlinks
+
 # v4.0.39
 11/8/26
 table size dynamically

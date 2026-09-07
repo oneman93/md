@@ -1,4 +1,11 @@
-# todo - table overflow
+# todo - xlsx icon
+
+* When table <td> content is a hyperlink and ends with `.xls` or `.xlsx`, show excel icon image as in [xlsx-icon](./imgs/img-ui/xlsx-icon.png) so that I can quickly notice.
+
+* Use [excel-icon2](./imgs/img-ui/excel-icon2.png) instead. Do not git check in automatically.
+* See [xlsx-icon-not](./imgs/img-ui/xlsx-icon-not.png). Not working.
+
+# done - table overflow
 
 * See [](./imgs/img-ui/table-overflow.png). I don't want table overflows in css. Make font sight smaller or table size smaller so that I can avoid table scroll bars.
 * Can you apply this smaller font size dynamically only when table content is huge and overflowing?
