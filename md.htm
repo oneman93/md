@@ -1442,18 +1442,6 @@
                     });
                 }, 150);
 
-                // Restore heading filter state across page refreshes
-                var _savedFilter = localStorage.getItem(_h1FilterKey);
-                if (_savedFilter) {
-                    var _savedLevels = _savedFilter.split(',').filter(Boolean);
-                    _savedLevels.forEach(function(level) {
-                        var cb = document.getElementById('chkFilter' + level.toUpperCase());
-                        if (cb) cb.checked = true;
-                    });
-                    applyHeadingFilter(_savedLevels);
-                    updateH1BtnState();
-                }
-
                 // Skip focus on mobile devices to avoid keyboard blocking the screen
                 function isMobileDevice() {
                     // Check for touch capability
@@ -1527,6 +1515,19 @@
                     searchText();
                 } else {
                     inputSearch.value = '';
+                }
+
+                // Restore heading filter state across page refreshes.
+                // Must run AFTER searchText() so the filter overrides the search "show all" on empty query.
+                var _savedFilter = localStorage.getItem(_h1FilterKey);
+                if (_savedFilter) {
+                    var _savedLevels = _savedFilter.split(',').filter(Boolean);
+                    _savedLevels.forEach(function(level) {
+                        var cb = document.getElementById('chkFilter' + level.toUpperCase());
+                        if (cb) cb.checked = true;
+                    });
+                    applyHeadingFilter(_savedLevels);
+                    updateH1BtnState();
                 }
 
                 // Belt-and-suspenders: clear any email that slipped through autofill
@@ -1941,8 +1942,6 @@
                 }
 
                 function addFavoriteIcons() {
-                    // Only show on _work-index.md
-                    if (!fnIsRootPage()) return;
                     var divAll = document.querySelector('zero-md-clone div.all');
                     if (!divAll) return;
                     divAll.querySelectorAll('.h1-wrapper').forEach(function(wrapper) {
@@ -2072,8 +2071,12 @@
                             window._favFileHandles = window._favFileHandles || {};
                             var fileHandle = window._favFileHandles[app.src];
                             if (!fileHandle) {
+                                var _srcParts = app.src.split('/');
+                                var _srcFolder = _srcParts.length > 1 ? _srcParts.slice(-2, -1)[0] : '';
+                                var _dialogId = ('md-' + _srcFolder.replace(/[^a-zA-Z0-9_-]/g, '-')).substring(0, 32) || 'md-default';
                                 fileHandle = await window.showSaveFilePicker({
                                     suggestedName: fileName,
+                                    id: _dialogId,
                                     types: [{ description: 'Markdown files', accept: { 'text/markdown': ['.md'] } }]
                                 });
                                 window._favFileHandles[app.src] = fileHandle;
@@ -2162,8 +2165,12 @@
                             window._favFileHandles = window._favFileHandles || {};
                             var fileHandle = window._favFileHandles[app.src];
                             if (!fileHandle) {
+                                var _srcParts = app.src.split('/');
+                                var _srcFolder = _srcParts.length > 1 ? _srcParts.slice(-2, -1)[0] : '';
+                                var _dialogId = ('md-' + _srcFolder.replace(/[^a-zA-Z0-9_-]/g, '-')).substring(0, 32) || 'md-default';
                                 fileHandle = await window.showSaveFilePicker({
                                     suggestedName: fileName,
+                                    id: _dialogId,
                                     types: [{ description: 'Markdown files', accept: { 'text/markdown': ['.md'] } }]
                                 });
                                 window._favFileHandles[app.src] = fileHandle;

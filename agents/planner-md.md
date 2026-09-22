@@ -1,4 +1,17 @@
-# todo - xlsx icon
+# todo - move, fav icon
+
+* See [move-fav1.png](./imgs/img-ui/move-fav1.png)
+* [move-fav2.png](./imgs/img-ui/move-fav2.png) Currently, move/fav icon set only shows in work_index.md file. Show these icon in all *.md file pages and let them work.
+
+* See [corresponding-path.png](./imgs/img-ui/corresponding-path.png). When file explorer opens, let explorer show the corresponding folder path, not just `c:\works`.
+
+# done - filtering option not remembered.
+
+* See [when-filtered.png](./imgs/img-ui/when-filtered.png). Let filtering be remembered after page reload. Currently, it shows all content when page reloads regardless of filtering options.
+
+* See [when-filtered2.png](./imgs/img-ui/when-filtered2.png) Maybe this filter option not remembered only in work_index.md. In other md files, the filtering option was remembered.
+
+# done - xlsx icon
 
 * When table <td> content is a hyperlink and ends with `.xls` or `.xlsx`, show excel icon image as in [xlsx-icon](./imgs/img-ui/xlsx-icon.png) so that I can quickly notice.
 
@@ -7,25 +20,25 @@
 
 # done - table overflow
 
-* See [](./imgs/img-ui/table-overflow.png). I don't want table overflows in css. Make font sight smaller or table size smaller so that I can avoid table scroll bars.
+* See [table-overflow.png](./imgs/img-ui/table-overflow.png). I don't want table overflows in css. Make font sight smaller or table size smaller so that I can avoid table scroll bars.
 * Can you apply this smaller font size dynamically only when table content is huge and overflowing?
 
 # DONE - scroll up and down
 
-* See [](./imgs/img-ui/scroll-up-down.png). Create scroll up and down button on left side on the same height of table side bar button of the right side. When clicked, it will scroll page to the top and to the bottom.
+* See [scroll-up-down.png](./imgs/img-ui/scroll-up-down.png). Create scroll up and down button on left side on the same height of table side bar button of the right side. When clicked, it will scroll page to the top and to the bottom.
 
-* See [](./imgs/img-ui/scroll-up-down2.png). In between up and down button, put `<-` button that, when clicked, scrolls to the previous posisiton.
+* See [scroll-up-down2.png](./imgs/img-ui/scroll-up-down2.png). In between up and down button, put `<-` button that, when clicked, scrolls to the previous posisiton.
 * When up and down button is clicked, save current position.
 
 
 # done - code hyperlink
 
-* See [](./imgs/img2/function-line.png). When a table has <th> text of `function` or `line`, make the td text as a hyperlink.
+* See [function-line.png](./imgs/img2/function-line.png). When a table has <th> text of `function` or `line`, make the td text as a hyperlink.
 * For example, table `Node Reference Table`, make each line text as a hyperlink and when clicked, go to the exact code in visual studio (preferably) or vs code.
 
 * Base path detection should not be based on `?src=` but should search text of `BASE-PATH` above the table. If this text is not give, return error message eg, `Base path detection of BASE-PATH is not given.`
 
-* See [](./imgs/img2/local-path.png). The full path may not be always immediate directly from Base path. For example, in the image, the actual correct path is `C:\Works\LocalAD-is02\Controllers\LocalADController.cs`. Can you find this correct full path dynamically or do you need sub folders on the html page to build the full path?
+* See [local-path.png](./imgs/img2/local-path.png). The full path may not be always immediate directly from Base path. For example, in the image, the actual correct path is `C:\Works\LocalAD-is02\Controllers\LocalADController.cs`. Can you find this correct full path dynamically or do you need sub folders on the html page to build the full path?
   * a. JavaScript in the browser has no filesystem access and cannot recursively scan folders to find a file. Subfolders must be provided. Two supported options:
     1. Include the relative path in the `File` column: e.g., `Controllers\LocalADController.cs` instead of just `LocalADController.cs`. The code already concatenates basePath + File value, so backslashes are normalized automatically.
     2. Set `BASE-PATH` to the deepest applicable folder (e.g., `C:\Works\LocalAD-is02\Controllers`) when all files in the table share the same subfolder.
@@ -34,7 +47,7 @@
 
 # DONE - tab title
 
-* See [](./imgs/img2/tab-title.png). 3 Tabs are all  different documents but shows as same time first part. Update code so that it shows markdown file name only as a tab title.
+* See [tab-title.png](./imgs/img2/tab-title.png). 3 Tabs are all  different documents but shows as same time first part. Update code so that it shows markdown file name only as a tab title.
 
 # Done - orange color keyword
 
@@ -42,11 +55,11 @@
 * Add `refresh` into the keyword array.
 
 # DONE - Folder icon
-* See [](./imgs/img2/folder-icon.png). Currently folder icon opens image file itself. Make it to `reveal in folder`.
+* See [folder-icon.png](./imgs/img2/folder-icon.png). Currently folder icon opens image file itself. Make it to `reveal in folder`.
 
 # DONE - Breadcrumb bar
 
-* See [](./imgs/img-structure/breadcrumb1.png) and [](./imgs/img-structure/breadcrumb2.png). Breadcrumb bar only shows when scrolling moves. Show breadcrumb bar always.
+* See [breadcrumb1.png](./imgs/img-structure/breadcrumb1.png) and [breadcrumb2.png](./imgs/img-structure/breadcrumb2.png). Breadcrumb bar only shows when scrolling moves. Show breadcrumb bar always.
 
 ## DONE - code button
 
@@ -58,36 +71,36 @@
 
 # Done - Grab icon css
 
-* I want css change to [](./imgs/after.png), which means all 3 below should be left aligned
+* I want css change to [after.png](./imgs/after.png), which means all 3 below should be left aligned
   * h1 text
   * hr line
   * first li item
 * Grab/Favorate icon should be on the left side of these 3 and margin between the 2 icons should not be too wide.
 * I thinik you can group Grab/Favorite icon and show them as position:relative to h1 title.
 * Also let Grab/Favorite icon show in `_work-index.md` file only.
-* Why it shows twice as in [](./imgs/why-twice.png). Fix please.
+* Why it shows twice as in [why-twice.png](./imgs/why-twice.png). Fix please.
 
 
 # Done - grab icon
 
 * Move `Favorite` icon button left to <h1> text not right.
-* See [](./imgs/grab-icon.png)
+* See [grab-icon.png](./imgs/grab-icon.png)
 * Create grab icon button left to <h1> text as well.
 * I want when user click grab icon and moves/drops, it saves the markdown file as well.
 * The user behavior is similar to https://jqueryui.com/sortable/ where use can drag and drop to sort.
 * Confirmation dialog should show as in Favorite icon button.
-* See [](./imgs/icon-not-pretty.png) Icons are not very well aligned. Fix please. Also after updating markdown file, please refresh webpage so that I can see it is updated.
+* See [icon-not-pretty.png](./imgs/icon-not-pretty.png) Icons are not very well aligned. Fix please. Also after updating markdown file, please refresh webpage so that I can see it is updated.
 
-* I want css change from [](./imgs/before.png) to [](./imgs/after.png). 
+* I want css change from [before.png](./imgs/before.png) to [after.png](./imgs/after.png).
 
-* Change grab icon from [](./imgs/grab-icon.png) back to default 6 dot icon.
+* Change grab icon from [grab-icon.png](./imgs/grab-icon.png) back to default 6 dot icon.
 * Change grab/favorate icon 0.85 em to 1em.
 * Remove grab/favorate icon from sections: `Recently Viewed`, `TODO`.
-* See [](./imgs/align.png). Align with other h1 sections for `Recently Viewed`, `TODO` even without grab/favorite icons.
+* See [align.png](./imgs/align.png). Align with other h1 sections for `Recently Viewed`, `TODO` even without grab/favorite icons.
 
 
 # done - Favorate icon button
-* See [](./imgs/favorate.png) and [](./imgs/favorate2.png)
+* See [favorate.png](./imgs/favorate.png) and [favorate2.png](./imgs/favorate2.png)
 * Next to each `h1` tag, show favorite icon with empty color.
 * When clicked, that `h1` section will move to the top after `TODO` section. And the favorite icon will be filled with yellow color.
 * This is not only css change but also actual markdown file update. So you should ask confirm message eg, `Will you move to the top and save markdown file`?
@@ -98,10 +111,10 @@
     2. **Fallback** (if `showSaveFilePicker` is unavailable): creates a `Blob` from the reordered markdown text, wraps it in a temporary `<a download>` link, and triggers a click to download the file.
     * The raw markdown content is fetched first via `fetch(app.src)` to get the original file text, then `reorderMarkdownH1Section()` rearranges the H1 sections before saving.
 
-* No <h1> tag shows favorite icon button. It shows other markdown file not in `_work_index.md` file. See [](./imgs/no-fav.png)
-* See [](./imgs/python1.png): I just favorited `Python` h1 section. It worked but has a few things to fix:
+* No <h1> tag shows favorite icon button. It shows other markdown file not in `_work_index.md` file. See [no-fav.png](./imgs/no-fav.png)
+* See [python1.png](./imgs/python1.png): I just favorited `Python` h1 section. It worked but has a few things to fix:
   * Python needs to be below `TODO` h1 section.
-  * Is it possible doing this without file dialog asking? [](./imgs/python2.png)
+  * Is it possible doing this without file dialog asking? [python2.png](./imgs/python2.png)
 
 * q. I see code as:
 ```
@@ -123,7 +136,7 @@ I thought javascript cannot change local files. How is this possible?
 
 # Done - `H1 Sort` button
 
-* See [](./imgs/img-general/h1-sort.png). Create a new button in `Show H1 Only` button's dialog, named `H1 Sort`.
+* See [h1-sort.png](./imgs/img-general/h1-sort.png). Create a new button in `Show H1 Only` button's dialog, named `H1 Sort`.
 * When clicked, the h1 tags will  be sorted alphabetically, eg,
 ```
 Recently viewed ...×
@@ -146,9 +159,9 @@ Todo
 
 # 'Go' button
 
-* You create `Go` button when you look at the key words [](#key-words) in table.
+* You create `Go` button when you look at the key words [Key words](#key-words) in table.
 
-* The key text [](#key-words) are case insensitive.
+* The key text [Key words](#key-words) are case insensitive.
 * If you find multiple text of above list, you will create multiple button for each of the text `<td>` value
 * The button order should be same as `<td>` order in `<tr>`
 * The button text will be `Go {folder path}`. For example, if source folder is C:\Works, then button text will be `Go C:\Works`.
@@ -171,29 +184,29 @@ Todo
 
 # Go button update
 
-* See [](./imgs/go-button-update.png)
+* See [go-button-update.png](./imgs/go-button-update.png)
 * Instead of creating 3 go buttons on bottom, create each `Go` button next to the path, within the same <tr> with a separate <td> column.
 * And the text is just `Go` instead of `Go {path}` because the previous <td> column already has the path.
-* Table css seems breaking [](./imgs/errors/table-breaking.png)
-* Table css still breaking [](./imgs/errors/table-breaking2.png) -> number of <td> should be all the same inside <table>
+* Table css seems breaking [table-breaking.png](./imgs/errors/table-breaking.png)
+* Table css still breaking [table-breaking2.png](./imgs/errors/table-breaking2.png) -> number of <td> should be all the same inside <table>
 ## Show go buttons by path not text
 
-* See [](./imgs/img-ui/go-buttons.png). Go buttons (GO, Code, Claude) shows by `table td` text eg, `local, folder` etc. Let these button show regardless of td text. If the value is file or folder, these button should show. Current logic should stay the same:
+* See [go-buttons.png](./imgs/img-ui/go-buttons.png). Go buttons (GO, Code, Claude) shows by `table td` text eg, `local, folder` etc. Let these button show regardless of td text. If the value is file or folder, these button should show. Current logic should stay the same:
   * Paths wrapped by `` should still be handled
   * File path should open file in relavant app
   * Folder path should open folder etc.
 
 # Table sidebar
 
-* See [](./imgs/table-sidebar.png)
+* See [table-sidebar.png](./imgs/table-sidebar.png)
 * Let table side bar has eg, `x` button to close and restore.
 * On page load, by default, the table side bar should be collapsed.
 
 
 # Show H1 Only
 
-* After function `showH1Only()` in [](../md.htm), it seems <h1> text size becomes smaller. Keep it as original <h1> size.
-* See [](./imgs/errors/why-not-collapsed.png)
+* After function `showH1Only()` in [md.htm](../md.htm), it seems <h1> text size becomes smaller. Keep it as original <h1> size.
+* See [why-not-collapsed.png](./imgs/errors/why-not-collapsed.png)
 * Why the text inside red rectagle not collapsed although they were not <h1>?
 * The full text of screenshot is given [here](./docs/planner-sql-archive-sample.md)
 * Hide <h3> as well when `Show H1 Only` button clicked.
@@ -201,29 +214,29 @@ Todo
 
 # Copy code
 
-* See [](./imgs/copy-code.png) 
+* See [copy-code.png](./imgs/copy-code.png)
 * If <pre> text, add `Copy code` button on top right. When clicked, the text inside <pre> will be copied to clipboard.
-* See [](./imgs/errors/copy-code-ui.png): copy code button should be hidden on `Show H1 Only` mode.
-* See [](./imgs/errors/button-still-show.png): copy code button still shows in `Show H1 Only` mode.
+* See [copy-code-ui.png](./imgs/errors/copy-code-ui.png): copy code button should be hidden on `Show H1 Only` mode.
+* See [button-still-show.png](./imgs/errors/button-still-show.png): copy code button still shows in `Show H1 Only` mode.
 
 # `code` button
 
 * Move `code` button to `divRight` section as the first button:
-  * [](./imgs/ui-code-button.png)
+  * [ui-code-button.png](./imgs/ui-code-button.png)
 * When clicked, open visual code to edit the matching markdown file of the url.
 * For example, if current url is `http://127.0.0.1:5500/md/md.htm?src=_LoadingDocuments%2Fclone-date-loading.md`, open code to edit `c:\works\_LoadingDocuments%2Fclone-date-loading.md`
 * Button clicking does not do anything.
-  * Leave console js log after line 902 in [](../md.htm) to confirm that it ran successfully.
-  * [](./imgs/ui-menu/code-does-nothing.png)
+  * Leave console js log after line 902 in [md.htm](../md.htm) to confirm that it ran successfully.
+  * [code-does-nothing.png](./imgs/ui-menu/code-does-nothing.png)
 ```
   window.location.href = 'vscode://file/' + filePath;
 ```
 * Clicking `code` button still does nothing. Add log in line 899 as well.
-* After popup screen, [](./imgs/ui-menu/code-does-nothing.png), there is no js log in console. Investigate.
-* Still does nothing [](./imgs/ui-menu/does-nothing2.png). Url seems correct though. It does not open markdown file in vscode. It does not show js log in chrome console.
+* After popup screen, [code-does-nothing.png](./imgs/ui-menu/code-does-nothing.png), there is no js log in console. Investigate.
+* Still does nothing [does-nothing2.png](./imgs/ui-menu/does-nothing2.png). Url seems correct though. It does not open markdown file in vscode. It does not show js log in chrome console.
 * Edge worked perfectly:
-  * [](./imgs/ui-menu/edge-wroked.png)
-  * [](./imgs/ui-menu/edge-worked2.png)
+  * [edge-wroked.png](./imgs/ui-menu/edge-wroked.png)
+  * [edge-worked2.png](./imgs/ui-menu/edge-worked2.png)
 * But Chrome did nothing.
 
 ```
@@ -244,7 +257,7 @@ vscode://file///c:/works/_LoadingDocuments/synctool-release-note.md
 ```
 * Restore `btnCode` button
 
-# UI - `Wrap with md.html` 
+# UI - `Wrap with md.html`
 * `Wrap with md.html` button wraps `href` url with `?src=xxx.md` paraemter. This url modification should not be applied to other protocol eg, `vscode`.
 * For example, below href url should not be changed by `Wrap with md.html` button:
 ```
@@ -257,25 +270,25 @@ vscode://file///c:/works/_LoadingDocuments/synctool-release-note.md
 # UI - version number
 
 * Version number should show right to Home button:
-  * [](./imgs/ui-menu/version1.png) is correct
-  * [](./imgs/ui-menu/version2.png) is incorrect.
+  * [version1.png](./imgs/ui-menu/version1.png) is correct
+  * [version2.png](./imgs/ui-menu/version2.png) is incorrect.
 
 
 # UI - `Copy password` button
 
 * Move copy password button from outside of `<pre>` to inside of `<pre>` next to `Copy code` button:
-  * [](./imgs/copy-password-btn.png)
+  * [copy-password-btn.png](./imgs/copy-password-btn.png)
 * Copy password button is still in old position outside of <pre> tag.
-  * [](./imgs/errors/still-out-pre.png)
+  * [still-out-pre.png](./imgs/errors/still-out-pre.png)
   * Add js console log if debug is required.
 
 
 * Update `Copy code` button to have same height as `Copy password`:
-  * [](./imgs/copy-code-vs-pass.png)
+  * [copy-code-vs-pass.png](./imgs/copy-code-vs-pass.png)
 * Both buttons seemed growing height and still different height:
-  * [](./imgs/errors/btn-height.png)
+  * [btn-height.png](./imgs/errors/btn-height.png)
 * Make these two buttons small button.
-  * [](./imgs/errors/small-btn.png)
+  * [small-btn.png](./imgs/errors/small-btn.png)
 
 
 
@@ -289,14 +302,14 @@ vscode://file///c:/works/_LoadingDocuments/synctool-release-note.md
 # UI - favicon etc
 
 * Let favicon be something interesting not just plain document icon:
-  * [](./imgs/favicon.png)
-  * I like your new [](./imgs/new-favicon.png), but let `md` text be yellow-ish color.
+  * [favicon.png](./imgs/favicon.png)
+  * I like your new [new-favicon.png](./imgs/new-favicon.png), but let `md` text be yellow-ish color.
 * Let `Go` button be `btn-info` color theme:
-  * [](./imgs/go-theme.png)
+  * [go-theme.png](./imgs/go-theme.png)
 
 ## done - # icon
 * Show favicon, instead of `md` text, show `#` as vector value.
-* Let `#` color be the dark blue color of [](./imgs/img2/h1-color.png)
+* Let `#` color be the dark blue color of [h1-color.png](./imgs/img2/h1-color.png)
 
 # DONE
 
@@ -371,36 +384,36 @@ vscode://file///c:/works/_LoadingDocuments/synctool-release-note.md
 https://home.atlassian.com/o/38fbec1d-48cd-4024-91f7-7ab0e7bd4766/?utm_source=identity&cloudId=cf0e281f-66b6-4a6f-ac30-d393342753a4
 ```
 * Do not delete the section automatically. I will move them to # DONE section when done.
-* I got image upload error [](./imgs/errors/image-upload-error.png)
-* I got another error [](./imgs/errors/image-upload-error2.png)
-* I got error [](./imgs/errors/powershell-error.png)
+* I got image upload error [image-upload-error.png](./imgs/errors/image-upload-error.png)
+* I got another error [image-upload-error2.png](./imgs/errors/image-upload-error2.png)
+* I got error [powershell-error.png](./imgs/errors/powershell-error.png)
 * Succeed on setting button, but when copied to confluence, images do not show:
-  * [](./imgs/errors/no-image1.png)
-  * [](./imgs/errors/no-image2.png)
-* Image still broken: 
-  * [](./imgs/errors/no-image3.png)
-* Also keep popup dialog showing [](./imgs/errors/pop-up-keep.png) until success message comes up.
+  * [no-image1.png](./imgs/errors/no-image1.png)
+  * [no-image2.png](./imgs/errors/no-image2.png)
+* Image still broken:
+  * [no-image3.png](./imgs/errors/no-image3.png)
+* Also keep popup dialog showing [pop-up-keep.png](./imgs/errors/pop-up-keep.png) until success message comes up.
 * Still failed:
-  * [](./imgs/errors/failed.png)
-  * Some were showing because of localhost: [](./imgs/errors/some-were-showing.png)
+  * [failed.png](./imgs/errors/failed.png)
+  * Some were showing because of localhost: [some-were-showing.png](./imgs/errors/some-were-showing.png)
   * No localhost image should be showing.
-* Still no image shows [](./imgs/errors/still-no-image.png)
+* Still no image shows [still-no-image.png](./imgs/errors/still-no-image.png)
 * Uploading popup does not show any progress. Show 1/27, 2/27 ... etc
 * When success dialog comes up, the popup can hide.
-  * [](./imgs/errors/uploading-does-not-progress.png)
+  * [uploading-does-not-progress.png](./imgs/errors/uploading-does-not-progress.png)
 * Image still corrupted:
-  * [](./imgs/errors/image-corrupt.png)
-* Still not working [](./imgs/errors/v4-fail.png)
+  * [image-corrupt.png](./imgs/errors/image-corrupt.png)
+* Still not working [v4-fail.png](./imgs/errors/v4-fail.png)
 * Don't you need some logs to confirm?
 * Image still not showing. Review with log files:
-  * [](./imgs/errors/fail1.png)
-  * [](./imgs/errors/fail2.png)
-  * [](../tmp/copy2conf-debug.log)
-  * [](../tmp/copy2conf-status.json)
+  * [fail1.png](./imgs/errors/fail1.png)
+  * [fail2.png](./imgs/errors/fail2.png)
+  * [copy2conf-debug.log](../tmp/copy2conf-debug.log)
+  * [copy2conf-status.json](../tmp/copy2conf-status.json)
 * Waited 1 min, but no good:
-  * [](./imgs/errors/wait1min.png)
-  * [](./imgs/errors/wait1min2.png)
-* Now I got [](./imgs/errors/grm-error.png)
+  * [wait1min.png](./imgs/errors/wait1min.png)
+  * [wait1min2.png](./imgs/errors/wait1min2.png)
+* Now I got [grm-error.png](./imgs/errors/grm-error.png)
 
 
 
@@ -411,16 +424,16 @@ https://home.atlassian.com/o/38fbec1d-48cd-4024-91f7-7ab0e7bd4766/?utm_source=id
 
 # Misc
 
-* See [](./imgs/errors/i-didnt-type.png)
+* See [i-didnt-type.png](./imgs/errors/i-didnt-type.png)
 * It shows my email in search text box. I don't know where it comes from.
 * It still show. When local storage is empty, show empty string.
 * Can you not allow email in this search box? User will never enter email to search text here.
-* See [](./imgs/errors/this-happens.png)
+* See [this-happens.png](./imgs/errors/this-happens.png)
 * After page refresh, sometimes this happens.
-* I think it may happen because of `btnConfigSettings` button: [](./imgs/errors/i-think-it.png)
-* See [](./imgs/img-err-menu/h2-not-show.png)
-* What makes the first few lines not showing on localhost website? 
-* See [](./imgs/img-err-menu/meta-data.png)
+* I think it may happen because of `btnConfigSettings` button: [i-think-it.png](./imgs/errors/i-think-it.png)
+* See [h2-not-show.png](./imgs/img-err-menu/h2-not-show.png)
+* What makes the first few lines not showing on localhost website?
+* See [meta-data.png](./imgs/img-err-menu/meta-data.png)
 * It still shows on top with small fonts. It seems `## q1` is treated as meta data.
 
 
@@ -432,68 +445,68 @@ https://home.atlassian.com/o/38fbec1d-48cd-4024-91f7-7ab0e7bd4766/?utm_source=id
   * H3
 * When each item ticked, render the markdown file to show matching items.
 * For example, if `H1, H2` selected, show all `<h1>` and `<h2>` items only in markdown.
-* See [](./imgs/img-err-menu/each-h2.png)
+* See [each-h2.png](./imgs/img-err-menu/each-h2.png)
   * Each <h2> and <h3> should have expand/collapse button, preferably, with smaller icons than <h1>
   * <h1> Collapse button does not work
   * `Show H1 Only` has the last item, `Show All` button, when clicked, it will show the page without any filtering.
-* See [](./imgs/img-err-menu/expand-h2-notworking.png)
+* See [expand-h2-notworking.png](./imgs/img-err-menu/expand-h2-notworking.png)
   * <h2> expand not working
   * Please update icons with better css - icon is not intuitive.
   * Mininum js logs if needed debugging.
 * See screenshots below. Expand not working in <h1> and <h2>
-  * [](./imgs/img-err-menu/q1-expand-not.png)
-  * [](./imgs/img-err-menu/q1-expand-not2.png)
-* Fix [](./imgs/img-err-menu/h2-not-working.png)
-* If `h1, h2, h3` has children text to show by expanding, do not show `expand` icon. In [](./imgs/img-err-menu/nothing-to-expand.png), the first <h1> should not show expand button.
+  * [q1-expand-not.png](./imgs/img-err-menu/q1-expand-not.png)
+  * [q1-expand-not2.png](./imgs/img-err-menu/q1-expand-not2.png)
+* Fix [h2-not-working.png](./imgs/img-err-menu/h2-not-working.png)
+* If `h1, h2, h3` has children text to show by expanding, do not show `expand` icon. In [nothing-to-expand.png](./imgs/img-err-menu/nothing-to-expand.png), the first <h1> should not show expand button.
 
 # Search box
 
-* See [](./imgs/errors/page-load-after.png)
+* See [page-load-after.png](./imgs/errors/page-load-after.png)
 * Search box text box is not editable right after page load. It seems being locked for a while. If it is locked, show text box css as disabled.
 * Find the root issue why the textbox was locked.
 
 # DONE - The first line title
 
-* See [](./imgs/img-ui/title-green.png)
+* See [title-green.png](./imgs/img-ui/title-green.png)
 * Instead of making title xxx.md into <h1>, make it bootstrap dark green color like comments/information.
 * Do not convert the title xxx.md into <h1>. Just change color.
-* Do not convert the title xxx.md into small size. No cess except color. Color should be brighter green as in [](./imgs/img-ui/color.png)
+* Do not convert the title xxx.md into small size. No cess except color. Color should be brighter green as in [color.png](./imgs/img-ui/color.png)
 
 
-* See [](./imgs/img-ui/two-li.png) and
-* [](./imgs/img-ui/two-li-2.png)
+* See [two-li.png](./imgs/img-ui/two-li.png) and
+* [two-li-2.png](./imgs/img-ui/two-li-2.png)
 * The first two lines should be both in `<ul>` as each `<li>` item.
 
-* See [](./imgs/img-ui/two-li-3.png)
+* See [two-li-3.png](./imgs/img-ui/two-li-3.png)
 * For this markdown file, title still shows as <h1>.
-  * Note that changes in [](#done---the-first-line-title) is **for all markdown files** that are rendered by md.htm.
+  * Note that changes in [Done - The first line title](#done---the-first-line-title) is **for all markdown files** that are rendered by md.htm.
 
-# Copy password 
+# Copy password
 
-* See [](./imgs/errors/copy-password-disappeared.png)
+* See [copy-password-disappeared.png](./imgs/errors/copy-password-disappeared.png)
 * Copy password button does not show any more.
-* Also see [](./imgs/errors/blur-notworking.png)
+* Also see [blur-notworking.png](./imgs/errors/blur-notworking.png)
 * In some markdown file, blur css for password not working. why?
-* See [](./imgs/errors/not-blurred.png).
+* See [not-blurred.png](./imgs/errors/not-blurred.png).
 * It is not css-blurred yet. Note that `xp9cv` only shows in the screenshot and the rest is covered by whitespace for security issue.
 
-* see [](./imgs/img-ui/copy-password.png)
+* see [copy-password.png](./imgs/img-ui/copy-password.png)
 * Copy password button still not showing
 
 ## done - eye icon
 * Next to blurred passed, show Hyperlink `Show` or eye open icon. When clicked it will show plain text with `eye-closed` icon. When `eye-closed` icon is clicked, it will be blurred again.
- 
+
 # Expand button
 
-* See [](./imgs/img-ui/expand-convert.png)
+* See [expand-convert.png](./imgs/img-ui/expand-convert.png)
 * I like `>` expand button. Replace green `Expand` button into `>`.
 * Also `copy code` button appears after page load when `H1,H2` selected although it was not `<pre>` area. Fix it.
 
 # Done
 
-* rename [](../local-version-history.md) into `version-history.md` and update code if required.
+* rename [local-version-history.md](../local-version-history.md) into `version-history.md` and update code if required.
 
-# 'Push2Conf' 
+# 'Push2Conf'
 
 * Parked as I don't know where is the full list of projects. And `Copy2Conf` may be good enough.
 
@@ -502,13 +515,13 @@ https://home.atlassian.com/o/38fbec1d-48cd-4024-91f7-7ab0e7bd4766/?utm_source=id
 * `Push2Conf` is an aumated version of `Push2Conf`.
 * The flow will be:
 ```
-Button clicked 
+Button clicked
 -> Popup shows with list of Confluence Projects (where will be the root folder?)
 ```
 
 # Table sidebar - localStorage
 
-* See [](./imgs/img-ui/table-sidebar.png)
+* See [table-sidebar.png](./imgs/img-ui/table-sidebar.png)
 * Let this table sidebar expand/closure state be remembered by localstorage.
 
 # Mermaid
@@ -520,11 +533,11 @@ Button clicked
 	* view code will show mermaid syntax
 	* copy code will copy mermaid syntax
 	* png will save current diagram into png and download
-* See [](./imgs/errors/mermaid-not-working.png)
+* See [mermaid-not-working.png](./imgs/errors/mermaid-not-working.png)
 * Mermaid syntax and diagram are not created dynamically from the <pre> text.
-* See [](./imgs/errors/open-new-tab.png)
+* See [open-new-tab.png](./imgs/errors/open-new-tab.png)
 * Diagram dialog is too small. Instead of dialog, open a new tab. If necessary, create a temporary markdown file.
-* See [](./imgs/errors/png-button-not-working.png)
+* See [png-button-not-working.png](./imgs/errors/png-button-not-working.png)
 * png button not working
 * When refreshing page, make the current section location be remembered and scroll down to it.
 
@@ -535,13 +548,13 @@ Button clicked
 
 # VSCode button
 
-* See [](./imgs/errors/vscode-kill.png)
+* See [vscode-kill.png](./imgs/errors/vscode-kill.png)
 * Clicking vscode button to open a folder kills currently opened vscode for C:\Works, and replaces the vscode with the new folder. This is not intended. You shouldn't kill another vscode if it has different project path.
 * This is happening again
 * C:\Works code should never be killed.
 
-```                                                 
-  Note: If VSCode still replaces the current window after this fix, it's a VSCode setting issue — set                    
+```
+  Note: If VSCode still replaces the current window after this fix, it's a VSCode setting issue — set
   "window.openFoldersInNewWindow": "on" in VSCode settings (Ctrl+, → search "openFoldersInNewWindow"). The ?windowId=_new
   parameter requires VSCode 1.64+ to be honored.
 ```
@@ -553,7 +566,7 @@ Button clicked
 
 # DONE
 
-* See [](./imgs/img-ui/title-on-top.png)
+* See [title-on-top.png](./imgs/img-ui/title-on-top.png)
 * Can you make title stay on top while scrolling windows down/up?
 * If first line is not the markdown file then show file name from url as the title.
 
@@ -566,45 +579,45 @@ Button clicked
 
 # stickyTitle bar
 
-* See [](./imgs/img-ui/stickyTitle.png)
+* See [stickyTitle.png](./imgs/img-ui/stickyTitle.png)
 * When current file name is shown in stickyTitle bar, show also who references this markdown file. Preferabbly this breadcrumb path can be remembered when markdown clicked on browser. Otherwise, you can refer to _work_index.md. These list of parent markdown filename should be hyperlinked. Also, add `x` button at the right side, so that user can delete this parent list.
 
 # done
 
-* See [](./imgs/img-ui/doc-title-heading.png)
+* See [doc-title-heading.png](./imgs/img-ui/doc-title-heading.png)
 * `doc-title-heading` should be markdown file name. If it does not end with `.md`, it is not a doc title. If first line does not end with `.md`, set `doc-title-heading` from url.
 
 # `Claude` button
 
-* sEE [](./imgs/errors/claude-button-does.png)
+* sEE [claude-button-does.png](./imgs/errors/claude-button-does.png)
 * Claude button does nothing. It opens cmd and does nothing.
-* See [](./imgs/errors/claude-separate.png)
-* I wanted open claude code in terminal like this [](./imgs/errors/claude-like-this.png) not in separate windows.
+* See [claude-separate.png](./imgs/errors/claude-separate.png)
+* I wanted open claude code in terminal like this [claude-like-this.png](./imgs/errors/claude-like-this.png) not in separate windows.
 
-* See [](./imgs/errors/no-claude.png)
+* See [no-claude.png](./imgs/errors/no-claude.png)
 * It opens vs code but no claude code terminal on the right side.
 
 * Still same, it caused vscode to come front, but not claude terminal.
-* See [](./imgs/errors/claude-bottom.png)
+* See [claude-bottom.png](./imgs/errors/claude-bottom.png)
 * Claude opened but in bottom panel. Is there any way you can click claude icon on top - `Claude code: Open in terminal`? That icon opened claude in right side terminal.
 
-* See [](./imgs/errors/see-what-you-did.png)
+* See [see-what-you-did.png](./imgs/errors/see-what-you-did.png)
 * It opened claude at bottom then opened another vs code.
-* See [](./imgs/errors/unnecessary-middle.png)
+* See [unnecessary-middle.png](./imgs/errors/unnecessary-middle.png)
 * Good, can you close the unnecessary middle empty panel?
 * Still same, it wasn't welcome screen. It was an empty screen with vscode logo background.
 
-* See [](./imgs/errors/terminal-on-bottom.png)
+* See [terminal-on-bottom.png](./imgs/errors/terminal-on-bottom.png)
 * After running `Claude` button, new terminal pops on the right side, which I don't like. I want new terminals on bottom as it was before.
 * Still same, the terminals open in right panel.
 
 ## done - powershell fix
-* See [](./imgs/errors/command.png)
-* I think line 31-52 in [](./powershell/open-claude.ps1) is unnecessary.
+* See [command.png](./imgs/errors/command.png)
+* I think line 31-52 in [open-claude.ps1](./powershell/open-claude.ps1) is unnecessary.
 
 
 * You can just run `Claude code: Open in terminal` from the beginning and it will open claude on right terminal. Then you don't need to change vs code setting again.
-* See [](./imgs/errors/old-behaviour.png) and [](./imgs/errors/old-behaviour2.png)
+* See [old-behaviour.png](./imgs/errors/old-behaviour.png) and [old-behaviour2.png](./imgs/errors/old-behaviour2.png)
 * Unnecessary extra panel on the right side -> need to remove
 * New terminals created on the right side -> need to be bottom.
 * Is this because of *.reg or vscode setting you changed already?
@@ -612,30 +625,30 @@ Button clicked
 
 # Breadcrumb path
 
-* See [](./imgs/errors/breadcrumb-path.png)
+* See [breadcrumb-path.png](./imgs/errors/breadcrumb-path.png)
 * Breadcrum parent item path is incorrect in url format.
 
 # done
-* See [](./imgs/errors/backslash-incorrect.png)
+* See [backslash-incorrect.png](./imgs/errors/backslash-incorrect.png)
 * The last backslahs in the path does not show in code preview and html page, resulting in breaking the full path.
 
 # camel case
 
-* See [](./imgs/img-ui/camelcase.png)
+* See [camelcase.png](./imgs/img-ui/camelcase.png)
 * Can you keep the hyperlink as original camel case instead of making all lower case?
 
 
 # DONE - code button
 
-* See [](./imgs/img-ui/code-button.png)
+* See [code-button.png](./imgs/img-ui/code-button.png)
 * Show `</>Code` button on top for `_work_index.md` as well.
 
-# Bugfix 
+# Bugfix
 
 * Go button used to open the matching program for file, eg, opening ms sql server studio for `.../test.sql`, but it does not do it any more, goes to windows file explorer. Fix please.
 * When table side bar is hidden, if hovered on `Show Tables` icon, show the table. When unhovered, hide the table again.
 
-# DONE - Mermaid zoom 
+# DONE - Mermaid zoom
 
 * See [plusminus.png](./imgs/img-mermaid/plusminus.png). Can you create +/- button that enlarges/reduces the mermaid diagram?
 * Create `zoom reset` button as well. Let buttons be grouped by category with some pretty css.
@@ -653,7 +666,7 @@ Button clicked
 
 # FUTURE - Push2Confluence
 
-* See [](./imgs/img-push2confluence/) folder images.
+* See [img-push2confluence](./imgs/img-push2confluence/) folder images.
 * I want to push current page to confluence.
 * On dialog, it will list project names that the page will be deployed.
 * Because image copy to confluence is tricky (refer to xxx), we take following steps to copy image from local folder to confluence site:
@@ -671,7 +684,7 @@ Button clicked
 
 * Let it show by wrapped `<li>` instead of line by line `<li>` to save ui space.
 * Show `*` (li dot) before each item.
-* Fix space issue in [](./imgs/errors/li-dot.png)
+* Fix space issue in [li-dot.png](./imgs/errors/li-dot.png)
 * Show the last accessed item as first item in the li list.
 
 # Done - </code> button

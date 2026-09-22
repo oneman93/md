@@ -1,3 +1,19 @@
+# v4.0.44
+22/9/26
+move/fav icons in all docs
+
+# v4.0.43
+22/9/26
+save dialog opens in file's own folder (showSaveFilePicker id by folder)
+
+# v4.0.42
+22/9/26
+move/fav icons shown in all md files, not just _work-index.md
+
+# v4.0.41
+22/9/26
+heading filter remembered after reload on _work-index.md
+
 # v4.0.40
 7/9/26
 xlsx icon on table td hyperlinks
