@@ -1857,18 +1857,36 @@
                 }
 
                 function addXlsxIcons() {
+                    function _getExt(str) {
+                        if (/^https?:\/\//i.test(str)) return null;
+                        var m = str.match(/\.([a-zA-Z0-9]+)(\?.*)?$/);
+                        return m ? m[1].toLowerCase() : null;
+                    }
+
                     $('td').each(function () {
                         $(this).find('a').each(function () {
+                            if ($(this).prev('.file-type-icon').length) return;
                             var href = $(this).attr('href') || '';
                             var text = $(this).text().trim();
-                            var isXlsx = /\.xlsx?(\?.*)?$/i.test(href) || /\.xlsx?$/i.test(text);
-                            if (isXlsx) {
-                                var $icon = $('<img>')
-                                    .attr('src', 'agents/imgs/img-ui/excel-icon2.png')
-                                    .attr('alt', 'xlsx')
-                                    .css({ width: '16px', height: '16px', marginRight: '4px', verticalAlign: 'middle' });
-                                $(this).before($icon);
-                            }
+                            var ext = _getExt(href) || _getExt(text);
+                            if (!ext) return;
+
+                            var iconSrc = 'agents/imgs/img-file-icons/' + ext + '.png';
+                            var $a = $(this);
+                            var $icon = $('<img>').attr('src', iconSrc).attr('alt', ext)
+                                .addClass('file-type-icon')
+                                .css({ width: '16px', height: '16px', marginRight: '4px', verticalAlign: 'middle' });
+
+                            $icon.on('error', function () {
+                                $(this).replaceWith(
+                                    $('<a>').attr('href', iconSrc).attr('title', 'Add icon: ' + iconSrc)
+                                        .addClass('file-type-icon')
+                                        .css({ marginRight: '4px', fontSize: '10px', color: '#ccc', verticalAlign: 'middle' })
+                                        .text('[' + ext + ']')
+                                );
+                            });
+
+                            $a.before($icon);
                         });
                     });
                 }

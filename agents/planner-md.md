@@ -5,18 +5,25 @@
 
 * See [corresponding-path.png](./imgs/img-ui/corresponding-path.png). When file explorer opens, let explorer show the corresponding folder path, not just `c:\works`.
 
+
+
 # done - filtering option not remembered.
 
 * See [when-filtered.png](./imgs/img-ui/when-filtered.png). Let filtering be remembered after page reload. Currently, it shows all content when page reloads regardless of filtering options.
 
 * See [when-filtered2.png](./imgs/img-ui/when-filtered2.png) Maybe this filter option not remembered only in work_index.md. In other md files, the filtering option was remembered.
 
-# done - xlsx icon
+# todo - xlsx icon
 
 * When table <td> content is a hyperlink and ends with `.xls` or `.xlsx`, show excel icon image as in [xlsx-icon](./imgs/img-ui/xlsx-icon.png) so that I can quickly notice.
 
 * Use [excel-icon2](./imgs/img-ui/excel-icon2.png) instead. Do not git check in automatically.
 * See [xlsx-icon-not](./imgs/img-ui/xlsx-icon-not.png). Not working.
+
+* See [visio-icon.png](./imgs/img-ui/visio-icon.png). Not just `*.xlsx`, can you show corresponding icon for hyperlinks with all file extension? For example, *.vsdx should show Visio icon at the beginning of hyperlink.
+
+* Please get icons from [img-file-icons](./imgs/img-file-icons/) folder.
+* If not found matching icon, show undefined image with hyperlink to image path, and I will manually update the folder.
 
 # done - table overflow
 

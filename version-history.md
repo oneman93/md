@@ -1,3 +1,7 @@
+# v4.0.45
+22/9/26
+file-type icons from folder
+
 # v4.0.44
 22/9/26
 move/fav icons in all docs
