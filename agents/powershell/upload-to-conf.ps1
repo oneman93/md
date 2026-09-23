@@ -5,7 +5,7 @@
 #
 # Uses System.Net.Http.HttpClient + ByteArrayContent for upload (raw bytes, no encoding)
 # Uses WebClient.DownloadData for download (raw bytes, no temp file)
-# Writes debug log to tmp/copy2conf-debug.log for diagnosing issues
+# Writes debug log to tmp/copy2conf-debug-{timestamp}.log; keeps the 3 most recent logs
 
 param([string]$url)
 
@@ -63,10 +63,11 @@ function Get-MimeType([string]$filename) {
 }
 
 function Upload-ImageToConf([string]$srcUrl, [string]$baseUrl, [string]$pageId, [string]$authHeader, [hashtable]$existingMap) {
-    # Derive filename from URL
+    # Derive filename from URL; prefix with source page name to avoid collisions across pages
     $decoded  = [System.Uri]::UnescapeDataString($srcUrl)
     $filename = [System.IO.Path]::GetFileName(([System.Uri]$decoded).LocalPath)
     if ([string]::IsNullOrWhiteSpace($filename)) { $filename = "image.png" }
+    if ($script:srcBase -and $script:srcBase -ne '') { $filename = "$script:srcBase-$filename" }
 
     # Download image as raw bytes — no temp file, no encoding conversion
     try {
@@ -129,19 +130,24 @@ function Upload-ImageToConf([string]$srcUrl, [string]$baseUrl, [string]$pageId, 
         Add-Content $script:logFile "[RESP] $filename : HTTP $([int]$resp.StatusCode) | $respBody"
 
         $json         = $respBody | ConvertFrom-Json
-        # Update response: top-level _links.download
-        # Create response: results[0]._links.download
-        $downloadPath = if ($existing) {
-            $json._links.download
+
+        # Verify upload succeeded: create returns results array, update returns top-level id
+        $uploadOk = if ($existing) {
+            $json.id -ne $null
         } else {
-            if ($json.results -and $json.results.Count -gt 0) { $json.results[0]._links.download } else { $null }
+            $json.results -and $json.results.Count -gt 0
         }
 
-        if ($downloadPath) {
+        if ($uploadOk) {
+            # Construct the stable CDN download URL directly.
+            # The POST response's _links.download is a REST API path (requires auth);
+            # /download/attachments/{pageId}/{filename} is the public CDN URL that works as <img src>.
+            $encodedName  = [Uri]::EscapeDataString($filename)
+            $downloadPath = "/download/attachments/$pageId/$encodedName"
             Add-Content $script:logFile "[OK] $filename -> $downloadPath"
             return @{ path = $downloadPath; updated = ($existing -ne $null) }
         } else {
-            Add-Content $script:logFile "[FAIL-RESP] $filename : no download path in response"
+            Add-Content $script:logFile "[FAIL-RESP] $filename : upload response had no id/results"
             return $null
         }
     } catch {
@@ -165,8 +171,9 @@ try {
     exit
 }
 
-$settings   = $data.settings
-$html       = $data.html
+$settings        = $data.settings
+$html            = $data.html
+$script:srcBase  = if ($data.srcBase) { $data.srcBase } else { '' }
 $authHeader = 'Basic ' + [Convert]::ToBase64String(
     [System.Text.Encoding]::ASCII.GetBytes("$($settings.email):$($settings.apiToken)"))
 $apiHeaders = @{ 'Authorization' = $authHeader }
@@ -180,9 +187,16 @@ $tmpDir     = Join-Path $mdRoot "tmp"
 $statusFile = Join-Path $tmpDir "copy2conf-status.json"
 if (-not (Test-Path $tmpDir)) { New-Item -ItemType Directory -Path $tmpDir | Out-Null }
 
-$script:logFile = Join-Path $tmpDir "copy2conf-debug.log"
+$logTimestamp   = (Get-Date -Format 'yyyyMMdd-HHmm') + (Get-Date).ToString('tt').ToLower()
+$script:logFile = Join-Path $tmpDir "copy2conf-debug-$logTimestamp.log"
 Set-Content -Path $script:logFile -Value "=== Copy2Conf $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') ===" -Encoding UTF8
 Add-Content  $script:logFile "BaseUrl=$($settings.baseUrl)  PageId=$($settings.pageId)"
+
+# Keep only the 3 most recent debug logs; delete older ones
+Get-ChildItem -Path $tmpDir -Filter "copy2conf-debug-*.log" |
+    Sort-Object LastWriteTime -Descending |
+    Select-Object -Skip 3 |
+    ForEach-Object { Remove-Item $_.FullName -Force }
 
 # Shared HttpClient — auth headers set once; ByteArrayContent sends raw bytes
 $script:httpClient = New-Object System.Net.Http.HttpClient
@@ -202,9 +216,10 @@ Set-Content -Path $statusFile -Value (ConvertTo-Json @{ done = 0; total = $total
 
 foreach ($m in $imgMatches) {
     $srcUrl = $m.Groups[1].Value
+    Add-Content $script:logFile "# image $($done + 1)/$total"
     $result = Upload-ImageToConf $srcUrl $settings.baseUrl $settings.pageId $authHeader $existingMap
     if ($result) {
-        $newSrc = "$($settings.baseUrl)$($result.path)"   # full versioned URL; api=v2 is required by Confluence Cloud
+        $newSrc = "$($settings.baseUrl)/wiki$($result.path)"   # full versioned URL; /wiki prefix required for Confluence Cloud
         Add-Content $script:logFile "[SRC] $([System.IO.Path]::GetFileName($srcUrl)) -> $newSrc"
         $html   = $html.Replace($srcUrl, $newSrc)
         if ($result.updated) { $updated++ } else { $created++ }
@@ -215,9 +230,6 @@ foreach ($m in $imgMatches) {
     Set-Content -Path $statusFile -Value (ConvertTo-Json @{ done = $done; total = $total; complete = $false }) -Encoding UTF8
 }
 
-# ── Mark upload complete so JS can dismiss the progress toast ─────────────────
-Set-Content -Path $statusFile -Value (ConvertTo-Json @{ done = $done; total = $total; complete = $true }) -Encoding UTF8
-
 # ── Cleanup ───────────────────────────────────────────────────────────────────
 $script:httpClient.Dispose()
 Add-Content $script:logFile "Done: created=$created updated=$updated failed=$failed"
@@ -225,18 +237,22 @@ Add-Content $script:logFile "Done: created=$created updated=$updated failed=$fai
 # ── Put modified HTML in clipboard ────────────────────────────────────────────
 Set-HtmlClipboard $html
 
-# ── Notify user ───────────────────────────────────────────────────────────────
+# ── Debug: dump clipboard HTML to file for inspection ────────────────────────
+Set-Content -Path (Join-Path $tmpDir "clipboard-target.html") -Value $html -Encoding UTF8
+
+# ── Build summary for JS banner ───────────────────────────────────────────────
 $parts = @()
 if ($created -gt 0) { $parts += "$created new" }
 if ($updated -gt 0) { $parts += "$updated updated" }
 if ($failed  -gt 0) { $parts += "$failed failed (kept as localhost)" }
+$summary    = if ($parts.Count -gt 0) { $parts -join ', ' } else { 'no images found' }
+$hasWarning = $failed -gt 0
 
-$summary = if ($parts.Count -gt 0) { $parts -join ", " } else { "no images found" }
-$icon    = if ($failed -gt 0) { [System.Windows.Forms.MessageBoxIcon]::Warning } `
-           else { [System.Windows.Forms.MessageBoxIcon]::Information }
-
-[System.Windows.Forms.MessageBox]::Show(
-    "Ready to paste!`n`n$summary.",
-    "Copy2Conf",
-    [System.Windows.Forms.MessageBoxButtons]::OK,
-    $icon)
+# ── Mark complete with summary so JS can show a slide-in banner ───────────────
+Set-Content -Path $statusFile -Value (ConvertTo-Json @{
+    done       = $done
+    total      = $total
+    complete   = $true
+    summary    = $summary
+    hasWarning = $hasWarning
+}) -Encoding UTF8

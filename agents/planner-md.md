@@ -1,4 +1,4 @@
-# todo - move, fav icon
+# done - move, fav icon
 
 * See [move-fav1.png](./imgs/img-ui/move-fav1.png)
 * [move-fav2.png](./imgs/img-ui/move-fav2.png) Currently, move/fav icon set only shows in work_index.md file. Show these icon in all *.md file pages and let them work.
@@ -13,7 +13,7 @@
 
 * See [when-filtered2.png](./imgs/img-ui/when-filtered2.png) Maybe this filter option not remembered only in work_index.md. In other md files, the filtering option was remembered.
 
-# todo - xlsx icon
+# done - xlsx icon
 
 * When table <td> content is a hyperlink and ends with `.xls` or `.xlsx`, show excel icon image as in [xlsx-icon](./imgs/img-ui/xlsx-icon.png) so that I can quickly notice.
 
@@ -671,16 +671,6 @@ Button clicked
 
 * Expand section/Collapse section icon click area too small. Give some padding.
 
-# FUTURE - Push2Confluence
-
-* See [img-push2confluence](./imgs/img-push2confluence/) folder images.
-* I want to push current page to confluence.
-* On dialog, it will list project names that the page will be deployed.
-* Because image copy to confluence is tricky (refer to xxx), we take following steps to copy image from local folder to confluence site:
-  * 1. Copy local images to OneDrive shared folder
-  * 2. Get url of the images
-  * 3. Use the image url in confluence website.
-* This way, we can avoid the image reference of 127.0.0.1.
 
 # DONE - Recently viewed
 

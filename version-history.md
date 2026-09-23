@@ -1,3 +1,7 @@
+# v4.0.46
+23/9/26
+copy2conf wip
+
 # v4.0.45
 22/9/26
 file-type icons from folder

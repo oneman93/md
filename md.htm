@@ -243,8 +243,8 @@
                     <input id="confApiToken" type="password" class="form-control form-control-sm" placeholder="Atlassian API token" autocomplete="new-password">
                 </div>
                 <div style="margin-bottom:8px;">
-                    <label style="font-size:0.83em;font-weight:600;display:block;">Page ID <span style="color:#999;font-weight:normal;">(from URL: /pages/<strong>3746627623</strong>/...)</span></label>
-                    <input id="confPageId" type="text" class="form-control form-control-sm" placeholder="e.g. 3746627623" autocomplete="nope">
+                    <label style="font-size:0.83em;font-weight:600;display:block;">Page ID <span style="color:#999;font-weight:normal;">(from URL: /pages/<strong>4146364431</strong>/...)</span></label>
+                    <input id="confPageId" type="text" class="form-control form-control-sm" placeholder="e.g. 4146364431" autocomplete="nope">
                 </div>
                 <div style="margin-bottom:14px;">
                     <label style="display:flex;align-items:center;gap:6px;font-size:0.83em;cursor:pointer;">
@@ -254,7 +254,7 @@
                 </div>
                 <div style="display:flex;gap:8px;justify-content:flex-end;">
                     <button onclick="document.getElementById('confSettingsOverlay').style.display='none'" class="btn btn-secondary btn-sm">Cancel</button>
-                    <button onclick="saveConfSettingsAndCopy()" class="btn btn-primary btn-sm">Save &amp; Copy</button>
+                    <button onclick="saveConfSettings()" class="btn btn-primary btn-sm">Save</button>
                 </div>
             </div>
         </div>
@@ -289,6 +289,10 @@
 
         // Production hostname
         var _productionHostname = "home.moh93.com";
+
+        // Confluence staging page ID (dedicated image upload page for Copy2Conf)
+        // Page: https://torrens.atlassian.net/wiki/spaces/~626b260534b9b700687c6365/pages/4146364431/dedicated+image-staging+page
+        var _confluenceStagingPageId = '4146364431';
         
         // isMoh93Project is already defined in the head script section
 
@@ -359,12 +363,12 @@
             document.getElementById('confBaseUrl').value  = s.baseUrl  || '';
             document.getElementById('confEmail').value    = s.email    || '';
             document.getElementById('confApiToken').value = s.apiToken || '';
-            document.getElementById('confPageId').value   = s.pageId   || '';
+            document.getElementById('confPageId').value   = s.pageId   || _confluenceStagingPageId;
             document.getElementById('confUploadImages').checked = s.uploadImages !== false;
             document.getElementById('confSettingsOverlay').style.display = 'block';
         }
 
-        function saveConfSettingsAndCopy() {
+        function saveConfSettings() {
             var settings = {
                 baseUrl:      (document.getElementById('confBaseUrl').value  || '').trim().replace(/\/$/, ''),
                 email:        (document.getElementById('confEmail').value    || '').trim(),
@@ -374,7 +378,6 @@
             };
             localStorage.setItem('conf-settings', JSON.stringify(settings));
             document.getElementById('confSettingsOverlay').style.display = 'none';
-            CopyHTMLToClipboard2Conf();
         }
 
         // --- Content clone + cleanup (shared logic) ---
@@ -442,15 +445,14 @@
                 }
             });
 
-            // Replace images with empty <p>; unwrap any <a> image-link wrapper first
+            // Unwrap PhotoSwipe <a> image-link wrappers; keep <img> in place so
+            // the upload path can detect and replace 127.0.0.1 src URLs.
+            // Image to <p> replacement happens only in the fallback path.
             clone.querySelectorAll('img').forEach(function(img) {
                 var parent = img.parentNode;
                 if (parent && parent.nodeName === 'A' && parent.parentNode) {
                     parent.parentNode.replaceChild(img, parent); // lift img out of <a>
-                    parent = img.parentNode;
                 }
-                var ph = document.createElement('p');
-                if (parent) parent.replaceChild(ph, img);
             });
 
             return clone;
@@ -484,7 +486,8 @@
                 if (settings && settings.uploadImages && settings.baseUrl && settings.email && settings.apiToken && settings.pageId) {
                     var images = Array.from(clone.querySelectorAll('img'));
                     var localImgs = images.filter(function(img) {
-                        var src = img.src || '';
+                        // Use getAttribute for detached DOM reliability (img.src resolves relative to doc)
+                        var src = img.getAttribute('src') || img.src || '';
                         return src.includes('127.0.0.1') || src.includes('localhost');
                     });
 
@@ -492,7 +495,11 @@
                         // Write JSON packet to clipboard, then trigger PowerShell via confupload: protocol.
                         // PowerShell downloads images (no CORS restriction), uploads to Confluence,
                         // and puts the final HTML back in clipboard. A dialog appears when done.
-                        var packet = JSON.stringify({ settings: settings, html: clone.innerHTML });
+                        // Derive source filename prefix for attachment naming (e.g. "part3-email-md" from "part3-email.md")
+                        var _srcParam = getQueryParam('src') || '';
+                        var _srcFile  = _srcParam.replace(/\\/g, '/').split('/').pop(); // last segment
+                        var _srcBase  = _srcFile.replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-|-$/g, '').toLowerCase();
+                        var packet = JSON.stringify({ settings: settings, html: clone.innerHTML, srcBase: _srcBase });
                         try {
                             await navigator.clipboard.writeText(packet);
                         } catch(e) {
@@ -507,7 +514,7 @@
                         }
                         window.location.href = 'confupload:run';
                         var _uploadTotal = localImgs.length;
-                        var _progToast = showToast('Uploading 0/' + _uploadTotal + ' image(s)…', 'info', 0);
+                        var _progToast = showToast('Uploading images…', 'info', 0);
                         // Poll progress file written by PowerShell
                         var _mdDir = window.location.href.split('?')[0].replace(/[^/]*$/, '');
                         var _statusUrl = _mdDir + 'tmp/copy2conf-status.json';
@@ -519,12 +526,12 @@
                                     _progToast.textContent = 'Uploading ' + s.done + '/' + s.total + ' image(s)…';
                                     if (s.complete) {
                                         clearInterval(_pollId);
+                                        _progToast.classList.remove('show');
                                         setTimeout(function() {
-                                            _progToast.classList.remove('show');
-                                            setTimeout(function() {
-                                                if (_progToast.parentNode) _progToast.parentNode.removeChild(_progToast);
-                                            }, 300);
-                                        }, 800);
+                                            if (_progToast.parentNode) _progToast.parentNode.removeChild(_progToast);
+                                        }, 300);
+                                        var _finalMsg = s.summary ? 'Ready to paste! ' + s.summary : 'Ready to paste!';
+                                        showToast(_finalMsg, s.hasWarning ? 'error' : 'success', 7000);
                                     }
                                 })
                                 .catch(function() { /* PS not started yet */ });
@@ -538,8 +545,13 @@
                 }
 
                 // Fallback: copy with localhost URLs (settings exist but upload disabled or no local images)
-                copyCloneToClipboard(clone);
+                // Count images before stripping them (local 127.0.0.1 images won't render in Confluence)
                 var imgCount = clone.querySelectorAll('img').length;
+                clone.querySelectorAll('img').forEach(function(img) {
+                    var ph = document.createElement('p');
+                    if (img.parentNode) img.parentNode.replaceChild(ph, img);
+                });
+                copyCloneToClipboard(clone);
                 showToast('Copied! (' + imgCount + ' image' + (imgCount !== 1 ? 's' : '') + ' included)');
             } catch (error) {
                 console.error('Copy error:', error);
