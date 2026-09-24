@@ -1,5 +1,5 @@
 agents/credentials/
 .bkit/
 .claude/
-agents/tmp/
+agents/logs/
 tmp/

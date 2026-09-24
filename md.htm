@@ -152,8 +152,6 @@
                     href="https://laureateaus-my.sharepoint.com/personal/matthew_oh_torrens_edu_au/_layouts/15/onedrive.aspx?id=%2Fpersonal%2Fmatthew%5Foh%5Ftorrens%5Fedu%5Fau%2FDocuments%2FLocalVideos&view=0">
                     Local Videos</a>
                 <button id="btnWrapIt" type="button" class="btn btn-primary btn-sm">Wrap with md.htm</button>
-                <button id="btnCopy" type="button" class="btn btn-primary btn-sm" onclick="CopyHTMLToClipboard()">
-                    Copy</button>
                 <button id="btnCopy2Conf" type="button" class="btn btn-primary btn-sm" onclick="CopyHTMLToClipboard2Conf()">
                     Copy2Conf</button>
                 <button id="btnConfSettings" type="button" class="btn btn-secondary btn-sm" onclick="showConfSettings()" title="Confluence Settings">&#9881;</button>
@@ -194,8 +192,6 @@
                         href="https://laureateaus-my.sharepoint.com/personal/matthew_oh_torrens_edu_au/_layouts/15/onedrive.aspx?id=%2Fpersonal%2Fmatthew%5Foh%5Ftorrens%5Fedu%5Fau%2FDocuments%2FLocalVideos&view=0">
                         Local Videos</a>
                     <button id="btnMobileWrapIt" type="button" class="btn btn-primary btn-sm btn-block">Wrap with md.htm</button>
-                    <button id="btnMobileCopy" type="button" class="btn btn-primary btn-sm btn-block" onclick="CopyHTMLToClipboard()">
-                        Copy</button>
                     <button id="btnMobileCopy2Conf" type="button" class="btn btn-primary btn-sm btn-block" onclick="CopyHTMLToClipboard2Conf()">
                         Copy2Conf</button>
                     <button type="button" class="btn btn-secondary btn-sm btn-block" onclick="showConfSettings()">&#9881; Conf Settings</button>
@@ -227,7 +223,7 @@
                 <h5 style="margin-bottom:8px;">&#9881; Confluence Settings</h5>
                 <p style="font-size:0.82em;color:#666;margin-bottom:14px;">
                     Images are uploaded as Confluence page attachments permanently via PowerShell.<br>
-                    <strong>One-time setup:</strong> run <code>agents/powershell/register-conf-upload-protocol.reg</code> first.<br>
+                    <strong>One-time setup:</strong> run <code>agents/shell/register-conf-upload-protocol.reg</code> first.<br>
                     Get an API token at <strong>id.atlassian.com → Security → API tokens</strong>.
                 </p>
                 <div style="margin-bottom:8px;">
@@ -428,18 +424,11 @@
                 }
             }
 
-            // .md links: remove entire containing <li> or <p> line
+            // .md links: replace link with plain text (keep the text, remove the hyperlink)
             // .mp4 links: replace link with plain text only (keep the line)
             clone.querySelectorAll('a[href]').forEach(function(link) {
                 var href = (link.getAttribute('href') || '').toLowerCase();
-                if (/\.md(\?|#|&|$)/.test(href)) {
-                    var container = link.closest('li, p');
-                    if (container && container.parentNode) {
-                        container.parentNode.removeChild(container);
-                    } else if (link.parentNode) {
-                        link.parentNode.replaceChild(document.createTextNode(link.textContent || ''), link);
-                    }
-                } else if (/\.mp4(\?|#|&|$)/.test(href)) {
+                if (/\.md(\?|#|&|$)/.test(href) || /\.mp4(\?|#|&|$)/.test(href)) {
                     link.parentNode && link.parentNode.replaceChild(
                         document.createTextNode(link.textContent || ''), link);
                 }
@@ -453,6 +442,52 @@
                 if (parent && parent.nodeName === 'A' && parent.parentNode) {
                     parent.parentNode.replaceChild(img, parent); // lift img out of <a>
                 }
+            });
+
+            // Unwrap h1-wrapper divs — Confluence can't handle tables/content inside custom divs
+            clone.querySelectorAll('div.h1-wrapper').forEach(function(wrapper) {
+                var parent = wrapper.parentNode;
+                if (!parent) return;
+                while (wrapper.firstChild) parent.insertBefore(wrapper.firstChild, wrapper);
+                parent.removeChild(wrapper);
+            });
+
+            // Strip class/style from table elements for Confluence compatibility
+            clone.querySelectorAll('table, thead, tbody, tr, th, td').forEach(function(el) {
+                el.removeAttribute('class');
+                el.removeAttribute('style');
+            });
+
+            // Strip md.htm UI chrome that Confluence doesn't understand
+            // h1-icon-group: grab/fav buttons injected into h1-wrapper headings
+            clone.querySelectorAll('.h1-icon-group').forEach(function(el) { el.parentNode && el.parentNode.removeChild(el); });
+            // btn-image-folder: open-folder button appended after image groups
+            clone.querySelectorAll('.btn-image-folder').forEach(function(el) { el.parentNode && el.parentNode.removeChild(el); });
+            // copy-code-btns: Copy-code button inside pre blocks
+            clone.querySelectorAll('.copy-code-btns').forEach(function(el) { el.parentNode && el.parentNode.removeChild(el); });
+            // doc-title-heading: filename title paragraph at top of page
+            clone.querySelectorAll('.doc-title-heading').forEach(function(el) { el.parentNode && el.parentNode.removeChild(el); });
+            // file-type-icon: small file-type icon images (from imgs/img-file-icons/) inserted by addSourceFolderGoButton
+            clone.querySelectorAll('img.file-type-icon').forEach(function(el) { el.parentNode && el.parentNode.removeChild(el); });
+            // Go/VSCode/Claude buttons injected into table <td> cells by addSourceFolderGoButton()
+            // Confluence fails to parse <table> when <button> is inside a <td> — falls back to plain <p>
+            clone.querySelectorAll('button').forEach(function(el) { el.parentNode && el.parentNode.removeChild(el); });
+            // Remove empty <td> cells left behind after button removal (3rd column of Key Place tables)
+            clone.querySelectorAll('td').forEach(function(el) { if (!el.innerHTML.trim()) el.parentNode && el.parentNode.removeChild(el); });
+
+            // Confluence only renders the first <img> per <p>; split multi-image paragraphs
+            // so each content image (class="sm") gets its own <p> block.
+            clone.querySelectorAll('p').forEach(function(p) {
+                var imgs = Array.from(p.querySelectorAll('img.sm'));
+                if (imgs.length < 2) return;
+                var parent = p.parentNode;
+                if (!parent) return;
+                imgs.forEach(function(img) {
+                    var newP = document.createElement('p');
+                    newP.appendChild(img);
+                    parent.insertBefore(newP, p);
+                });
+                parent.removeChild(p);
             });
 
             return clone;
@@ -517,12 +552,18 @@
                         var _progToast = showToast('Uploading images…', 'info', 0);
                         // Poll progress file written by PowerShell
                         var _mdDir = window.location.href.split('?')[0].replace(/[^/]*$/, '');
-                        var _statusUrl = _mdDir + 'tmp/copy2conf-status.json';
+                        var _statusUrl = _mdDir + 'agents/logs/copy2conf-status.json';
+                        // Guard: only accept complete:true after seeing complete:false at least once.
+                        // Prevents stale complete:true from the previous run triggering the banner
+                        // before PS has even started writing a fresh status file.
+                        var _seenNotComplete = false;
                         var _pollId = setInterval(function() {
                             fetch(_statusUrl + '?t=' + Date.now())
                                 .then(function(r) { return r.ok ? r.json() : null; })
                                 .then(function(s) {
                                     if (!s) return;
+                                    if (!s.complete) _seenNotComplete = true;
+                                    if (!_seenNotComplete) return; // stale file from previous run
                                     _progToast.textContent = 'Uploading ' + s.done + '/' + s.total + ' image(s)…';
                                     if (s.complete) {
                                         clearInterval(_pollId);
@@ -531,7 +572,8 @@
                                             if (_progToast.parentNode) _progToast.parentNode.removeChild(_progToast);
                                         }, 300);
                                         var _finalMsg = s.summary ? 'Ready to paste! ' + s.summary : 'Ready to paste!';
-                                        showToast(_finalMsg, s.hasWarning ? 'error' : 'success', 7000);
+                                        // duration=0: banner stays until user dismisses — ensures clipboard is ready before pasting
+                                        showToast(_finalMsg, s.hasWarning ? 'error' : 'success', 0);
                                     }
                                 })
                                 .catch(function() { /* PS not started yet */ });
@@ -1890,12 +1932,7 @@
                                 .css({ width: '16px', height: '16px', marginRight: '4px', verticalAlign: 'middle' });
 
                             $icon.on('error', function () {
-                                $(this).replaceWith(
-                                    $('<a>').attr('href', iconSrc).attr('title', 'Add icon: ' + iconSrc)
-                                        .addClass('file-type-icon')
-                                        .css({ marginRight: '4px', fontSize: '10px', color: '#ccc', verticalAlign: 'middle' })
-                                        .text('[' + ext + ']')
-                                );
+                                $(this).remove();
                             });
 
                             $a.before($icon);

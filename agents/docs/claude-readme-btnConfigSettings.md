@@ -13,7 +13,7 @@ to upload images to Confluence via a PowerShell relay.
 ```
 md/
 ├── md.htm                              # Main app — UI + all JS logic
-└── powershell/
+└── shell/
     ├── register-conf-upload-protocol.reg  # One-time setup: registers confupload: Windows protocol
     ├── launch-upload.vbs               # Called by confupload: protocol — launches PS hidden
     ├── upload-to-conf.ps1              # Main upload script (downloads images, uploads to Confluence)

@@ -620,7 +620,7 @@ Button clicked
 
 ## done - powershell fix
 * See [command.png](./imgs/errors/command.png)
-* I think line 31-52 in [open-claude.ps1](./powershell/open-claude.ps1) is unnecessary.
+* I think line 31-52 in [open-claude.ps1](./shell/open-claude.ps1) is unnecessary.
 
 
 * You can just run `Claude code: Open in terminal` from the beginning and it will open claude on right terminal. Then you don't need to change vs code setting again.

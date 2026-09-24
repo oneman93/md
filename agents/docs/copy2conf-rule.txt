@@ -1,0 +1,58 @@
+Copy2Conf Transformation Rules
+================================
+Rules applied by buildConf2Clone() in md.htm before HTML is sent to PowerShell / clipboard.
+
+1. STOP MARKER
+   - Content from any heading matching "do not copy from here" (case-insensitive) onwards is removed.
+   - The heading's .h1-wrapper (if present) and all sibling nodes after it are deleted.
+
+2. .md LINKS → PLAIN TEXT
+   - Any <a href="...*.md"> is replaced with its text content (link removed, text kept).
+   - Applies to links ending in .md optionally followed by ?, #, &.
+
+3. .mp4 LINKS → PLAIN TEXT
+   - Any <a href="...*.mp4"> is replaced with its text content (link removed, text kept).
+
+4. PHOTOSWIPE ANCHOR UNWRAP
+   - <img> elements wrapped inside an <a> (PhotoSwipe lightbox) are lifted out of the <a>.
+   - The <a> wrapper is removed; the <img> stays in place.
+
+5. UI CHROME REMOVAL
+   - .h1-icon-group    : grab/fav buttons injected into h1-wrapper headings → removed
+   - .btn-image-folder : open-folder button appended after image groups → removed
+   - .copy-code-btns   : Copy-code button inside <pre> blocks → removed
+   - .doc-title-heading: filename title paragraph at top of page → removed
+   - img.file-type-icon: small file-type icon images (from imgs/img-file-icons/) → removed
+   - button            : Go/VSCode/Claude buttons inside table <td> cells (from addSourceFolderGoButton()) → removed
+                         Confluence paste parser fails on <button> inside <td> and converts the whole <table> to <p>.
+   - td (empty)        : Empty <td> cells left after button removal (3rd column of Key Place tables) → removed
+
+6. H1-WRAPPER UNWRAP
+   - All `div.h1-wrapper` elements (added by changeBody() to group content by h1) are unwrapped.
+   - Each wrapper is replaced by its children so tables and headings are top-level in the pasted HTML.
+   - Reason: Confluence Fabric editor cannot parse <table> inside custom divs — it falls back to
+     extracting plain text, losing all table structure.
+
+7. TABLE CLASS/STYLE STRIP
+   - class and style attributes are removed from <table>, <thead>, <tbody>, <tr>, <th>, <td>.
+   - Reason: GitHub markdown theme CSS classes on table elements may confuse Confluence's paste parser.
+
+8. MULTI-IMAGE PARAGRAPH SPLIT
+   - Any <p> containing 2+ img.sm elements is split: each img.sm gets its own <p>.
+   - Reason: Confluence Fabric editor only renders the first <img> per <p>; others are dropped.
+
+9. ABSOLUTE IMAGE SRC
+   - Before cloning, each live <img>.src is snapshotted as an absolute URL (e.g. http://127.0.0.1:5500/...).
+   - These are written back onto the cloned <img> so the PowerShell regex can match all local images.
+
+10. LOCAL IMAGE UPLOAD (PowerShell - upload-to-conf.ps1)
+   - Any <img src="http://127.0.0.1/..."> or <img src="http://localhost/..."> is uploaded to the
+     Confluence staging page (pageId = _confluenceStagingPageId, default 4146364431).
+   - Filename is prefixed with the source page slug (e.g. part3-email-md-0022.png) to avoid collisions.
+   - The src is replaced with the stable Confluence CDN URL:
+       https://{baseUrl}/wiki/download/attachments/{pageId}/{filename}
+   - Existing attachments are updated (not duplicated) using their attachment ID.
+
+11. CLIPBOARD FORMAT
+   - Final HTML is written to agents/logs/clipboard-target.html, then read back and put into
+     clipboard as CF_HTML format (Windows HTML clipboard format) via Set-HtmlClipboard in PS1.

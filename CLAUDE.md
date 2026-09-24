@@ -32,7 +32,7 @@ dist/
 
 images/                     — Favicon and icon assets
 
-powershell/
+shell/
   upload-to-conf.ps1        — Upload images to Confluence as attachments
   open-explorer.ps1         — Open Windows Explorer via openexplorer: protocol
   register-conf-upload-protocol.reg  — Register confupload: protocol
@@ -107,6 +107,11 @@ The `code` button (opens file in VS Code) works in Edge but requires a one-time 
 
 # Rule
 
+## Granted Permission
+
+* Don't ask me about permission for `C:/Works/Informatica/__Export` folder unzipping. You can unzip.
+* Do not ask me about `sqlcmd` permission to read table, view, stored procedure etc. You can read fully, but you should not modify any sql object automatically.
+
 ## TODO section
 
 * When I ask you to do `# todo` section, do not delete or strike through #todo section text. Do not change `# todo` to `# done`. For example,
@@ -114,6 +119,8 @@ The `code` button (opens file in VS Code) works in Edge but requires a one-time 
 do @planner-work-index.md #todo
 ```
 command should not delete or strike through text in the corresponding section, eg, `# TODO - more changes`. It will not change the section title either, eg, into `# DONE - more changes`.
+
+* When asked to do `#todo` section, refresh the file first to read the latest content. You were sometimes saying that there are 2 TODOS when actually only 1 left.
 
 * Whenever doing #todo section, if found any empty references in the file of #todo, eg, [], run /md-fill-empty-reference command to fill them.
 
@@ -135,19 +142,61 @@ command should not delete or strike through text in the corresponding section, e
 
 * For sql tasks, do not deploy any code to sql server directly.
 * Scripts to deploy will be saved into `/agents/sql-claude` folder.
+* When user asks to update existing procs or tables, read the latest code from actual database connection, not reading code from `/agents/sql-claude` folder
+* When code is ready to deploy, you may update existing code in `/agents/sql-claude` folder.
+* When asked to update an object (proc, table, view etc), you must read from actual database first and use it as the base. You should not update based on your previous local files in `/agents/sql-claude`.
+* When creating a procedure, use below comments template
+
+```
+-----------------------------------
+-- Author: moh
+-- Date: {date}
+-- Descriptioin:
+/* How to run: */
+-----------------------------------
+```
+
+## Shell script
+
+* When user requests to create a shell script ending with `*.sh, *.ps1, *.ps`, create the file in a folder `/agents/shell`
+
+## Curl script
+
+* When user requests to create a curl script/query, create a file in a folder `/agents/curl-claude`
+
+## JS/Python project
+
+* If existing source structure does not exist, and you create a new script of js or python, put them into `/agents/source` folder.
 
 ## ConnectionString
 
 * Project specific sql server connection string will be given here:
 
 ```
-here
+sydawsprd-db02
+Windows Authentication
 ```
 
 * Default database will be given here:
 ```
-here
+CRM_Staging
 ```
+
+## GIT
+
+* .gitignore -> When creating git, exclude any file or folder names including `credential` or `password`.
+
+* git ignore all files of folder: `.bkit` and `.claude`
+
+* This means sub folder as well. For example, `./agents/imgs/img-credential` should not be git checked in.
+
+* Do not git push automatically. Do not run /git-push command automatically. I like to see what files has changed, especially *.sql files etc.
+
+## Git: version-history.md
+
+* All project should have `version-history.md` that keeps app version number history.
+* The number is not mathmatical increase. It is table-content-like increase. For example, after `v1.5.9`, the next version will be `v1.5.10` not `v1.6.0`.
+
 
 ## BAU documentation
 

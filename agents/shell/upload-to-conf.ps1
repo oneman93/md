@@ -5,7 +5,7 @@
 #
 # Uses System.Net.Http.HttpClient + ByteArrayContent for upload (raw bytes, no encoding)
 # Uses WebClient.DownloadData for download (raw bytes, no temp file)
-# Writes debug log to tmp/copy2conf-debug-{timestamp}.log; keeps the 3 most recent logs
+# Writes debug log to agents/logs/copy2conf-debug-{timestamp}.log; keeps the 3 most recent logs
 
 param([string]$url)
 
@@ -17,12 +17,17 @@ function Set-HtmlClipboard([string]$htmlFragment) {
     $endHtml        = "<!--EndFragment--></body></html>"
     $headerTemplate = "Version:0.9`r`nStartHTML:{0:D10}`r`nEndHTML:{1:D10}`r`nStartFragment:{2:D10}`r`nEndFragment:{3:D10}`r`n"
 
+    # CF_HTML offsets must be UTF-8 byte offsets, not character counts.
+    # .NET Clipboard.SetText(Html) stores the string as UTF-8 bytes internally.
+    # Using .Length (char count) gives wrong offsets for any non-ASCII content,
+    # causing Confluence to truncate the pasted fragment and lose later tables/content.
+    $enc          = [System.Text.Encoding]::UTF8
     $dummyHeader  = $headerTemplate -f 0, 0, 0, 0
-    $headerLen    = $dummyHeader.Length
+    $headerLen    = $enc.GetByteCount($dummyHeader)
     $startHtmlPos = $headerLen
-    $startFragPos = $headerLen + $startHtml.Length
-    $endFragPos   = $startFragPos + $htmlFragment.Length
-    $endHtmlPos   = $endFragPos + $endHtml.Length
+    $startFragPos = $headerLen + $enc.GetByteCount($startHtml)
+    $endFragPos   = $startFragPos + $enc.GetByteCount($htmlFragment)
+    $endHtmlPos   = $endFragPos + $enc.GetByteCount($endHtml)
 
     $header      = $headerTemplate -f $startHtmlPos, $endHtmlPos, $startFragPos, $endFragPos
     $fullContent = $header + $startHtml + $htmlFragment + $endHtml
@@ -183,7 +188,7 @@ $existingMap = Get-ExistingAttachments $settings.baseUrl $settings.pageId $apiHe
 
 # ── Setup tmp dir, progress status file, and debug log ───────────────────────
 $mdRoot     = Split-Path $PSScriptRoot -Parent
-$tmpDir     = Join-Path $mdRoot "tmp"
+$tmpDir     = Join-Path $mdRoot "logs"
 $statusFile = Join-Path $tmpDir "copy2conf-status.json"
 if (-not (Test-Path $tmpDir)) { New-Item -ItemType Directory -Path $tmpDir | Out-Null }
 
@@ -234,11 +239,13 @@ foreach ($m in $imgMatches) {
 $script:httpClient.Dispose()
 Add-Content $script:logFile "Done: created=$created updated=$updated failed=$failed"
 
-# ── Put modified HTML in clipboard ────────────────────────────────────────────
-Set-HtmlClipboard $html
-
-# ── Debug: dump clipboard HTML to file for inspection ────────────────────────
-Set-Content -Path (Join-Path $tmpDir "clipboard-target.html") -Value $html -Encoding UTF8
+# ── Write HTML to file first, then copy FROM the file into clipboard ──────────
+# This guarantees clipboard content is byte-for-byte identical to clipboard-target.html.
+$clipboardTargetPath = Join-Path $tmpDir "clipboard-target.html"
+Set-Content -Path $clipboardTargetPath -Value $html -Encoding UTF8
+$htmlFromFile = Get-Content -Path $clipboardTargetPath -Raw -Encoding UTF8
+Set-HtmlClipboard $htmlFromFile
+Add-Content $script:logFile "[CLIP] clipboard set from $clipboardTargetPath ($($htmlFromFile.Length) chars)"
 
 # ── Build summary for JS banner ───────────────────────────────────────────────
 $parts = @()

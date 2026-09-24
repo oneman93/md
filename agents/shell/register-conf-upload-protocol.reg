@@ -7,7 +7,7 @@ Windows Registry Editor Version 5.00
 ;   1. Double-click this .reg file and confirm the UAC prompt (one-time setup).
 ;   2. Done — Copy2Conf will now upload images permanently to Confluence.
 ;
-; NOTE: Update paths below if you move the powershell/ folder.
+; NOTE: Update paths below if you move the shell/ folder.
 
 [HKEY_CLASSES_ROOT\confupload]
 @="URL:Conf Upload Protocol"
@@ -18,4 +18,4 @@ Windows Registry Editor Version 5.00
 [HKEY_CLASSES_ROOT\confupload\shell\open]
 
 [HKEY_CLASSES_ROOT\confupload\shell\open\command]
-@="wscript.exe //B \"C:\\Works\\md\\agents\\powershell\\launch-upload.vbs\" \"%1\""
+@="wscript.exe //B \"C:\\Works\\md\\agents\\shell\\launch-upload.vbs\" \"%1\""
