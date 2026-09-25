@@ -1319,6 +1319,15 @@
                         document.getElementById('h1FilterDropdown').style.display = 'none';
                     }
                 });
+                var h1FilterGroup = document.getElementById('h1FilterGroup');
+                if (h1FilterGroup) {
+                    h1FilterGroup.addEventListener('mouseenter', function() {
+                        document.getElementById('h1FilterDropdown').style.display = 'block';
+                    });
+                    h1FilterGroup.addEventListener('mouseleave', function() {
+                        document.getElementById('h1FilterDropdown').style.display = 'none';
+                    });
+                }
                 ['chkFilterH1', 'chkFilterH2', 'chkFilterH3'].forEach(function(id) {
                     var cb = document.getElementById(id);
                     if (cb) cb.addEventListener('change', function() {
@@ -4119,8 +4128,8 @@
             // add to end
             array.push(tmpHref);
 
-            //Task last 5 items only
-            var newArray = array.slice(-5);
+            //Task last 7 items only
+            var newArray = array.slice(-7);
             localStorage.setItem(_clickHistory, newArray.toString());
         }
 
@@ -4142,6 +4151,10 @@
             if (strArray != null) {
                 array = strArray.split(',').map(function (item) {
                     return item;
+                });
+                // Deduplicate: keep last occurrence of each URL
+                array = array.filter(function (item, index) {
+                    return array.lastIndexOf(item) === index;
                 });
             }
             return array;

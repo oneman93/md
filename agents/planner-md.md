@@ -1,3 +1,29 @@
+# done - show all
+
+* See [show-all-hover.png](./imgs/img-ui/show-all-hover.png)
+* As table icon button hover works, let `Show All` button show the actual dialog on hover as well as clicking.
+
+
+# done - Recently viewed section
+
+* Fix [duplication.png](./imgs/img-structure/duplication.png)
+* Also, increase item number of `Recently viewed...` section to 7 items.
+
+# done - linkedFolder
+
+* See [linkedFolder1.png](./imgs/img-structure/linkedFolder1.png)
+* `C:\Works\source` is linked to `C:\Users\matthew.oh\source`
+* Claude session commands eg, `/md-add-resource-planners-and-qnas` create entry like below:
+```
+ [planner-myequals.md](../../Users/matthew.oh/source/repos/onlser-myequals/agents/planner-myequals.md)
+```
+, that should be changed to:
+```
+ [planner-myequals.md](../source/repos/onlser-myequals/agents/planner-myequals.md)
+```
+to make md.html hyperlink work.
+
+
 # done - move, fav icon
 
 * See [move-fav1.png](./imgs/img-ui/move-fav1.png)

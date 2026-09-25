@@ -1,3 +1,7 @@
+# v4.1.2
+25/9/26
+hover etc
+
 # v4.1.1
 24/9/26
 Copy2Conf is done
