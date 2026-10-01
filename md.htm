@@ -268,7 +268,10 @@
         <!-- Scroll Up/Down Buttons -->
         <div class="scroll-nav-buttons" id="scrollNavButtons">
             <button class="scroll-nav-btn" onclick="_pushScrollHistory();window.scrollTo({top:0,behavior:'smooth'})" title="Scroll to top">&#9650;</button>
-            <button class="scroll-nav-btn scroll-nav-btn-back" id="btnScrollBack" onclick="scrollBack()" title="Scroll to previous position" disabled>&#8592;</button>
+            <div class="scroll-back-wrapper">
+                <button class="scroll-nav-btn scroll-nav-btn-back" id="btnScrollBack" onclick="scrollBack()" title="Scroll to previous position" disabled>&#8592;</button>
+                <div class="scroll-history-popup" id="scrollHistoryPopup"></div>
+            </div>
             <button class="scroll-nav-btn" onclick="_pushScrollHistory();window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})" title="Scroll to bottom">&#9660;</button>
         </div>
 
@@ -804,22 +807,121 @@
             return false;
         }
 
-        // Scroll history for the back button
-        var _scrollHistory = [];
+        // Scroll history for the back button — persisted across files in localStorage
+        var _scrollHistoryKey = 'md-scroll-history';
+        var _scrollHistory = (function() {
+            try { return JSON.parse(localStorage.getItem(_scrollHistoryKey)) || []; } catch(e) { return []; }
+        })();
+        // Sync back-button disabled state on load
+        (function() {
+            var btn = document.getElementById('btnScrollBack');
+            if (btn) btn.disabled = (_scrollHistory.length === 0);
+        })();
 
-        function _pushScrollHistory() {
-            _scrollHistory.push(window.scrollY);
+        function _saveScrollHistory() {
+            try { localStorage.setItem(_scrollHistoryKey, JSON.stringify(_scrollHistory.slice(-5))); } catch(e) {}
+        }
+
+        function _h1ToSlug(text) {
+            return (text || '').trim().toLowerCase()
+                .replace(/['''"""]/g, '')
+                .replace(/\s+/g, '-')
+                .replace(/[^a-z0-9-]/g, '');
+        }
+
+        function _getNearestH1Slug(pos) {
+            var wrappers = document.querySelectorAll('.h1-wrapper');
+            var nearestTop = -Infinity;
+            var nearestH1 = null;
+            wrappers.forEach(function(w) {
+                var top = w.getBoundingClientRect().top + window.scrollY;
+                if (top <= pos + 50 && top > nearestTop) {
+                    nearestTop = top;
+                    nearestH1 = w.querySelector('h1');
+                }
+            });
+            return nearestH1 ? _h1ToSlug(nearestH1.textContent) : '';
+        }
+
+        function _pushScrollHistory(pos, headingOverride) {
+            var src = getQueryParam('src');
+            var scrollPos = pos !== undefined ? pos : window.scrollY;
+            var heading = headingOverride !== undefined ? headingOverride : _getNearestH1Slug(scrollPos);
+            _scrollHistory.push({ src: src, pos: scrollPos, heading: heading });
+            _saveScrollHistory();
             var btn = document.getElementById('btnScrollBack');
             if (btn) btn.disabled = false;
         }
 
         function scrollBack() {
             if (_scrollHistory.length === 0) return;
-            var pos = _scrollHistory.pop();
-            window.scrollTo({ top: pos, behavior: 'smooth' });
+            var entry = _scrollHistory.pop();
+            _saveScrollHistory();
             var btn = document.getElementById('btnScrollBack');
             if (btn) btn.disabled = (_scrollHistory.length === 0);
+            var currentSrc = getQueryParam('src');
+            if (entry.src === currentSrc) {
+                window.scrollTo({ top: entry.pos, behavior: 'smooth' });
+            } else {
+                // Different file — navigate there and restore position after load
+                try { localStorage.setItem('md-scroll-pending', JSON.stringify(entry)); } catch(e) {}
+                var baseUrl = window.location.href.split('?')[0];
+                window.location.href = baseUrl + '?src=' + encodeURIComponent(entry.src);
+            }
         }
+
+        // Scroll history hover popup
+        (function() {
+            function _initScrollHistoryPopup() {
+                var backBtn = document.getElementById('btnScrollBack');
+                var popup = document.getElementById('scrollHistoryPopup');
+                if (!backBtn || !popup) return;
+
+                function _buildPopup() {
+                    popup.innerHTML = '';
+                    if (_scrollHistory.length === 0) return;
+                    var currentSrc = getQueryParam('src');
+                    var entries = _scrollHistory.slice().reverse();
+                    entries.forEach(function(entry) {
+                        var filename = (entry.src || '').split('/').pop().split('\\').pop() || '(unknown)';
+                        var label = entry.heading
+                            ? filename + ' ' + entry.heading
+                            : filename + ' \u2191' + Math.round(entry.pos || 0) + 'px';
+                        var item = document.createElement('div');
+                        item.className = 'scroll-history-item';
+                        item.title = (entry.src || '') + ' \u2014 Y:' + Math.round(entry.pos || 0) + 'px';
+                        item.textContent = label;
+                        item.addEventListener('mousedown', function(e) {
+                            e.preventDefault();
+                            popup.classList.remove('visible');
+                            if (entry.src === currentSrc) {
+                                window.scrollTo({ top: entry.pos, behavior: 'smooth' });
+                            } else {
+                                try { localStorage.setItem('md-scroll-pending', JSON.stringify(entry)); } catch(ex) {}
+                                var baseUrl = window.location.href.split('?')[0];
+                                window.location.href = baseUrl + '?src=' + encodeURIComponent(entry.src);
+                            }
+                        });
+                        popup.appendChild(item);
+                    });
+                }
+
+                var wrapperEl = backBtn.parentElement;
+                wrapperEl.addEventListener('mouseenter', function() {
+                    if (_scrollHistory.length === 0) return;
+                    _buildPopup();
+                    popup.classList.add('visible');
+                });
+                wrapperEl.addEventListener('mouseleave', function() {
+                    popup.classList.remove('visible');
+                });
+            }
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', _initScrollHistoryPopup);
+            } else {
+                _initScrollHistoryPopup();
+            }
+        })();
 
         function scrollToElement(elementId) {
             const element = document.getElementById(elementId);
@@ -1497,6 +1599,14 @@
                     addBannerCredentialCopyButtons(app);
                     addFavoriteIcons();
                     compactOverflowingTables();
+                    // Restore pending scroll position when navigated back from another file
+                    try {
+                        var _pending = JSON.parse(localStorage.getItem('md-scroll-pending'));
+                        if (_pending && _pending.src === getQueryParam('src')) {
+                            localStorage.removeItem('md-scroll-pending');
+                            setTimeout(function() { window.scrollTo({ top: _pending.pos, behavior: 'smooth' }); }, 100);
+                        }
+                    } catch(e) {}
                     // Re-check on window resize (debounced)
                     var _compactResizeTimer;
                     window.addEventListener('resize', function() {
@@ -1599,10 +1709,19 @@
                 });
 
                 // Track in-page anchor clicks for the ← scroll back button
+                // Also intercept to scroll with fixed-header offset so h1 isn't hidden under the menu
                 document.getElementById('mdcontainer').addEventListener('click', function(e) {
                     var anchor = e.target.closest('a');
                     if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').startsWith('#')) {
-                        _pushScrollHistory();
+                        var id = anchor.getAttribute('href').substring(1);
+                        var target = document.getElementById(id);
+                        if (target) {
+                            e.preventDefault();
+                            _pushScrollHistory();
+                            scrollToElement(id);
+                        } else {
+                            _pushScrollHistory();
+                        }
                     }
                 });
 
@@ -2049,6 +2168,17 @@
                         grabBtn.style.cssText = 'background:none;border:none;cursor:grab;padding:0 2px;line-height:1;user-select:none;touch-action:none;margin:0;';
                         grabBtn.addEventListener('mousedown', function() {
                             wrapper.setAttribute('draggable', 'true');
+                        });
+                        grabBtn.addEventListener('click', function(e) {
+                            // Save this section's scroll position into anchor history (offset-adjusted for fixed header)
+                            var sw = document.querySelector('.search-wrapper');
+                            var headerOffset = sw ? sw.offsetHeight + 20 : 80;
+                            var top = wrapper.getBoundingClientRect().top + window.scrollY - headerOffset;
+                            var h1el = wrapper.querySelector('h1');
+                            _pushScrollHistory(top, h1el ? _h1ToSlug(h1el.textContent) : '');
+                            // Brief visual feedback
+                            var icon = grabBtn.querySelector('i');
+                            if (icon) { icon.style.color = '#5bc0de'; setTimeout(function(){ icon.style.color = '#bbb'; }, 400); }
                         });
 
                         // Favorite icon

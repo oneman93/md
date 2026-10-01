@@ -1,3 +1,7 @@
+# v4.1.3
+1/10/26
+scroll history fixes
+
 # v4.1.2
 25/9/26
 hover etc

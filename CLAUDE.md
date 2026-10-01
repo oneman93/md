@@ -107,6 +107,16 @@ The `code` button (opens file in VS Code) works in Edge but requires a one-time 
 
 # Rule
 
+
+## Loading Document
+
+* When user mentions such as `project loading document`, it is pointing to one of `*.md` file in `c:\works` or `c:\works\_loadingDocument`.
+* The loading document's path will be given in this section as a form of windows path or localhost url.
+* This loading document url can be used as a default parameter for command eg, `/md-add-resource-planners-and-qnas`
+* Thie loading document of this project is:
+
+http://127.0.0.1:5500/md/md.htm?src=_LoadingDocuments%2Fmdhtm-loading.md
+
 ## Granted Permission
 
 * Don't ask me about permission for `C:/Works/Informatica/__Export` folder unzipping. You can unzip.

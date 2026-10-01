@@ -1,3 +1,56 @@
+# todo - anchor, scrollHistory
+
+* See [anchor-history.png](./imgs/img-ui/anchor-history.png) When `fa-grip-vertical` icon is clicked, add that anchor into anchor history so that when `scroll-nav-btn` is clicked, it can go to that link.
+
+* Run `/md-mermaid-table` 'when _schollHistory is saved with entry' in this document
+
+BASE-PATH: C:/Works/md/md.htm
+
+```mermaid
+flowchart TD
+    A["[1] Scroll Top btn\nonclick line 270"] --> E
+    B["[2] Scroll Bottom btn\nonclick line 272"] --> E
+    C["[3] scrollToElement()\nline 824"] --> E
+    D["[4] Anchor click\nhref=# line 1605"] --> E
+    G["[5] Grab icon click\nfa-grip-vertical line 2053"] --> F
+    E["[6] _pushScrollHistory()\nline 810"] --> H
+    F["[7] Direct push\nh1 wrapper Y line 2056"] --> H
+    H["[8] _scrollHistory array\nline 808"] --> I
+    I["[9] btnScrollBack\nline 271"] --> J
+    J["[10] scrollBack()\nline 816"]
+```
+
+| # | Node | Description | Object Type | RootLineNumbers | Navigate to |
+|---|------|-------------|-------------|-----------------|-------------|
+| 1 | Scroll Top btn | Saves current Y then scrolls to page top | HTML button | [270](vscode://file/C:/Works/md/md.htm:270) | [md.htm:270](vscode://file/C:/Works/md/md.htm:270) |
+| 2 | Scroll Bottom btn | Saves current Y then scrolls to page bottom | HTML button | [272](vscode://file/C:/Works/md/md.htm:272) | [md.htm:272](vscode://file/C:/Works/md/md.htm:272) |
+| 3 | scrollToElement() | Called by table-nav sidebar links; saves Y before jumping to element | JS Function | [824–839](vscode://file/C:/Works/md/md.htm:824) | [md.htm:824](vscode://file/C:/Works/md/md.htm:824) |
+| 4 | Anchor click handler | Fires on any `<a href="#">` click inside `#mdcontainer`; saves Y before browser scrolls | JS event | [1601–1607](vscode://file/C:/Works/md/md.htm:1601) | [md.htm:1605](vscode://file/C:/Works/md/md.htm:1605) |
+| 5 | Grab icon click | Fires when `fa-grip-vertical` on an h1 is clicked; saves that section's Y as a bookmark | JS event | [2053–2060](vscode://file/C:/Works/md/md.htm:2053) | [md.htm:2053](vscode://file/C:/Works/md/md.htm:2053) |
+| 6 | _pushScrollHistory() | Core helper: pushes `window.scrollY` to array and enables `←` button | JS Function | [810–814](vscode://file/C:/Works/md/md.htm:810) | [md.htm:810](vscode://file/C:/Works/md/md.htm:810) |
+| 7 | Direct push (grab) | Grab icon pushes `wrapper.getBoundingClientRect().top + scrollY` directly (section's own position) | JS inline | [2055–2056](vscode://file/C:/Works/md/md.htm:2055) | [md.htm:2055](vscode://file/C:/Works/md/md.htm:2055) |
+| 8 | _scrollHistory[] | In-memory array of saved Y positions; declared at page load | JS variable | [808](vscode://file/C:/Works/md/md.htm:808) | [md.htm:808](vscode://file/C:/Works/md/md.htm:808) |
+| 9 | btnScrollBack | The `←` back button; disabled when history is empty | HTML button | [271](vscode://file/C:/Works/md/md.htm:271) | [md.htm:271](vscode://file/C:/Works/md/md.htm:271) |
+| 10 | scrollBack() | Pops last Y from array, scrolls to it, disables button when stack empty | JS Function | [816–822](vscode://file/C:/Works/md/md.htm:816) | [md.htm:816](vscode://file/C:/Works/md/md.htm:816) |
+
+
+* See [anchroed-h1.png](./imgs/img-ui/anchroed-h1.png) Anchored h1 is hidden under top menu bar.
+
+* Can you make `_scrollHistory` be remembered across different markdown files?
+
+* Let `_scrollHistory` remember recent top 5 clicks.
+* When hovering scroll button show a popup dialog with top 5 recent hyperlink.
+
+* See [anchor-same.png](./imgs/img-ui/anchor-same.png) If in the same file, all anchor shows the same.
+* Also, when hovering each item in dialog, the dialog disappears because mouse is outside of scrollHistory button itself.
+
+* Let item text be `{filename} {h1-text-without-space}`, eg, 
+  * `planner-md.md go-button`
+  * `planner-md.md go-button-update`
+
+* See [wrong-item.png](./imgs/img-ui/wrong-item.png) I clicked: `Done - why toggling happens?` but in dialog, it saved an item `toprepare - sqlcmd`.
+
+
 # done - show all
 
 * See [show-all-hover.png](./imgs/img-ui/show-all-hover.png)

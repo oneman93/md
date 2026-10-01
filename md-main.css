@@ -336,6 +336,46 @@ code {
     background: rgba(255, 255, 255, 0.95);
 }
 
+.scroll-back-wrapper {
+    position: relative;
+}
+
+.scroll-history-popup {
+    display: none;
+    position: absolute;
+    left: 100%;
+    top: 0;
+    margin-left: 4px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 2px 4px 12px rgba(0,0,0,0.15);
+    min-width: 180px;
+    max-width: 280px;
+    z-index: 9999;
+    padding: 4px 0;
+}
+
+.scroll-history-popup.visible {
+    display: block;
+}
+
+.scroll-history-item {
+    display: block;
+    padding: 5px 12px;
+    font-size: 12px;
+    color: #333;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.scroll-history-item:hover {
+    background: #f0f4ff;
+    color: #0069d9;
+}
+
 .table-nav-button {
     display: block;
     width: 100%;
