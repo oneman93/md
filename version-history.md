@@ -1,3 +1,7 @@
+# v4.1.4
+1/10/26
+cross-file scroll restore fix
+
 # v4.1.3
 1/10/26
 scroll history fixes

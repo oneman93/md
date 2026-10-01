@@ -1604,7 +1604,13 @@
                         var _pending = JSON.parse(localStorage.getItem('md-scroll-pending'));
                         if (_pending && _pending.src === getQueryParam('src')) {
                             localStorage.removeItem('md-scroll-pending');
-                            setTimeout(function() { window.scrollTo({ top: _pending.pos, behavior: 'smooth' }); }, 100);
+                            var _pendingPos = _pending.pos;
+                            // Apply immediately (instant so retry doesn't fight smooth animation)
+                            setTimeout(function() {
+                                window.scrollTo({ top: _pendingPos, behavior: 'instant' });
+                                // Retry after images/layout fully settle
+                                setTimeout(function() { window.scrollTo({ top: _pendingPos, behavior: 'instant' }); }, 600);
+                            }, 100);
                         }
                     } catch(e) {}
                     // Re-check on window resize (debounced)

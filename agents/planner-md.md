@@ -1,4 +1,9 @@
-# todo - anchor, scrollHistory
+# todo 
+* scrollbar button and dialog is still apart in space. Sometimes, while I move mouse, dialog disappears.
+
+* When dialog item clicking goes to different file, anchor is not correct. If I click the item again on the file, the anchor reaches correctly.
+
+# done - anchor, scrollHistory
 
 * See [anchor-history.png](./imgs/img-ui/anchor-history.png) When `fa-grip-vertical` icon is clicked, add that anchor into anchor history so that when `scroll-nav-btn` is clicked, it can go to that link.
 
